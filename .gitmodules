@@ -13,3 +13,6 @@
 [submodule "watchtower/src"]
 	path = watchtower/src
 	url = https://github.com/containrrr/watchtower.git
+[submodule "traefik/src"]
+	path = traefik/src
+	url = https://github.com/containous/traefik.git
