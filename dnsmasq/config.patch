@@ -1,0 +1,43 @@
+--- a/src/config.h	2020-07-15 12:31:53.233368908 +0200
++++ b/config.h	2020-07-15 14:33:06.943635145 +0200
+@@ -40,11 +40,11 @@
+ #define DHCP_PACKET_MAX 16384 /* hard limit on DHCP packet size */
+ #define SMALLDNAME 50 /* most domain names are smaller than this */
+ #define CNAME_CHAIN 10 /* chains longer than this atr dropped for loop protection */
+-#define HOSTSFILE "/etc/hosts"
+-#define ETHERSFILE "/etc/ethers"
++#define HOSTSFILE "/app/config/hosts"
++#define ETHERSFILE "/app/config/ethers"
+ #define DEFLEASE 3600 /* default lease time, 1 hour */
+-#define CHUSER "nobody"
+-#define CHGRP "dip"
++#define CHUSER "app"
++#define CHGRP "app"
+ #define TFTP_MAX_CONNECTIONS 50 /* max simultaneous connections */
+ #define LOG_MAX 5 /* log-queue length */
+ #define RANDFILE "/dev/urandom"
+@@ -173,6 +173,11 @@
+ #define HAVE_LOOP
+ #define HAVE_DUMPFILE
+ 
++#define LEASEFILE "/app/data/leases"
++#define CONFFILE "/app/config/dnsmasq.conf"
++#define RESOLVFILE "/app/config/resolv.conf"
++#define RUNFILE "/dev/shm/dnsmasq.pid"
++
+ /* Build options which require external libraries.
+    
+    Defining HAVE_<opt>_STATIC as _well_ as HAVE_<opt> will link the library statically.
+@@ -183,9 +188,9 @@
+ /* #define HAVE_LUASCRIPT */
+ /* #define HAVE_DBUS */
+ /* #define HAVE_IDN */
+-/* #define HAVE_LIBIDN2 */
+-/* #define HAVE_CONNTRACK */
+-/* #define HAVE_DNSSEC */
++#define HAVE_LIBIDN2
++#define HAVE_CONNTRACK
++#define HAVE_DNSSEC
+ 
+ 
+ /* Default locations for important system files. */

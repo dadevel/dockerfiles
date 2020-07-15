@@ -1,0 +1,12 @@
+[submodule "dnsmasq/src"]
+	path = dnsmasq/src
+	url = http://thekelleys.org.uk/git/dnsmasq.git
+[submodule "prometheus-smart-collector/src"]
+	path = prometheus-smart-collector/src
+	url = https://github.com/prometheus-community/node-exporter-textfile-collector-scripts.git
+[submodule "unbound/src"]
+	path = unbound/src
+	url = https://github.com/NLnetLabs/unbound.git
+[submodule "chrony/src"]
+	path = chrony/src
+	url = https://git.tuxfamily.org/chrony/chrony.git
