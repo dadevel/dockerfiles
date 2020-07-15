@@ -10,3 +10,6 @@
 [submodule "chrony/src"]
 	path = chrony/src
 	url = https://git.tuxfamily.org/chrony/chrony.git
+[submodule "watchtower/src"]
+	path = watchtower/src
+	url = https://github.com/containrrr/watchtower.git
