@@ -13,10 +13,10 @@ jobs:
       matrix:
         image:
         - alpine
-        - distroless
-        - python
         - c-builder
+        - distroless
         - go-builder
+        - python
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
@@ -65,6 +65,8 @@ jobs:
       matrix:
         image:
         - prometheus-smart-collector
+        - traefik
+        - watchtower
     runs-on: ubuntu-20.04
     needs:
     - base
