@@ -8,82 +8,26 @@ on:
   schedule:
   - cron: '0 3 * * *'
 jobs:
-  base:
-    strategy:
-      matrix:
-        image:
-        - alpine
-        - c-builder
-        - distroless
-        - go-builder
-        - python
+  build:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Get submodule head
-      run: echo ::set-env name=MODULE_HEAD::$(git submodule status ${{ matrix.image }}/src | grep -Eo [a-f0-9]{40})
-    - name: Cache submodules
+      with:
+        fetch-depth: 0
+    - name: Submodule Status
+      run: echo ::set-env name=SUBMODULE_KEY::$(git submodule status | grep -Eo [a-f0-9]{40} | sha256sum | cut -d ' ' -f 1)
+    - name: Cache Submodules
       uses: actions/cache@v2
       with:
         path: |
           .git/modules
           */src
-        key: ${{ matrix.image }}-module-${{ env.MODULE_HEAD }}
-    - name: Build & push images
-      run: ./build.sh ${{ matrix.image }}
+        key: submodule-${{ env.SUBMODULE_KEY }}
+    - name: Build & Push
+      run: ./build.py
       env:
         REGISTRY_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-  cxx:
-    strategy:
-      matrix:
-        image:
-        - chrony
-        - dnsmasq
-        - unbound
-    runs-on: ubuntu-20.04
-    needs:
-    - base
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Get submodule head
-      run: echo ::set-env name=MODULE_HEAD::$(git submodule status ${{ matrix.image }}/src | grep -Eo [a-f0-9]{40})
-    - name: Cache submodules
-      uses: actions/cache@v2
-      with:
-        path: |
-          .git/modules
-          */src
-        key: ${{ matrix.image }}-module-${{ env.MODULE_HEAD }}
-    - name: Build & push images
-      run: ./build.sh ${{ matrix.image }}
-      env:
-        REGISTRY_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-  go:
-    strategy:
-      matrix:
-        image:
-        - prometheus-smart-collector
-        - traefik
-        - watchtower
-    runs-on: ubuntu-20.04
-    needs:
-    - base
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Get submodule head
-      run: echo ::set-env name=MODULE_HEAD::$(git submodule status ${{ matrix.image }}/src | grep -Eo [a-f0-9]{40})
-    - name: Cache submodules
-      uses: actions/cache@v2
-      with:
-        path: |
-          .git/modules
-          */src
-        key: ${{ matrix.image }}-module-${{ env.MODULE_HEAD }}
-    - name: Build & push images
-      run: ./build.sh ${{ matrix.image }}
-      env:
-        REGISTRY_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        COMMIT_BEFORE: ${{ github.event.before }}
+        COMMIT_NOW: ${{ github.sha }}
 

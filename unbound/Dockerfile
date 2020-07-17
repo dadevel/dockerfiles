@@ -29,7 +29,9 @@ RUN ./configure \
 --with-pic
 # additional feature flags
 # --enable-tfo-client --enable-tfo-server --enable-ipset --enable-subnet
-RUN make -j $(nproc) && strip ./unbound
+RUN make -j $(nproc) && \
+strip ./unbound && \
+setcap -q cap_net_bind_service+ep ./unbound
 # unbound-anchor exits with return code 1 even if everything went fine
 RUN wget -q -O - https://www.internic.net/domain/named.cache | tee ./root.hints | awk '{ if ($3 == "A" || $3 == "AAAA") { printf("master: %s\n", $NF) } }' > ./root.conf && { ./unbound-anchor -a ./root.key -r ./root.hints || [ $? -eq 1 ]; }
 

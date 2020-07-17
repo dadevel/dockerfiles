@@ -16,3 +16,6 @@
 [submodule "traefik/src"]
 	path = traefik/src
 	url = https://github.com/containous/traefik.git
+[submodule "cadvisor/src"]
+	path = cadvisor/src
+	url = https://github.com/google/cadvisor.git

@@ -1,5 +1,8 @@
 FROM dadevel/python:latest
-RUN apk add --no-cache smartmontools && rm -rf /etc/smartd*
 COPY ./src/smartmon.py ./entrypoint.sh ./bin/
+RUN apk add --no-cache libcap smartmontools && \
+setcap -q cap_sys_rawio+ep ./smartmon.py && \
+apk del --purge --rdepends libcap && \
+rm -rf /etc/smartd*
 ENTRYPOINT ["/app/bin/entrypoint.sh"]
 

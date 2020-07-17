@@ -1,5 +1,5 @@
 FROM golang:alpine
-RUN apk add --no-cache ca-certificates fortify-headers gcc git make musl-dev tzdata && \
+RUN apk add --no-cache ca-certificates fortify-headers gcc git libcap make musl-dev tzdata && \
 ln -s /usr/share/zoneinfo/UTC /etc/localtime
 ENV CHARSET UTF-8
 ENV LANG C.UTF-8

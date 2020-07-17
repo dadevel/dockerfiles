@@ -1,5 +1,5 @@
 FROM alpine:latest
-RUN apk add --no-cache ca-certificates fortify-headers gcc git make musl-dev patch tzdata && \
+RUN apk add --no-cache ca-certificates fortify-headers gcc git libcap make musl-dev patch tzdata && \
 ln -s /usr/share/zoneinfo/UTC /etc/localtime
 ENV CHARSET UTF-8
 ENV LANG C.UTF-8
