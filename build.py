@@ -19,23 +19,8 @@ Image = collections.namedtuple('Image', ['path', 'registry', 'user', 'repo_url']
 RegistryCredentials = collections.namedtuple('RegistryCredentials', ['name', 'user', 'token'])
 
 
-BUILD_ORDER = [
-    # base
-    'alpine', 'distroless', 'python',
-    # builder
-    'c-builder', 'go-builder',
-    # c-based
-    'chrony', 'dnsmasq', 'unbound',
-    # go-based
-    'cadvisor', 'traefik', 'watchtower',
-    # other
-    'prometheus-smart-collector',
-]
-
-
 def main():
     repo_url = os.environ.get('REPO_URL', 'https://github.com/dadevel/dockerfiles')
-    architectures = os.environ.get('ARCHITECTURES', 'linux/amd64,linux/arm64,linux/arm/v7')
     cache = Path(os.environ.get('CACHE', '~/.cache/buildx')).expanduser()
     running_in_ci = os.environ.get('CI')
     try:
@@ -45,14 +30,10 @@ def main():
         setup_buildx()
         for item in sys.argv[1:]:
             image = Image(Path(item), credentials.name, credentials.user, repo_url)
-            process(image, cache, architectures)
+            process(image, cache)
     finally:
         if running_in_ci:
             logout_registry(credentials)
-
-
-def into_build_order(it):
-    return list(sorted(it, key=lambda item: BUILD_ORDER.index(item)))
 
 
 def registry_credentials_from_env():
@@ -80,32 +61,21 @@ def setup_buildx():
         docker('buildx', 'inspect', '--bootstrap', 'multiarch')
 
 
-def changes(first_commit, last_commit):
-    try:
-        paths = [Path(line) for line in run('git', 'diff', '--name-only', first_commit, last_commit).splitlines()]
-        result = {path.parent for path in paths if path.parent.joinpath('Dockerfile').is_file()}
-        result = into_build_order(result)
-    except SubprocessError:
-        result = BUILD_ORDER
-    print(f'rebuilding images {", ".join(str(x) for x in result)}')
-    return result
-
-
-def process(image, cache_dir, architectures):
+def process(image, cache_dir):
     has_source = image.path.joinpath('src').is_dir()
-    git_info = fetch(image) if has_source else GitInfo(None, None, None, None, None)
+    ref_matcher, version_adapter_target, version_adapter_replacement, platform = parse_meta_file(image.path/'meta.env')
+    git_info = fetch(image, ref_matcher, version_adapter_target, version_adapter_replacement) if has_source else GitInfo(None, None, None, None, None)
     print(f'current commit {git_info.current_commit}, latest commit {git_info.latest_commit}, latest reference {git_info.latest_ref}, latest version {git_info.latest_version}')
     if has_source:
         checkout(image, git_info)
-    build(image, git_info, cache_dir, architectures)
+    build(image, git_info, cache_dir, platform)
     if has_source:
         bump(image, git_info)
 
 
-def fetch(image):
+def fetch(image, ref_matcher, version_adapter_target, version_adapter_replacement):
     # update source
     run('git', 'submodule', 'update', '--init', '--recursive', image.path/'src')
-    ref_matcher, version_adapter_target, version_adapter_replacement = parse_meta_file(image.path/'meta.env')
     # find newest version
     latest_ref, latest_version = find_lastest_reference(image, ref_matcher)
     latest_version = adapt_version(latest_version, version_adapter_target, version_adapter_replacement)
@@ -122,6 +92,7 @@ def parse_meta_file(path):
     variables = load_envfile(path)
     try:
         matcher = re.compile(variables['ref_matcher'])
+        platform = variables.get('platform', 'linux/amd64,linux/arm64,linux/arm/v7')
     except KeyError as e:
         raise RuntimeError('ref_matcher not defined in meta.env') from e
     try:
@@ -130,7 +101,7 @@ def parse_meta_file(path):
     except KeyError:
         adapter_target = None
         adapter_replacement = None
-    return matcher, adapter_target, adapter_replacement
+    return matcher, adapter_target, adapter_replacement, platform
 
 
 def find_lastest_reference(image, regex):
