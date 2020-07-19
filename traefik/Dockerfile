@@ -1,4 +1,4 @@
-FROM node:12.11 as webui
+FROM node:12-alpine as webui
 WORKDIR /build/src/
 COPY ./src/webui/ .
 RUN npm install

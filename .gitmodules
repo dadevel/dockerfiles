@@ -19,3 +19,30 @@
 [submodule "cadvisor/src"]
 	path = cadvisor/src
 	url = https://github.com/google/cadvisor.git
+[submodule "hostapd/src"]
+	path = hostapd/src
+	url = git://w1.fi/srv/git/hostap.git
+[submodule "haveged/src"]
+	path = haveged/src
+	url = https://github.com/jirka-h/haveged.git
+[submodule "prometheus/src"]
+	path = prometheus/src
+	url = https://github.com/prometheus/prometheus.git
+[submodule "prometheus-node-exporter/src"]
+	path = prometheus-node-exporter/src
+	url = https://github.com/prometheus/node_exporter.git
+[submodule "prometheus-blackbox-exporter/src"]
+	path = prometheus-blackbox-exporter/src
+	url = https://github.com/prometheus/blackbox_exporter.git
+[submodule "prometheus-alertmanager/src"]
+	path = prometheus-alertmanager/src
+	url = https://github.com/prometheus/alertmanager.git
+[submodule "grafana/src"]
+	path = grafana/src
+	url = https://github.com/grafana/grafana.git
+[submodule "prometheus-signal-receiver/src"]
+	path = prometheus-signal-receiver/src
+	url = https://github.com/dadevel/alertmanager-signal-receiver.git
+[submodule "prometheus-nftables-exporter/src"]
+	path = prometheus-nftables-exporter/src
+	url = https://github.com/dadevel/prometheus-nftables-exporter.git

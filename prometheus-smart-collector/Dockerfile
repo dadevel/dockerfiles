@@ -4,5 +4,5 @@ RUN apk add --no-cache libcap smartmontools && \
 setcap -q cap_sys_rawio+ep ./smartmon.py && \
 apk del --purge --rdepends libcap && \
 rm -rf /etc/smartd*
-ENTRYPOINT ["/app/bin/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
 

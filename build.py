@@ -38,20 +38,12 @@ def main():
     architectures = os.environ.get('ARCHITECTURES', 'linux/amd64,linux/arm64,linux/arm/v7')
     cache = Path(os.environ.get('CACHE', '~/.cache/buildx')).expanduser()
     running_in_ci = os.environ.get('CI')
-    if running_in_ci and os.environ.get('GITHUB_EVENT_NAME') == 'push':
-        print('running on push')
-        first = os.environ.get('COMMIT_BEFORE')
-        last = os.environ.get('COMMIT_NOW')
-        images = changes(first, last)
-    else:
-        print('running on schedule')
-        images = sys.argv[1:]
     try:
         credentials = registry_credentials_from_env()
         if running_in_ci:
             login_registry(credentials)
         setup_buildx()
-        for item in images:
+        for item in sys.argv[1:]:
             image = Image(Path(item), credentials.name, credentials.user, repo_url)
             process(image, cache, architectures)
     finally:

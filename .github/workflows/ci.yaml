@@ -8,26 +8,131 @@ on:
   schedule:
   - cron: '0 3 * * *'
 jobs:
-  build:
+  base:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        image:
+        - alpine
+        - c-builder
+        - distroless
+        - go-builder
+        - python
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
+    - name: Detect Changes
+      uses: dorny/paths-filter@v2.2.0
+      id: filter
+      with:
+        filters: |
+          source:
+          - '${{ matrix.image }}/**/*'
     - name: Submodule Status
-      run: echo ::set-env name=SUBMODULE_KEY::$(git submodule status | grep -Eo [a-f0-9]{40} | sha256sum | cut -d ' ' -f 1)
+      if: github.event_name == 'schedule' || steps.filter.outputs.source == 'true'
+      run: echo ::set-env name=SUBMODULE_HEAD::$(git submodule status ${{ matrix.image }}/src | grep -Eo [a-f0-9]{40})
     - name: Cache Submodules
+      if: github.event_name == 'schedule' || steps.filter.outputs.source == 'true'
       uses: actions/cache@v2
       with:
         path: |
           .git/modules
           */src
-        key: submodule-${{ env.SUBMODULE_KEY }}
+        key: submodule-${{ matrix.image }}-${{ env.SUBMODULE_HEAD }}
     - name: Build & Push
-      run: ./build.py
+      if: github.event_name == 'schedule' || steps.filter.outputs.source == 'true'
+      run: ./build.py ${{ matrix.image }}
       env:
         REGISTRY_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        COMMIT_BEFORE: ${{ github.event.before }}
-        COMMIT_NOW: ${{ github.sha }}
+
+  cxx:
+    runs-on: ubuntu-20.04
+    needs:
+    - base
+    strategy:
+      matrix:
+        image:
+        - chrony
+        - dnsmasq
+        - haveged
+        - hostapd
+        - unbound
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Detect Changes
+      uses: dorny/paths-filter@v2.2.0
+      id: filter
+      with:
+        filters: |
+          source:
+          - '${{ matrix.image }}/**/*'
+    - name: Submodule Status
+      if: github.event_name == 'schedule' || steps.filter.outputs.source == 'true'
+      run: echo ::set-env name=SUBMODULE_HEAD::$(git submodule status ${{ matrix.image }}/src | grep -Eo [a-f0-9]{40})
+    - name: Cache Submodules
+      if: github.event_name == 'schedule' || steps.filter.outputs.source == 'true'
+      uses: actions/cache@v2
+      with:
+        path: |
+          .git/modules
+          */src
+        key: submodule-${{ matrix.image }}-${{ env.SUBMODULE_HEAD }}
+    - name: Build & Push
+      if: github.event_name == 'schedule' || steps.filter.outputs.source == 'true'
+      run: ./build.py ${{ matrix.image }}
+      env:
+        REGISTRY_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  go:
+    runs-on: ubuntu-20.04
+    needs:
+    - base
+    strategy:
+      matrix:
+        image:
+        - cadvisor
+        - grafana
+        - prometheus
+        - prometheus-alertmanager
+        - prometheus-apt-collector
+        - prometheus-blackbox-exporter
+        - prometheus-nftables-exporter
+        - prometheus-node-exporter
+        - prometheus-signal-receiver
+        - prometheus-smart-collector
+        - traefik
+        - watchtower
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Detect Changes
+      uses: dorny/paths-filter@v2.2.0
+      id: filter
+      with:
+        filters: |
+          source:
+          - '${{ matrix.image }}/**/*'
+    - name: Submodule Status
+      if: github.event_name == 'schedule' || steps.filter.outputs.source == 'true'
+      run: echo ::set-env name=SUBMODULE_HEAD::$(git submodule status ${{ matrix.image }}/src | grep -Eo [a-f0-9]{40})
+    - name: Cache Submodules
+      if: github.event_name == 'schedule' || steps.filter.outputs.source == 'true'
+      uses: actions/cache@v2
+      with:
+        path: |
+          .git/modules
+          */src
+        key: submodule-${{ matrix.image }}-${{ env.SUBMODULE_HEAD }}
+    - name: Build & Push
+      if: github.event_name == 'schedule' || steps.filter.outputs.source == 'true'
+      run: ./build.py ${{ matrix.image }}
+      env:
+        REGISTRY_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
