@@ -24,6 +24,7 @@ RUN mkdir -p ./data/plugins \
 ./config/provisioning/dashboards \
 ./config/provisioning/notifiers && \
 chown -R app:app ./data/plugins
+COPY ./src/conf/defaults.ini ./static/conf/
 COPY --from=webui /build/public ./static/public
 COPY --from=webui /build/tools ./static/tools
 COPY --from=grafana /build/bin/linux-$TARGETARCH/grafana-server ./bin/
