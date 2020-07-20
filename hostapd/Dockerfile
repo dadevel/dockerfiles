@@ -6,7 +6,8 @@ COPY ./config.patch ./hostapd/
 RUN cd ./hostapd && patch -u -i ./config.patch ./.config && make -j $(nproc) && strip ./hostapd
 
 FROM dadevel/alpine:latest
-COPY --from=hostapd /build/hostapd/hostapd /app/bin/
+COPY --from=hostapd /build/hostapd/hostapd ./bin/
+COPY ./entrypoint.sh ./bin/
 RUN apk add --no-cache libnl3 openssl
 # hostapd -v always exits with return code 1
 RUN hostapd -v || [ $? -eq 1 ]
