@@ -31,6 +31,7 @@ def main():
         credentials = registry_credentials_from_env()
         if running_in_ci:
             login_registry(credentials)
+            setup_git()
         setup_buildx()
         for item in sys.argv[1:]:
             image = Image(Path(item), credentials.name, credentials.user, repo_url)
@@ -54,6 +55,11 @@ def login_registry(creds):
 
 def logout_registry(creds):
     run('docker', 'logout', creds.name)
+
+
+def setup_git():
+    run('git', 'config', 'user.name', 'github-actions')
+    run('git', 'config', 'user.email', 'github-actions@github.com')
 
 
 def setup_buildx():
