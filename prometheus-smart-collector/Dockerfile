@@ -5,4 +5,5 @@ setcap -q cap_sys_rawio+ep /usr/sbin/smartctl && \
 apk del --purge --rdepends libcap && \
 rm -rf /etc/smartd*
 ENTRYPOINT ["entrypoint.sh"]
+USER app:app
 
