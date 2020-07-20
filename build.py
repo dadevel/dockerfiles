@@ -14,6 +14,11 @@ import re
 import sys
 
 
+CACHE_DIR = Path('~/.cache/buildx').expanduser()
+# DEFAULT_PLATFORM = 'linux/amd64,linux/arm64,linux/arm/v7'
+DEFAULT_PLATFORM = 'linux/amd64'
+
+
 GitInfo = collections.namedtuple('GitInfo', ['source_url', 'latest_ref', 'latest_version', 'latest_commit', 'current_commit'])
 Image = collections.namedtuple('Image', ['path', 'registry', 'user', 'repo_url'])
 RegistryCredentials = collections.namedtuple('RegistryCredentials', ['name', 'user', 'token'])
@@ -21,7 +26,6 @@ RegistryCredentials = collections.namedtuple('RegistryCredentials', ['name', 'us
 
 def main():
     repo_url = os.environ.get('REPO_URL', 'https://github.com/dadevel/dockerfiles')
-    cache = Path(os.environ.get('CACHE', '~/.cache/buildx')).expanduser()
     running_in_ci = os.environ.get('CI')
     try:
         credentials = registry_credentials_from_env()
@@ -30,7 +34,7 @@ def main():
         setup_buildx()
         for item in sys.argv[1:]:
             image = Image(Path(item), credentials.name, credentials.user, repo_url)
-            process(image, cache)
+            process(image)
     finally:
         if running_in_ci:
             logout_registry(credentials)
@@ -61,14 +65,16 @@ def setup_buildx():
         docker('buildx', 'inspect', '--bootstrap', 'multiarch')
 
 
-def process(image, cache_dir):
+def process(image):
     has_source = image.path.joinpath('src').is_dir()
     ref_matcher, version_adapter_target, version_adapter_replacement, platform = parse_meta_file(image.path/'meta.env')
+    if has_source and ref_matcher is None:
+        raise RuntimeError('image with source but without ref_matcher')
     git_info = fetch(image, ref_matcher, version_adapter_target, version_adapter_replacement) if has_source else GitInfo(None, None, None, None, None)
     print(f'current commit {git_info.current_commit}, latest commit {git_info.latest_commit}, latest reference {git_info.latest_ref}, latest version {git_info.latest_version}')
     if has_source:
         checkout(image, git_info)
-    build(image, git_info, cache_dir, platform)
+    build(image, git_info, platform)
     if has_source:
         bump(image, git_info)
 
@@ -89,10 +95,13 @@ def fetch(image, ref_matcher, version_adapter_target, version_adapter_replacemen
 
 
 def parse_meta_file(path):
-    variables = load_envfile(path)
+    try:
+        variables = load_envfile(path)
+    except FileNotFoundError:
+        return None, None, None, DEFAULT_PLATFORM
     try:
         matcher = re.compile(variables['ref_matcher'])
-        platform = variables.get('platform', 'linux/amd64,linux/arm64,linux/arm/v7')
+        platform = variables.get('platform', DEFAULT_PLATFORM)
     except KeyError as e:
         raise RuntimeError('ref_matcher not defined in meta.env') from e
     try:
@@ -126,7 +135,7 @@ def checkout(image, git_info):
     run('git', '-C', image.path/'src', 'checkout', git_info.latest_ref)
 
 
-def build(image, git_info, cache_dir, platform):
+def build(image, git_info, platform):
     build_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
     tag_args = [
         ('--tag', f'{image.registry}/{image.user}/{image.path.name}:{tag}')
@@ -134,8 +143,8 @@ def build(image, git_info, cache_dir, platform):
     ]
     docker(
         'buildx', 'build',
-        '--cache-from', f'type=local,src={cache_dir}',
-        '--cache-to', f'type=local,dest={cache_dir}',
+        '--cache-from', f'type=local,src={CACHE_DIR}',
+        '--cache-to', f'type=local,dest={CACHE_DIR}',
         '--platform', platform,
         *tag_args,
         '--label', f'org.opencontainers.image.title={image.path.name}',

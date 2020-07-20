@@ -3,7 +3,7 @@ WORKDIR /build
 RUN git clone --depth 1 https://github.com/AsamK/signal-cli.git .
 RUN ./gradlew build && ./gradlew installDist
 
-FROM dadevel/go-builder:alpine as receiver
+FROM dadevel/go-builder:latest as receiver
 COPY ./src/ .
 RUN go build && strip ./alertmanager-signal-receiver
 
