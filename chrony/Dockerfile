@@ -13,7 +13,7 @@ RUN ./configure \
 --chronyvardir=/app/data \
 --chronyrundir=/dev/shm \
 --with-pidfile=/dev/shm/chronyd.pid \
---with-hwclockfile=/app/data/adjtime \
+--with-hwclockfile=/app/config/adjtime \
 --with-user=app \
 --with-sendmail=/usr/sbin/sendmail \
 --enable-ntp-signd
@@ -22,7 +22,7 @@ RUN make -j $(nproc) && strip ./chronyd
 FROM dadevel/alpine:latest
 COPY --from=chrony /build/chronyd /app/bin/
 RUN apk add --no-cache gnutls libcap nettle && chronyd -v
-ENTRYPOINT ["chronyd", "-d"]
-CMD ["-u", "app", "-f", "/app/config/chrony.conf", "-r", "-s"]
+ENTRYPOINT ["chronyd", "-d", "-u", "app", "-f", "/app/config/chrony.conf"]
+CMD ["-r", "-s"]
 EXPOSE 123/udp
 

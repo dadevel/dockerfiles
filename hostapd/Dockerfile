@@ -10,6 +10,5 @@ COPY --from=hostapd /build/hostapd/hostapd /app/bin/
 RUN apk add --no-cache libnl3 openssl
 # hostapd -v always exits with return code 1
 RUN hostapd -v || [ $? -eq 1 ]
-ENTRYPOINT ["hostapd"]
-CMD ["-P", "/dev/shm/hostapd.pid", "-g", "/dev/shm/hostapd", "-G", "app", "/app/config/hostapd.conf"]
+ENTRYPOINT ["entrypoint.sh", "-P", "/dev/shm/hostapd.pid", "-g", "/dev/shm/hostapd", "-G", "app"]
 

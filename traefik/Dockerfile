@@ -19,7 +19,6 @@ mv ./traefik /build/
 FROM dadevel/distroless:latest
 COPY --from=traefik /build/traefik /app/bin/
 RUN ["traefik", "version"]
-ENTRYPOINT ["traefik"]
-CMD ["--configfile", "/app/config/traefik.yaml"]
+ENTRYPOINT ["traefik", "--configfile", "/app/config/traefik.yaml"]
 HEALTHCHECK --interval=60s --timeout=3s --start-period=1s --retries=1 CMD ["traefik", "healthcheck", "--configfile", "/app/config/traefik.yaml"]
 

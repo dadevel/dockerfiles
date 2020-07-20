@@ -28,8 +28,7 @@ COPY --from=webui /build/public ./static/public
 COPY --from=webui /build/tools ./static/tools
 COPY --from=grafana /build/bin/linux-$TARGETARCH/grafana-server ./bin/
 RUN grafana-server -v
-ENTRYPOINT ["grafana-server", "--packaging=docker", "cfg:default.log.mode=console", "--homepath=/app/static"]
-CMD ["--config=/app/config/grafana.ini", "cfg:default.paths.data=/app/data", "cfg:default.paths.plugins=/app/data/plugins", "cfg:default.paths.provisioning=/app/config/provisioning"]
+ENTRYPOINT ["grafana-server", "--packaging=docker", "--homepath=/app/static", "--config=/app/config/grafana.ini", "cfg:default.paths.data=/app/data", "cfg:default.paths.plugins=/app/data/plugins", "cfg:default.paths.provisioning=/app/config/provisioning", "cfg:default.log.mode=console"]
 USER 1000:1000
 EXPOSE 3000/tcp
 
