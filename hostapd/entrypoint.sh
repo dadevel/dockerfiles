@@ -1,3 +1,4 @@
 #!/bin/sh
-exec hostapd "$@" /app/config/*.conf
+cat /app/config/*.conf > /dev/shm/hostapd.conf && \
+    exec hostapd "$@" /dev/shm/hostapd.conf
 
