@@ -6,5 +6,5 @@ apk del --purge --rdepends libcap && \
 rm -rf /etc/smartd* && \
 addgroup app disk
 ENTRYPOINT ["entrypoint.sh"]
-USER app:app
+USER app
 

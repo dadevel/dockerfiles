@@ -8,6 +8,6 @@ FROM dadevel/distroless:latest
 COPY --from=alertmanager /build/alertmanager ./bin/
 RUN ["alertmanager", "--version"]
 ENTRYPOINT ["alertmanager", "--config.file=/app/config/alertmanager.yaml", "--storage.path=/app/data"]
-USER 1000:1000
+USER 1000
 EXPOSE 9093/tcp
 

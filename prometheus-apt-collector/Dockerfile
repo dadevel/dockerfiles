@@ -6,6 +6,6 @@ mkdir ./data && chown -R app:app ./data && \
 chmod 0700 ./data
 ENV PATH $PATH:/app/bin
 ENTRYPOINT ["entrypoint.sh"]
-USER app:app
+USER app
 VOLUME /app/data /rootfs
 

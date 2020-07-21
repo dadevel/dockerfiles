@@ -35,5 +35,5 @@ COPY --from=receiver /build/alertmanager-signal-receiver ./bin/
 RUN apk add --no-cache libgcc gcompat
 ENTRYPOINT ["alertmanager-signal-receiver"]
 EXPOSE 9709/tcp
-USER app:app
+USER app
 
