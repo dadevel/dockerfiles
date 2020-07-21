@@ -1,0 +1,7 @@
+root ALL=(ALL) ALL
+%wheel ALL=(ALL) NOPASSWD: ALL
+
+Defaults secure_path=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Defaults editor=/usr/bin/nvim:/usr/bin/vim:/usr/bin/vi:/usr/bin/nano
+Defaults lecture=never
+

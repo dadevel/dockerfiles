@@ -14,6 +14,7 @@ jobs:
       matrix:
         image:
         - alpine
+        - blackarch
         - c-builder
         - distroless
         - go-builder
