@@ -1,5 +1,23 @@
 --- a/defconfig	2020-07-18 12:53:14.580019942 +0200
-+++ b/defconfig	2020-07-18 13:01:31.100038084 +0200
++++ b/defconfig	2020-07-21 09:41:50.055016488 +0200
+@@ -13,7 +13,7 @@
+ CONFIG_DRIVER_HOSTAP=y
+ 
+ # Driver interface for wired authenticator
+-#CONFIG_DRIVER_WIRED=y
++CONFIG_DRIVER_WIRED=y
+ 
+ # Driver interface for drivers using the nl80211 kernel interface
+ CONFIG_DRIVER_NL80211=y
+@@ -42,7 +42,7 @@
+ #LIBS_c += -L/usr/local/lib
+ 
+ # Driver interface for no driver (e.g., RADIUS server only)
+-#CONFIG_DRIVER_NONE=y
++CONFIG_DRIVER_NONE=y
+ 
+ # IEEE 802.11F/IAPP
+ CONFIG_IAPP=y
 @@ -54,7 +54,7 @@
  CONFIG_IEEE80211W=y
  
@@ -9,7 +27,14 @@
  
  # Integrated EAP server
  CONFIG_EAP=y
-@@ -148,21 +148,21 @@
+@@ -142,27 +142,27 @@
+ 
+ # RADIUS authentication server. This provides access to the integrated EAP
+ # server from external hosts using RADIUS.
+-#CONFIG_RADIUS_SERVER=y
++CONFIG_RADIUS_SERVER=y
+ 
+ # Build IPv6 support for RADIUS operations
  CONFIG_IPV6=y
  
  # IEEE Std 802.11r-2008 (Fast BSS Transition)
@@ -34,24 +59,20 @@
  
  # IEEE 802.11ax HE support
  # Note: This is experimental and work in progress. The definitions are still
-@@ -173,7 +173,7 @@
- # Remove debugging code that is printing out debug messages to stdout.
- # This can be used to reduce the size of the hostapd considerably if debugging
- # code is not needed.
--#CONFIG_NO_STDOUT_DEBUG=y
-+CONFIG_NO_STDOUT_DEBUG=y
+@@ -199,11 +199,11 @@
  
- # Add support for writing debug log to a file: -f /tmp/hostapd.log
- # Disabled by default.
-@@ -208,7 +208,7 @@
+ # Enable support for fully dynamic VLANs. This enables hostapd to
+ # automatically create bridge and VLAN interfaces if necessary.
+-#CONFIG_FULL_DYNAMIC_VLAN=y
++CONFIG_FULL_DYNAMIC_VLAN=y
+ 
+ # Use netlink-based kernel API for VLAN operations instead of ioctl()
+ # Note: This requires libnl 3.1 or newer.
+-#CONFIG_VLAN_NETLINK=y
++CONFIG_VLAN_NETLINK=y
+ 
  # Remove support for dumping internal state through control interface commands
  # This can be used to reduce binary size at the cost of disabling a debugging
- # option.
--#CONFIG_NO_DUMP_STATE=y
-+CONFIG_NO_DUMP_STATE=y
- 
- # Enable tracing code for developer debugging
- # This tracks use of memory allocations and other registrations and reports
 @@ -262,13 +262,13 @@
  # Should we attempt to use the getrandom(2) call that provides more reliable
  # yet secure randomness source than /dev/random on Linux 3.17 and newer.
@@ -77,7 +98,7 @@
  
  # Select which ciphers to use by default with OpenSSL if the user does not
  # specify them.
-@@ -308,12 +308,12 @@
+@@ -308,7 +308,7 @@
  # At the cost of about 4 kB of additional binary size, the internal LibTomMath
  # can be configured to include faster routines for exptmod, sqr, and div to
  # speed up DH and RSA calculation considerably
@@ -86,12 +107,6 @@
  
  # Interworking (IEEE 802.11u)
  # This can be used to enable functionality to improve interworking with
- # external networks.
--#CONFIG_INTERWORKING=y
-+CONFIG_INTERWORKING=y
- 
- # Hotspot 2.0
- #CONFIG_HS20=y
 @@ -322,10 +322,10 @@
  #CONFIG_SQLITE=y
  
