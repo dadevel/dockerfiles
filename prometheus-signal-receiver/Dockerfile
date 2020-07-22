@@ -10,8 +10,7 @@ RUN go build && strip ./alertmanager-signal-receiver
 FROM alpine:latest as alpine
 RUN apk add --no-cache ca-certificates tzdata
 RUN mkdir -p /app/bin /app/lib /app/static /app/config /app/data && \
-chown -R 1000:1000 /app/data && \
-chmod 0700 /app/data
+chown -R 1000:1000 /app/data
 
 FROM openjdk:14-alpine
 ENV CHARSET UTF-8
