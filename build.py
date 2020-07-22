@@ -15,8 +15,7 @@ import sys
 
 
 CACHE_DIR = Path('~/.cache/buildx').expanduser()
-# DEFAULT_PLATFORM = 'linux/amd64,linux/arm64,linux/arm/v7'
-DEFAULT_PLATFORM = 'linux/amd64'
+DEFAULT_PLATFORM = 'linux/amd64,linux/arm64,linux/arm/v7'
 
 
 GitInfo = collections.namedtuple('GitInfo', ['source_url', 'latest_ref', 'latest_version', 'latest_commit', 'current_commit'])
