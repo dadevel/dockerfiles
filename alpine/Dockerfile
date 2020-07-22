@@ -16,7 +16,7 @@ ENV GID 1000
 ENV PATH /app/bin:$PATH
 ENV LD_LIBRARY_PATH /app/lib
 ENV HOME /app/data
-ENV TMPDIR /tmp
+ENV TMPDIR /dev/shm
 WORKDIR /app
 VOLUME /app/config /app/data
 
