@@ -6,18 +6,15 @@ ENV NODE_ENV production
 RUN ./node_modules/.bin/grunt build
 
 FROM dadevel/go-builder:latest as grafana
-ARG TARGETARCH=amd64
 COPY ./src/ .
 # grafana uses sqlite which requires cgo
 ENV CGO_ENABLED 1
 ENV LDFLAGS ""
-RUN echo "LDFLAGS=$LDFLAGS;"
-RUN unset LDFLAGS && \
-go run ./build.go build-server && \
-strip ./bin/linux-$TARGETARCH/grafana-server
+RUN go run ./build.go build-server && \
+mv ./bin/linux-*/grafana-server . && \
+strip ./grafana-server
 
 FROM dadevel/alpine:latest
-ARG TARGETARCH=amd64
 RUN apk add --no-cache musl-utils openssl
 RUN mkdir -p ./data/log/ ./data/plugins/ \
 ./config/provisioning/plugins \
@@ -28,7 +25,7 @@ chown -R app:app ./data/
 COPY ./src/conf/defaults.ini ./static/conf/
 COPY --from=webui /build/public ./static/public
 COPY --from=webui /build/tools ./static/tools
-COPY --from=grafana /build/bin/linux-$TARGETARCH/grafana-server ./bin/
+COPY --from=grafana /build/grafana-server ./bin/
 RUN grafana-server -v
 ENTRYPOINT ["grafana-server", "--packaging", "docker", "--homepath", "/app/static", "--config", "/app/config/grafana.ini", "cfg:default.paths.data=/app/data", "cfg:default.paths.logs=/app/data/log", "cfg:default.paths.plugins=/app/data/plugins", "cfg:default.paths.provisioning=/app/config/provisioning", "cfg:default.log.mode=console"]
 USER app

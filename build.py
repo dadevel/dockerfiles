@@ -187,7 +187,7 @@ def get_groups():
 
 def load_envfile(path):
     with open(path) as file:
-        lines = [line.split('=', maxsplit=1) for line in file]
+        lines = [line.split('=', maxsplit=1) for line in file if not line.startswith('#')]
         return {key: value.rstrip() for key, value in lines}
 
 
