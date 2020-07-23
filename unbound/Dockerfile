@@ -38,9 +38,9 @@ RUN wget -q -O - https://www.internic.net/domain/named.cache | tee ./root.hints 
 FROM dadevel/distroless:latest
 COPY --from=unbound /build/unbound /app/bin/
 COPY --from=unbound --chown=1000:1000 /build/root.hints /build/root.key /build/root.conf /app/data/
-USER 1000
 RUN ["unbound", "-V"]
 ENTRYPOINT ["unbound", "-dd"]
 CMD ["-p", "-c", "/app/config/unbound.conf"]
+USER 1000
 EXPOSE 53/tcp 53/udp 853/tcp
 

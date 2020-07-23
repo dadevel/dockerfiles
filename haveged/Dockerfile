@@ -1,13 +1,7 @@
 FROM dadevel/c-builder:latest as haveged
-# without -flto to avoid error from ar
-# ENV CFLAGS $CFLAGS -fno-lto
-# without -pie to avoid linker error
-# ENV LDFLAGS -Wl,--as-needed,--hash-style=gnu,-z,relro,-z,now
-# RUN apk add --no-cache file libtool linux-headers
 RUN apk add --no-cache autoconf automake file libtool linux-headers
 COPY ./src .
 RUN autoreconf -vif
-# see ./configure --help
 RUN ./configure \
 --prefix=/app \
 --bindir=/app/bin \

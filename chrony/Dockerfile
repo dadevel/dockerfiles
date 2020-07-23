@@ -21,10 +21,10 @@ RUN make -j $(nproc) && strip ./chronyd
 
 FROM dadevel/alpine:latest
 ARG TARGETARCH
-COPY --from=chrony /build/chronyd /app/bin/
 RUN apk add --no-cache libcap nettle && \
-([ $TARGETARCH != arm ] || apk add --no-cache libgcc) && \
-chronyd -v
+([ $TARGETARCH != arm ] || apk add --no-cache libgcc)
+COPY --from=chrony /build/chronyd /app/bin/
+RUN chronyd -v
 ENTRYPOINT ["chronyd", "-d", "-u", "app", "-f", "/app/config/chrony.conf"]
 CMD ["-r", "-s"]
 EXPOSE 123/udp

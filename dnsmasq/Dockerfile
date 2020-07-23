@@ -8,11 +8,11 @@ make -j $(nproc) all-i18n && \
 strip ./src/dnsmasq
 
 FROM dadevel/alpine:latest
+# root must own ./data because dnsmasq accesses ./data/leases before dropping privileges
+RUN apk add --no-cache libidn2 libnetfilter_conntrack nettle && chown -R root:root ./data/
 COPY --from=dnsmasq /build/src/dnsmasq ./bin/
 COPY --from=dnsmasq /build/trust-anchors.conf ./static/
-RUN apk add --no-cache libidn2 libnetfilter_conntrack nettle && dnsmasq --version
-# dnsmasq accesses ./data before dropping privileges
-RUN chown -R root:root ./data/
+RUN dnsmasq --version
 ENTRYPOINT ["dnsmasq", "--keep-in-foreground", "--user=app", "--group=app", "--pid-file=", "--log-facility=-", "--host-record=health.dnsmasq.test,127.0.0.1"]
 HEALTHCHECK --interval=60s --timeout=3s --start-period=1s --retries=1 CMD ["nslookup", "health.dnsmasq.test", "127.0.0.1#53"]
 EXPOSE 53/udp 67/udp 69/udp 547/udp
