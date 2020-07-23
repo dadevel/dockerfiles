@@ -16,6 +16,7 @@ import sys
 
 CACHE_DIR = Path('~/.cache/buildx').expanduser()
 DEFAULT_PLATFORM = 'linux/amd64,linux/arm64,linux/arm/v7'
+DEFAULT_REF_MATCHER = '^refs/tags/v([0-9.]+)$'
 
 
 GitInfo = collections.namedtuple('GitInfo', ['source_url', 'latest_ref', 'latest_version', 'latest_commit', 'current_commit'])
@@ -73,10 +74,10 @@ def setup_buildx():
 def process(image):
     has_source = image.path.joinpath('src').is_dir()
     ref_matcher, version_adapter_target, version_adapter_replacement, platform = parse_meta_file(image.path/'meta.env')
-    if has_source and ref_matcher is None:
-        raise RuntimeError('image with source but without ref_matcher')
-    git_info = fetch(image, ref_matcher, version_adapter_target, version_adapter_replacement) if has_source else GitInfo(None, None, None, None, None)
-    print(f'current commit {git_info.current_commit}, latest commit {git_info.latest_commit}, latest reference {git_info.latest_ref}, latest version {git_info.latest_version}')
+    git_info = GitInfo(None, None, None, None, None)
+    if has_source:
+        git_info = fetch(image, ref_matcher, version_adapter_target, version_adapter_replacement)
+        print(f'current commit {git_info.current_commit}, latest commit {git_info.latest_commit}, latest reference {git_info.latest_ref}, latest version {git_info.latest_version}')
     if has_source:
         checkout(image, git_info)
     build(image, git_info, platform)
@@ -101,20 +102,13 @@ def fetch(image, ref_matcher, version_adapter_target, version_adapter_replacemen
 
 def parse_meta_file(path):
     try:
-        variables = load_envfile(path)
+        values = load_envfile(path)
     except FileNotFoundError:
         return None, None, None, DEFAULT_PLATFORM
-    try:
-        matcher = re.compile(variables['ref_matcher'])
-        platform = variables.get('platform', DEFAULT_PLATFORM)
-    except KeyError as e:
-        raise RuntimeError('ref_matcher not defined in meta.env') from e
-    try:
-        adapter_target = re.compile(variables['version_adapter_target'])
-        adapter_replacement = variables['version_adapter_replacement']
-    except KeyError:
-        adapter_target = None
-        adapter_replacement = None
+    matcher = re.compile(values.get('ref_matcher', DEFAULT_REF_MATCHER))
+    platform = values.get('platform', DEFAULT_PLATFORM)
+    adapter_target = re.compile(values['version_adapter_target']) if 'version_adapter_target' in values else None
+    adapter_replacement = values.get('version_adapter_replacement')
     return matcher, adapter_target, adapter_replacement, platform
 
 
