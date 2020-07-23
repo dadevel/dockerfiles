@@ -23,7 +23,8 @@ RUN ./configure \
 RUN make -j $(nproc) && strip ./src/haveged
 
 FROM dadevel/alpine:latest
-RUN apk add --no-cache libgcc
+ARG TARGETARCH
+RUN ([ $TARGETARCH != arm ] || apk add --no-cache libgcc)
 COPY --from=haveged /build/src/haveged /app/bin/
 RUN haveged --version
 ENTRYPOINT ["haveged", "--Foreground", "--pidfile=/dev/shm/haveged.pid"]
