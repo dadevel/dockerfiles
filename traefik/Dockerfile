@@ -1,5 +1,5 @@
 FROM node:12-alpine as webui
-WORKDIR /build/src/
+WORKDIR /build
 COPY ./src/webui/ .
 RUN npm install
 RUN npm run build

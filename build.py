@@ -15,7 +15,7 @@ import sys
 
 
 CACHE_DIR = Path('~/.cache/buildx').expanduser()
-DEFAULT_PLATFORM = 'linux/amd64,linux/arm64,linux/arm/v7'
+DEFAULT_PLATFORM = 'linux/amd64,linux/arm64/v8,linux/arm/v7'
 DEFAULT_REF_MATCHER = '^refs/tags/v([0-9.]+)$'
 
 
