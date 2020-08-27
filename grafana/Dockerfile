@@ -23,11 +23,12 @@ RUN mkdir -p ./data/log/ ./data/plugins/ \
 ./config/provisioning/notifiers && \
 chown -R app:app ./data/
 COPY ./src/conf/defaults.ini ./static/conf/
+COPY ./entrypoint.sh ./bin/
 COPY --from=webui /build/public ./static/public
 COPY --from=webui /build/tools ./static/tools
 COPY --from=grafana /build/grafana-server ./bin/
 RUN grafana-server -v
-ENTRYPOINT ["grafana-server", "--packaging", "docker", "--homepath", "/app/static", "--config", "/app/config/grafana.ini", "cfg:default.paths.data=/app/data", "cfg:default.paths.logs=/app/data/log", "cfg:default.paths.plugins=/app/data/plugins", "cfg:default.paths.provisioning=/app/config/provisioning", "cfg:default.log.mode=console"]
+ENTRYPOINT ["entrypoint.sh", "--packaging", "docker", "--homepath", "/app/static", "--config", "/app/config/grafana.ini", "cfg:default.paths.data=/app/data", "cfg:default.paths.logs=/app/data/log", "cfg:default.paths.plugins=/app/data/plugins", "cfg:default.paths.provisioning=/app/config/provisioning", "cfg:default.log.mode=console"]
 USER app
 EXPOSE 3000/tcp
 

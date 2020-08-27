@@ -88,6 +88,7 @@ def process(image):
 def fetch(image, ref_matcher, version_adapter_target, version_adapter_replacement):
     # update source
     run('git', 'submodule', 'update', '--init', '--recursive', image.path/'src')
+    run('git', '-C', image.path/'src', 'fetch', '--tags')
     # find newest version
     latest_ref, latest_version = find_lastest_reference(image, ref_matcher)
     latest_version = adapt_version(latest_version, version_adapter_target, version_adapter_replacement)
