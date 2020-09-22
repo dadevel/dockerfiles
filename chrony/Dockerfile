@@ -13,7 +13,7 @@ RUN ./configure \
 --chronyvardir=/app/data \
 --chronyrundir=/dev/shm \
 --with-pidfile=/dev/shm/chronyd.pid \
---with-hwclockfile=/app/config/adjtime \
+--with-hwclockfile=/app/static/adjtime \
 --with-user=app \
 --with-sendmail=/usr/sbin/sendmail \
 --enable-ntp-signd
@@ -24,8 +24,9 @@ ARG TARGETARCH
 RUN apk add --no-cache libcap nettle && \
 ([ $TARGETARCH != arm ] || apk add --no-cache libgcc)
 COPY --from=chrony /build/chronyd /app/bin/
+COPY ./entrypoint.sh /app/bin/
 RUN chronyd -v
-ENTRYPOINT ["chronyd", "-d", "-u", "app", "-f", "/app/config/chrony.conf"]
+ENTRYPOINT ["entrypoint.sh", "-d", "-u", "app", "-f", "/app/config/chrony.conf"]
 CMD ["-r", "-s"]
 EXPOSE 123/udp
 
