@@ -46,3 +46,9 @@
 [submodule "prometheus-nftables-exporter/src"]
 	path = prometheus-nftables-exporter/src
 	url = https://github.com/dadevel/prometheus-nftables-exporter.git
+[submodule "lego/src"]
+	path = lego/src
+	url = https://github.com/go-acme/lego.git
+[submodule "nginx/src"]
+	path = nginx/src
+	url = https://github.com/nginx/nginx.git

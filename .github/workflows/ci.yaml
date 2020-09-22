@@ -60,6 +60,7 @@ jobs:
         - dnsmasq
         - haveged
         - hostapd
+        - nginx
         - unbound
     steps:
     - name: Checkout
@@ -100,6 +101,7 @@ jobs:
         image:
         - cadvisor
         - grafana
+        - lego
         - prometheus
         - prometheus-alertmanager
         - prometheus-apt-collector
