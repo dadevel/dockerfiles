@@ -50,9 +50,11 @@ RUN ./auto/configure \
 RUN make -j $(nproc) && strip ./objs/nginx
 
 FROM dadevel/alpine:latest
+ARG TARGETARCH
+RUN apk add --no-cache openssl pcre perl zlib && \
+([ $TARGETARCH != arm ] || apk add --no-cache libgcc)
 COPY --from=nginx /build/objs/nginx /app/bin/
 COPY --from=nginx /build/conf/mime.types /app/static/
-RUN apk add --no-cache openssl pcre perl zlib
 RUN nginx -v
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
 EXPOSE 80/tcp 443/tcp
