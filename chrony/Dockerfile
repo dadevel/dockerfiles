@@ -22,7 +22,7 @@ RUN make -j $(nproc) && strip ./chronyd
 FROM dadevel/alpine:latest
 ARG TARGETARCH
 RUN apk add --no-cache libcap nettle && \
-([ $TARGETARCH != arm ] || apk add --no-cache libgcc)
+[ $TARGETARCH != arm ] || apk add --no-cache libgcc
 COPY --from=chrony /build/chronyd /app/bin/
 COPY ./entrypoint.sh /app/bin/
 RUN chronyd -v

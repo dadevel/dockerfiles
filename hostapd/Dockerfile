@@ -8,7 +8,7 @@ RUN cd ./hostapd && patch -u -i ./config.patch ./.config && make -j $(nproc) && 
 FROM dadevel/alpine:latest
 ARG TARGETARCH
 RUN apk add --no-cache iw libnl3 openssl && \
-([ $TARGETARCH != arm ] || apk add --no-cache libgcc)
+[ $TARGETARCH != arm ] || apk add --no-cache libgcc
 COPY ./entrypoint.sh ./bin/
 COPY --from=hostapd /build/hostapd/hostapd ./bin/
 # hostapd -v always exits with return code 1

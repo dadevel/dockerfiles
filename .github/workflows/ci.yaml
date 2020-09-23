@@ -110,8 +110,6 @@ jobs:
         - prometheus-node-exporter
         - prometheus-signal-receiver
         - prometheus-smart-collector
-        - traefik
-        - watchtower
     steps:
     - name: Checkout
       uses: actions/checkout@v2
