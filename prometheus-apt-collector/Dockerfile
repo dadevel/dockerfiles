@@ -8,5 +8,5 @@ ENV PATH $PATH:/app/bin
 # apt requires a writeable temp directory
 ENV TMPDIR /dev/shm
 USER app
-VOLUME /app/data /rootfs
+VOLUME /app/data
 

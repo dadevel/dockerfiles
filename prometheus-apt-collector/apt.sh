@@ -11,11 +11,11 @@ main() {
 
     echo '# HELP apt_reboot_required System reboot required to complete software updates.'
     echo '# TYPE apt_reboot_required gauge'
-    [ -f "$ROOTFS/run/reboot-required" ] && echo apt_reboot_required 1 || echo apt_reboot_required 0
+    [[ -f "$ROOTFS/run/reboot-required" ]] && echo apt_reboot_required 1 || echo apt_reboot_required 0
 }
 
 apt() {
-    command apt -o "RootDir=$ROOTFS" -o Debug::NoLocking=1 "$@"
+    command apt -o Debug::NoLocking=1 "$@"
 }
 
 main "$@"
