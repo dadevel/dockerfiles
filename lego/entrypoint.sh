@@ -1,14 +1,94 @@
 #!/bin/sh
 
-RELOAD_COMMAND="${LEGO_RELOAD_COMMAND:-}"
-RENEW_INTERVAL="${LEGO_RENEW_INTERVAL:-7d}"
+LEGO_SERVER="${LEGO_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
+LEGO_DOMAINS="${LEGO_DOMAINS:?no domains specified}"
+LEGO_EMAIL="${LEGO_EMAIL:?no email specified}"
+LEGO_KEY_TYPE="${LEGO_KEY_TYPE:-ec384}"
+LEGO_MUST_STAPLE="${LEGO_MUST_STAPLE:-false}"
 
-while :; do
+LEGO_CHALLENGE="${LEGO_CHALLENGE:?no challenge specified}"
+case "$LEGO_CHALLENGE" in
+    http)
+        LEGO_HTTP_PORT="${LEGO_HTTP_PORT:-:80}"
+        LEGO_HTTP_WEBROOT="${LEGO_HTTP_WEBROOT:-/app/www}"
+        ;;
+    tls)
+        LEGO_TLS_PORT="${LEGO_HTTP_PORT:-:443}"
+        ;;
+    dns)
+        LEGO_DNS_PROVIDER="${LEGO_DNS_PROVIDER:?no dns provider specified}"
+        LEGO_DNS_RESOLVERS="$LEGO_DNS_RESOLVERS"
+        ;;
+esac
+
+LEGO_STORAGE_DIR="${LEGO_STORAGE_DIR:-/app/data}"
+LEGO_REFRESH_INTERVAL="${LEGO_REFRESH_INTERVAL:-7d}"
+LEGO_RETRY_INTERVAL="${LEGO_RETRY_INTERVAL:-15m}"
+LEGO_RENEW_DAYS="${LEGO_RENEW_DAYS:-30}"
+
+main() {
+    while :; do
+        if update_certificates && update_staples; then
+            sh -c "$LEGO_RELOAD_COMMAND"
+            sleep "$LEGO_REFRESH_INTERVAL"
+        else
+            sleep "$LEGO_RETRY_INTERVAL"
+        fi
+    done
+}
+
+update_certificates() {
+    set -- --path "$LEGO_STORAGE_DIR" --server "$LEGO_SERVER" --accept-tos --email "$LEGO_EMAIL" --key-type "$LEGO_KEY_TYPE"
+
+    for domain in $LEGO_DOMAINS; do
+        set -- "$@" --domains "${domain}"
+    done
+
+    case "$LEGO_CHALLENGE" in
+        http)
+            set -- "$@" --http --http.port "$LEGO_HTTP_PORT" --http.webroot "$LEGO_HTTP_WEBROOT"
+            ;;
+        tls)
+            set -- "$@" --tls --tls.port "$LEGO_TLS_PORT"
+            ;;
+        dns)
+            set -- "$@" --dns "$LEGO_DNS_PROVIDER"
+            for resolver in $LEGO_DNS_RESOLVERS; do
+                set -- "$@" --dns.resolvers "${resolver}"
+            done
+            ;;
+    esac
+
     if [ "$(lego "$@" list)" = "No certificates found." ]; then
-        lego "$@" run --must-staple && sh -c "$RELOAD_COMMAND"
+        set -- "$@" run
     else
-        lego "$@" renew --must-staple --reuse-key --days 30 && sh -c "$RELOAD_COMMAND"
+        set -- "$@" renew --reuse-key --days "$LEGO_RENEW_DAYS"
     fi
-    sleep "$RENEW_INTERVAL"
-done
+
+    case "$LEGO_MUST_STAPLE" in
+        y|yes|true|1)
+            set -- "$@" --must-staple
+            ;;
+        *)
+            ;;
+    esac
+
+    lego "$@"
+}
+
+update_staples() {
+    for path in "$LEGO_STORAGE_DIR"/certificates/*.json; do
+        [ -f "${path}" ] || continue
+        path="${path%.json}"
+        openssl ocsp \
+            -no_nonce \
+            -issuer "${path}.issuer.crt" \
+            -verify_other "${path}.issuer.crt" \
+            -cert "${path}.crt" \
+            -respout "${path}.staple.der" \
+            -url "$(openssl x509 -noout -ocsp_uri -in "${path}.crt")"
+    done
+}
+
+main "$@"
 
