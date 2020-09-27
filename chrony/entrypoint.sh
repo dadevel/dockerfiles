@@ -1,4 +1,4 @@
 #!/bin/sh
-chown app:app /app/data/
+[ "$(stat -c %U:%G /app/data/)" = app:app ] || chown -R app:app /app/data/
 exec chronyd "$@"
 
