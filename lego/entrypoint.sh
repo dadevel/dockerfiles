@@ -5,6 +5,7 @@ LEGO_DOMAINS="${LEGO_DOMAINS:?no domains specified}"
 LEGO_EMAIL="${LEGO_EMAIL:?no email specified}"
 LEGO_KEY_TYPE="${LEGO_KEY_TYPE:-ec384}"
 LEGO_MUST_STAPLE="${LEGO_MUST_STAPLE:-false}"
+LEGO_GENERATE_DHPARAM="${LEGO_GENERATE_DHPARAM:-false}"
 
 LEGO_CHALLENGE="${LEGO_CHALLENGE:?no challenge specified}"
 case "$LEGO_CHALLENGE" in
@@ -27,6 +28,7 @@ LEGO_RETRY_INTERVAL="${LEGO_RETRY_INTERVAL:-15m}"
 LEGO_RENEW_DAYS="${LEGO_RENEW_DAYS:-30}"
 
 main() {
+    update_dhparam
     while :; do
         if update_certificates && update_staples; then
             sh -c "$LEGO_RELOAD_COMMAND"
@@ -35,6 +37,14 @@ main() {
             sleep "$LEGO_RETRY_INTERVAL"
         fi
     done
+}
+
+update_dhparam() {
+    case "$LEGO_GENERATE_DHPARAM" in
+        y|yes|true|1)
+            [ -f "$LEGO_STORAGE_DIR/certificates/dhparam.pem" ] || openssl dhparam -out "$LEGO_STORAGE_DIR/certificates/dhparam.pem" 2048
+            ;;
+    esac
 }
 
 update_certificates() {
@@ -77,17 +87,21 @@ update_certificates() {
 }
 
 update_staples() {
-    for path in "$LEGO_STORAGE_DIR"/certificates/*.json; do
-        [ -f "${path}" ] || continue
-        path="${path%.json}"
-        openssl ocsp \
-            -no_nonce \
-            -issuer "${path}.issuer.crt" \
-            -verify_other "${path}.issuer.crt" \
-            -cert "${path}.crt" \
-            -respout "${path}.staple.der" \
-            -url "$(openssl x509 -noout -ocsp_uri -in "${path}.crt")"
-    done
+    case "$LEGO_MUST_STAPLE" in
+        y|yes|true|1)
+            for path in "$LEGO_STORAGE_DIR"/certificates/*.json; do
+                [ -f "${path}" ] || continue
+                path="${path%.json}"
+                openssl ocsp \
+                    -no_nonce \
+                    -issuer "${path}.issuer.crt" \
+                    -verify_other "${path}.issuer.crt" \
+                    -cert "${path}.crt" \
+                    -url "$(openssl x509 -noout -ocsp_uri -in "${path}.crt")" \
+                    -respout "${path}.staple.der"
+            done
+            ;;
+    esac
 }
 
 main "$@"
