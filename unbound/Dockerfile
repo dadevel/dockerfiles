@@ -1,6 +1,6 @@
 FROM dadevel/c-builder:latest as unbound
 # fstrm and protobuf are required for dnstap
-RUN apk add --no-cache expat-dev expat-static file fstrm-dev fstrm-static libevent-dev libevent-static libressl-dev protobuf-c-dev
+RUN apk add --no-cache byacc expat-dev expat-static file fstrm-dev fstrm-static libevent-dev libevent-static libressl-dev protobuf-c-dev
 COPY ./src .
 RUN ./configure \
 --prefix=/app \
