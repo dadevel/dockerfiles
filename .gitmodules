@@ -46,3 +46,9 @@
 [submodule "nginx/src"]
 	path = nginx/src
 	url = https://github.com/nginx/nginx.git
+[submodule "aria2/src"]
+	path = aria2/src
+	url = https://github.com/aria2/aria2.git
+[submodule "webui-aria2/src"]
+	path = webui-aria2/src
+	url = https://github.com/ziahamza/webui-aria2.git
