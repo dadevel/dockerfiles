@@ -1,7 +1,7 @@
 FROM dadevel/c-builder:latest as unbound
 # fstrm and protobuf are required for dnstap
 RUN apk add --no-cache byacc expat-dev expat-static file fstrm-dev fstrm-static libevent-dev libevent-static libressl-dev protobuf-c-dev
-COPY ./src .
+COPY ./src/ .
 RUN ./configure \
 --prefix=/app \
 --bindir=/app/bin \
@@ -34,11 +34,11 @@ RUN make -j $(nproc) && strip ./unbound
 RUN wget -q -O - https://www.internic.net/domain/named.cache | tee ./root.hints | awk '{ if ($3 == "A" || $3 == "AAAA") { printf("master: %s\n", $NF) } }' > ./root.conf && { ./unbound-anchor -a ./root.key -r ./root.hints || [ $? -eq 1 ]; }
 
 FROM dadevel/distroless:latest
-COPY --from=unbound /build/unbound /app/bin/
-COPY --from=unbound --chown=1000:1000 /build/root.hints /build/root.key /build/root.conf /app/data/
+COPY --from=unbound /build/unbound ./bin/
+COPY --from=unbound --chown=1000:1000 /build/root.hints /build/root.key /build/root.conf ./data/
+USER 1000
 RUN ["unbound", "-V"]
 ENTRYPOINT ["unbound", "-dd"]
-CMD ["-p", "-c", "/app/config/unbound.conf"]
-USER 1000
+CMD ["-p", "-c", "./config/unbound.conf"]
 EXPOSE 53/tcp 53/udp 853/tcp
 

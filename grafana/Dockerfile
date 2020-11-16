@@ -15,20 +15,22 @@ mv ./bin/linux-*/grafana-server . && \
 strip ./grafana-server
 
 FROM dadevel/alpine:latest
-RUN apk add --no-cache musl-utils openssl
-RUN mkdir -p ./data/log/ ./data/plugins/ \
+RUN apk add --no-cache musl-utils openssl && \
+mkdir -p \
+./data/log/ \
+./data/plugins/ \
 ./config/provisioning/plugins \
 ./config/provisioning/datasources \
 ./config/provisioning/dashboards \
 ./config/provisioning/notifiers && \
 chown -R app:app ./data/
 COPY ./src/conf/defaults.ini ./static/conf/
-COPY ./entrypoint.sh ./bin/
+COPY ./entrypoint.sh ./lib/
 COPY --from=webui /build/public ./static/public
 COPY --from=webui /build/tools ./static/tools
 COPY --from=grafana /build/grafana-server ./bin/
-RUN grafana-server -v
-ENTRYPOINT ["entrypoint.sh", "--packaging", "docker", "--homepath", "/app/static", "--config", "/app/config/grafana.ini", "cfg:default.paths.data=/app/data", "cfg:default.paths.logs=/app/data/log", "cfg:default.paths.plugins=/app/data/plugins", "cfg:default.paths.provisioning=/app/config/provisioning", "cfg:default.log.mode=console"]
 USER app
+RUN grafana-server -v
+ENTRYPOINT ["./lib/entrypoint.sh", "--packaging", "docker", "--homepath", "./static", "--config", "./config/grafana.ini", "cfg:default.paths.data=./data", "cfg:default.paths.logs=./data/log", "cfg:default.paths.plugins=./data/plugins", "cfg:default.paths.provisioning=./config/provisioning", "cfg:default.log.mode=console"]
 EXPOSE 3000/tcp
 

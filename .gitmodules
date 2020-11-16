@@ -52,3 +52,15 @@
 [submodule "webui-aria2/src"]
 	path = webui-aria2/src
 	url = https://github.com/ziahamza/webui-aria2.git
+[submodule "stdiscosrv/src"]
+	path = stdiscosrv/src
+	url = https://github.com/syncthing/syncthing.git
+[submodule "strelaysrv/src"]
+	path = strelaysrv/src
+	url = https://github.com/syncthing/syncthing.git
+[submodule "syncthing/src"]
+	path = syncthing/src
+	url = https://github.com/syncthing/syncthing.git
+[submodule "wpa-supplicant/src"]
+	path = wpa-supplicant/src
+	url = git://w1.fi/srv/git/hostap.git

@@ -1,14 +1,12 @@
 FROM dadevel/c-builder:latest as dnsmasq
 RUN apk add --no-cache gettext libidn2-dev libnetfilter_conntrack-dev linux-headers musl-libintl nettle-dev
-COPY ./src .
-COPY ./config.patch .
+COPY ./src/ ./config.patch .
 RUN patch -u -i ./config.patch ./src/config.h && \
-rm ./config.patch && \
 make -j $(nproc) all-i18n && \
 strip ./src/dnsmasq
 
 FROM dadevel/alpine:latest
-# root must own ./data because dnsmasq accesses ./data/leases before dropping privileges
+# root must own ./data because dnsmasq accesses ./data/leases before switching user
 RUN apk add --no-cache libidn2 libnetfilter_conntrack nettle && chown -R root:root ./data/
 COPY --from=dnsmasq /build/src/dnsmasq ./bin/
 COPY --from=dnsmasq /build/trust-anchors.conf ./static/

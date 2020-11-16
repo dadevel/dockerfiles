@@ -17,39 +17,36 @@ import sys
 CACHE_DIR = Path('~/.cache/buildx').expanduser()
 DEFAULT_PLATFORM = 'linux/amd64,linux/arm64/v8,linux/arm/v7'
 DEFAULT_REF_MATCHER = '^refs/tags/v([0-9.]+)$'
+REGISTRY = 'docker.io'
+USERNAME = 'dadevel'
+REPO_URL = 'https://github.com/dadevel/dockerfiles'
 
 
 GitInfo = collections.namedtuple('GitInfo', ['source_url', 'latest_ref', 'latest_version', 'latest_commit', 'current_commit'])
+MetaInfo = collections.namedtuple('MetaInfo', ['ref_matcher', 'version_adapter_target', 'version_adapter_replacement', 'platform'])
 Image = collections.namedtuple('Image', ['path', 'registry', 'user', 'repo_url'])
 RegistryCredentials = collections.namedtuple('RegistryCredentials', ['name', 'user', 'token'])
 
 
 def main():
-    repo_url = os.environ.get('REPO_URL', 'https://github.com/dadevel/dockerfiles')
     running_in_ci = os.environ.get('CI')
     try:
-        credentials = registry_credentials_from_env()
+        credentials = RegistryCredentials(REGISTRY, USERNAME, os.environ.get('REGISTRY_TOKEN'))
         if running_in_ci:
             login_registry(credentials)
             setup_git()
         setup_buildx()
-        for item in sys.argv[1:]:
-            image = Image(Path(item), credentials.name, credentials.user, repo_url)
+        images = (Image(Path(item), credentials.name, credentials.user, REPO_URL) for item in sys.argv[1:])
+        for image in images:
             process(image)
     finally:
         if running_in_ci:
             logout_registry(credentials)
 
 
-def registry_credentials_from_env():
-    try:
-        return RegistryCredentials('docker.io', 'dadevel', os.environ.get('REGISTRY_TOKEN'))
-    except KeyError as e:
-        raise RuntimeError('environment variable {e} undefined') from e
-
-
 def login_registry(creds):
-    assert creds.token, 'registry token missing or empty'
+    if not creds.token:
+        raise RuntimeError('registry token missing')
     run('docker', 'login', creds.name, '--username', creds.user, '--password-stdin', stdin=creds.token)
 
 
@@ -58,46 +55,51 @@ def logout_registry(creds):
 
 
 def setup_git():
-    run('git', 'config', 'user.name', 'github-actions')
-    run('git', 'config', 'user.email', 'github-actions@github.com')
+    run('git', 'config', 'user.name', 'GitHub Actions')
+    run('git', 'config', 'user.email', 'actions@github.com')
 
 
 def setup_buildx():
     docker('run', '--rm', '--privileged', 'multiarch/qemu-user-static:latest', '--reset', '--persistent', 'yes')
     try:
         docker('buildx', 'inspect', 'multiarch')
-    except SubprocessError:
+    except RuntimeError:
         docker('buildx', 'create', '--name', 'multiarch', '--use')
         docker('buildx', 'inspect', '--bootstrap', 'multiarch')
 
 
 def process(image):
+    meta_info = parse_meta_file(image.path/'meta.env')
     has_source = image.path.joinpath('src').is_dir()
-    ref_matcher, version_adapter_target, version_adapter_replacement, platform = parse_meta_file(image.path/'meta.env')
     git_info = GitInfo(None, None, None, None, None)
     if has_source:
-        git_info = fetch(image, ref_matcher, version_adapter_target, version_adapter_replacement)
+        git_info = fetch(image, meta_info)
         print(f'current commit {git_info.current_commit}, latest commit {git_info.latest_commit}, latest reference {git_info.latest_ref}, latest version {git_info.latest_version}')
     if has_source:
         checkout(image, git_info)
-    build(image, git_info, platform)
+    build(image, git_info, meta_info.platform)
     if has_source:
         bump(image, git_info)
 
 
-def fetch(image, ref_matcher, version_adapter_target, version_adapter_replacement):
+def fetch(image, meta_info):
     # update source
     run('git', 'submodule', 'update', '--init', '--recursive', image.path/'src')
     run('git', '-C', image.path/'src', 'fetch', '--tags')
     # find newest version
-    latest_ref, latest_version = find_lastest_reference(image, ref_matcher)
-    latest_version = adapt_version(latest_version, version_adapter_target, version_adapter_replacement)
+    latest_ref, latest_version = find_lastest_reference(image, meta_info.ref_matcher)
+    # substitute in version if needed
+    latest_version = adapt_version(
+        latest_version,
+        meta_info.version_adapter_target,
+        meta_info.version_adapter_replacement,
+    )
     return GitInfo(
-        run('git', 'config', f'submodule.{image.path}/src.url'),
+        run('git', 'config', f'submodule.{image.path}/src.url', capture=True),
         latest_ref,
         latest_version,
-        latest_commit=run('git', '-C', image.path/'src', 'rev-list', '--max-count=1', latest_ref),
-        current_commit=run('git', '-C', image.path/'src', 'rev-parse', 'HEAD')
+        run('git', '-C', image.path/'src', 'rev-list', '--max-count=1', latest_ref, capture=True),
+        run('git', '-C', image.path/'src', 'rev-parse', 'HEAD', capture=True),
     )
 
 
@@ -105,16 +107,19 @@ def parse_meta_file(path):
     try:
         values = load_envfile(path)
     except FileNotFoundError:
-        return None, None, None, DEFAULT_PLATFORM
-    matcher = re.compile(values.get('ref_matcher', DEFAULT_REF_MATCHER))
-    platform = values.get('platform', DEFAULT_PLATFORM)
-    adapter_target = re.compile(values['version_adapter_target']) if 'version_adapter_target' in values else None
-    adapter_replacement = values.get('version_adapter_replacement')
-    return matcher, adapter_target, adapter_replacement, platform
+        return MetaInfo(None, None, None, DEFAULT_PLATFORM)
+    return MetaInfo(
+        re.compile(values.get('ref_matcher', DEFAULT_REF_MATCHER)),
+        re.compile(values['version_adapter_target']) if 'version_adapter_target' in values else None,
+        values.get('version_adapter_replacement'),
+        values.get('platform', DEFAULT_PLATFORM),
+    )
 
 
 def find_lastest_reference(image, regex):
-    lines = run('git', '-C', image.path/'src', 'show-ref').splitlines()
+    if not regex:
+        return None
+    lines = run('git', '-C', image.path/'src', 'show-ref', capture=True).splitlines()
     refs = [line.split(' ')[1] for line in lines]
     matches = [(ref, match) for ref in refs if (match := regex.match(ref))]
     if len(matches) == 1:
@@ -132,28 +137,23 @@ def adapt_version(version, adapter_target, adapter_replacement):
 
 def checkout(image, git_info):
     run('git', '-C', image.path/'src', 'fetch', 'origin', git_info.latest_ref)
-    run('git', '-C', image.path/'src', 'checkout', git_info.latest_ref)
+    run('git', '-C', image.path/'src', 'checkout', '--quiet', git_info.latest_ref)
 
 
 def build(image, git_info, platform):
-    build_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
-    tag_args = [
-        ('--tag', f'{image.registry}/{image.user}/{image.path.name}:{tag}')
-        for tag in generate_tags(git_info.latest_version)
-    ]
+    tags = []
+    for tag in generate_tags(git_info.latest_version):
+        tags.extend(('--tag', f'{image.registry}/{image.user}/{image.path.name}:{tag}'))
+    labels = []
+    for label in generate_labels(image, git_info):
+        labels.extend(('--label', f'org.opencontainers.image.{label}'))
     docker(
         'buildx', 'build',
         '--cache-from', f'type=local,src={CACHE_DIR}',
         '--cache-to', f'type=local,dest={CACHE_DIR}',
         '--platform', platform,
-        *tag_args,
-        '--label', f'org.opencontainers.image.title={image.path.name}',
-        '--label', f'org.opencontainers.image.authors={image.user}',
-        '--label', f'org.opencontainers.image.url={image.repo_url}',
-        '--label', f'org.opencontainers.image.created={build_date}',
-        ('--label', f'org.opencontainers.image.version={git_info.latest_version}') if git_info.latest_version else None,
-        ('--label', f'org.opencontainers.image.revision={git_info.latest_commit}') if git_info.latest_commit else None,
-        ('--label', f'org.opencontainers.image.source={git_info.source_url}') if git_info.source_url else None,
+        *tags,
+        *labels,
         '--push', image.path
     )
 
@@ -164,18 +164,33 @@ def generate_tags(version):
         yield from itertools.accumulate(version.split('.'), lambda a, b: f'{a}.{b}' if a else b)
 
 
+def generate_labels(image, git_info):
+    build_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+    yield f'title={image.path.name}'
+    yield f'authors={image.user}'
+    yield f'url={image.repo_url}'
+    yield f'created={build_date}'
+    if git_info.latest_version:
+        yield f'version={git_info.latest_version}'
+    if git_info.latest_commit:
+        yield f'revision={git_info.latest_commit}'
+    if git_info.source_url:
+        yield f'source={git_info.source_url}'
+
+
 def bump(image, git_info):
     if git_info.latest_commit != git_info.current_commit:
         run('git', 'add', image.path/'src')
-        run('git', 'commit', '--message', f'{image.path.name}: bump version to v{git_info.latest_version}' if git_info.latest_version else f'{image.path.name}: bump version to {git_info.latest_commit[:7]}')
+        target = f'v{git_info.latest_version}' if git_info.latest_version else f'{git_info.latest_commit[:7]}'
+        run('git', 'commit', '--message', f'{image.path.name}: bump version to {target}')
         run('git', 'push')
 
 
 def docker(*args):
     if sudo_needed():
-        return system('sudo', 'DOCKER_BUILDKIT=1', 'DOCKER_CLI_EXPERIMENTAL=enabled', 'docker', *args)
+        run('sudo', 'DOCKER_BUILDKIT=1', 'DOCKER_CLI_EXPERIMENTAL=enabled', 'docker', *args)
     else:
-        return system('env', 'DOCKER_BUILDKIT=1', 'DOCKER_CLI_EXPERIMENTAL=enabled', 'docker', *args)
+        run('env', 'DOCKER_BUILDKIT=1', 'DOCKER_CLI_EXPERIMENTAL=enabled', 'docker', *args)
 
 
 def sudo_needed():
@@ -188,44 +203,19 @@ def get_groups():
 
 def load_envfile(path):
     with open(path) as file:
-        lines = [line.split('=', maxsplit=1) for line in file if not line.startswith('#')]
+        lines = [line.split('=', maxsplit=1) for line in file if line.strip() and not line.startswith('#')]
         return {key: value.rstrip() for key, value in lines}
 
 
-def run(*args, stdin=None, text=True, **kwargs):
-    command = filter_command(args)
-    print(' '.join(command))
-    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=text, **kwargs)
-    out, err = process.communicate(stdin)
-    rc = process.wait()
-    if rc != 0:
-        raise SubprocessError(' '.join(command), err)
-    return out.strip()
-
-
-def system(*args):
-    command = ' '.join(shlex.quote(item) for item in filter_command(args))
-    print(command)
-    err = os.system(command)
-    if err != 0:
-        raise SubprocessError(command)
-
-
-class SubprocessError(Exception):
-    def __init__(self, command, error=None):
-        self.command = command
-        self.error = error.strip() if error else None
-        super().__init__(f'subprocess failed: {self.error}' if self.error else 'subprocess failed')
-
-
-def filter_command(args):
-    command = []
-    for item in args:
-        if isinstance(item, tuple):
-            command.extend(str(x) for x in item)
-        elif item is not None:
-            command.append(str(item))
-    return command
+def run(*args, stdin=None, capture=False):
+    args = [str(item) for item in args if item is not None]
+    cmdline = ' '.join(args)
+    print('>', cmdline)
+    process = subprocess.run(args, input=stdin, text=True, check=False, capture_output=capture)
+    if process.returncode != 0:
+        raise RuntimeError(f'subprocess failed with exit code {process.returncode}: {cmdline}')
+    if capture:
+        return process.stdout.strip()
 
 
 if __name__ == '__main__':

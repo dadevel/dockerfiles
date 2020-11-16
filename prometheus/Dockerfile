@@ -7,8 +7,8 @@ strip ./prometheus
 
 FROM dadevel/distroless:latest
 COPY --from=prometheus /build/prometheus ./bin/
-RUN ["prometheus", "--version"]
-ENTRYPOINT ["prometheus", "--config.file=/app/config/prometheus.yaml", "--storage.tsdb.path=/app/data", "--web.console.libraries=/app/config/console_libraries", "--web.console.templates=/app/config/consoles"]
 USER 1000
+RUN ["prometheus", "--version"]
+ENTRYPOINT ["prometheus", "--config.file=./config/prometheus.yaml", "--storage.tsdb.path=./data", "--web.console.libraries=./config/console_libraries", "--web.console.templates=./config/consoles"]
 EXPOSE 9090/tcp
 

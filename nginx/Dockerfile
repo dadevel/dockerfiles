@@ -1,6 +1,6 @@
 FROM dadevel/c-builder:latest as nginx
 RUN apk add --no-cache linux-headers openssl-dev pcre-dev zlib-dev
-COPY ./src .
+COPY ./src/ .
 ENV CFLAGS $CFLAGS -fPIC
 # documentation: https://nginx.org/en/docs/configure.html
 RUN ./auto/configure \
@@ -47,10 +47,10 @@ FROM dadevel/alpine:latest
 ARG TARGETARCH
 RUN apk add --no-cache openssl pcre perl zlib && \
 [ $TARGETARCH != arm ] || apk add --no-cache libgcc
-COPY --from=nginx /build/objs/nginx /app/bin/
-COPY --from=nginx /build/conf/mime.types /app/static/
+COPY --from=nginx /build/objs/nginx ./bin/
+COPY --from=nginx /build/conf/mime.types ./static/
+USER app
 RUN nginx -v
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
 EXPOSE 80/tcp 443/tcp
-USER app
 

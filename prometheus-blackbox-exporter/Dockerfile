@@ -5,8 +5,8 @@ RUN make -j $(nproc) common-build && mv ./build ./blackbox-exporter && strip ./b
 
 FROM dadevel/distroless:latest
 COPY --from=blackbox-exporter /build/blackbox-exporter ./bin/
-RUN ["blackbox-exporter", "--version"]
-ENTRYPOINT ["blackbox-exporter", "--config.file=/app/config/blackbox-exporter.yaml"]
 USER 1000
+RUN ["blackbox-exporter", "--version"]
+ENTRYPOINT ["blackbox-exporter", "--config.file=./config/blackbox-exporter.yaml"]
 EXPOSE 9115/tcp
 
