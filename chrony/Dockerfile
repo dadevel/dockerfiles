@@ -32,5 +32,6 @@ COPY ./entrypoint.sh ./lib/
 RUN chronyd -v
 ENTRYPOINT ["./lib/entrypoint.sh", "-d", "-u", "app", "-f", "./config/chrony.conf"]
 CMD ["-r", "-s"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["chronyc", "quit"]
 EXPOSE 123/udp
 

@@ -15,7 +15,7 @@ mv ./bin/linux-*/grafana-server . && \
 strip ./grafana-server
 
 FROM dadevel/alpine:latest
-RUN apk add --no-cache musl-utils openssl && \
+RUN apk add --no-cache musl-utils libressl && \
 mkdir -p \
 ./data/log/ \
 ./data/plugins/ \
@@ -32,5 +32,6 @@ COPY --from=grafana /build/grafana-server ./bin/
 USER app
 RUN grafana-server -v
 ENTRYPOINT ["./lib/entrypoint.sh", "--packaging", "docker", "--homepath", "./static", "--config", "./config/grafana.ini", "cfg:default.paths.data=./data", "cfg:default.paths.logs=./data/log", "cfg:default.paths.plugins=./data/plugins", "cfg:default.paths.provisioning=./config/provisioning", "cfg:default.log.mode=console"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "http://127.0.0.1:3000/healthz"]
 EXPOSE 3000/tcp
 

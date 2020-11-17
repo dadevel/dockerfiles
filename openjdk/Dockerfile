@@ -3,7 +3,7 @@ RUN apk add --no-cache ca-certificates tzdata
 RUN mkdir -p /app/bin /app/lib /app/static /app/config /app/data && \
 chown -R 1000:1000 /app/data
 
-FROM openjdk:14-alpine
+FROM openjdk:alpine
 RUN addgroup -g 1000 app && adduser -h /dev/shm -g '' -s /bin/sh -G app -D -H -u 1000 app
 ENV CHARSET UTF-8
 ENV LANG C.UTF-8

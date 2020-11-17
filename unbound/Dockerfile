@@ -33,12 +33,14 @@ RUN make -j $(nproc) && strip ./unbound
 # unbound-anchor exits with return code 1 even if everything went fine
 RUN wget -q -O - https://www.internic.net/domain/named.cache | tee ./root.hints | awk '{ if ($3 == "A" || $3 == "AAAA") { printf("master: %s\n", $NF) } }' > ./root.conf && { ./unbound-anchor -a ./root.key -r ./root.hints || [ $? -eq 1 ]; }
 
-FROM dadevel/distroless:latest
+FROM dadevel/busybox:latest
 COPY --from=unbound /build/unbound ./bin/
 COPY --from=unbound --chown=1000:1000 /build/root.hints /build/root.key /build/root.conf ./data/
+COPY ./unbound.conf ./static/
 USER 1000
 RUN ["unbound", "-V"]
 ENTRYPOINT ["unbound", "-dd"]
-CMD ["-p", "-c", "./config/unbound.conf"]
+CMD ["-p", "-c", "./static/unbound.conf"]
+HEALTHCHECK --interval=60s --timeout=5s CMD ["nslookup", "health.unbound.test", "127.0.0.1#53"]
 EXPOSE 53/tcp 53/udp 853/tcp
 

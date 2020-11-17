@@ -3,7 +3,7 @@ RUN apk add --no-cache ca-certificates tzdata
 RUN mkdir -p /app/bin /app/lib /app/static /app/config /app/data && \
 chown -R 1000:1000 /app/data
 
-FROM scratch
+FROM busybox:musl
 ENV CHARSET UTF-8
 ENV LANG C.UTF-8
 ENV TZ UTC

@@ -14,5 +14,6 @@ COPY --from=signal /build/build/install/signal-cli/lib/ ./lib/
 COPY --from=receiver /build/alertmanager-signal-receiver ./bin/
 USER app
 ENTRYPOINT ["alertmanager-signal-receiver"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "http://127.0.0.1:9709/healthz"]
 EXPOSE 9709/tcp
 

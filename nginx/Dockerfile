@@ -1,5 +1,5 @@
 FROM dadevel/c-builder:latest as nginx
-RUN apk add --no-cache linux-headers openssl-dev pcre-dev zlib-dev
+RUN apk add --no-cache linux-headers libressl-dev pcre-dev zlib-dev
 COPY ./src/ .
 ENV CFLAGS $CFLAGS -fPIC
 # documentation: https://nginx.org/en/docs/configure.html
@@ -45,12 +45,13 @@ RUN make -j $(nproc) && strip ./objs/nginx
 
 FROM dadevel/alpine:latest
 ARG TARGETARCH
-RUN apk add --no-cache openssl pcre perl zlib && \
+RUN apk add --no-cache libressl pcre perl zlib && \
 [ $TARGETARCH != arm ] || apk add --no-cache libgcc
 COPY --from=nginx /build/objs/nginx ./bin/
 COPY --from=nginx /build/conf/mime.types ./static/
 USER app
 RUN nginx -v
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "http://127.0.0.1"]
 EXPOSE 80/tcp 443/tcp
 
