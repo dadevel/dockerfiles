@@ -12,6 +12,6 @@ COPY --from=dnsmasq /build/src/dnsmasq ./bin/
 COPY --from=dnsmasq /build/trust-anchors.conf ./static/
 RUN dnsmasq --version
 ENTRYPOINT ["dnsmasq", "--keep-in-foreground", "--user=app", "--group=app", "--pid-file=", "--log-facility=-", "--host-record=health.dnsmasq.test,127.0.0.1"]
-HEALTHCHECK --interval=60s --timeout=5s CMD ["nslookup", "health.dnsmasq.test", "127.0.0.1#53"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["nslookup", "health.dnsmasq.test", "127.0.0.1#53"]
 EXPOSE 53/udp 67/udp 69/udp 547/udp
 

@@ -1,4 +1,5 @@
-FROM node:12-alpine as webui
+ARG BUILDPLATFORM
+FROM --platform=$BUILDPLATFORM node:12-alpine as webui
 WORKDIR /build
 COPY ./src/ .
 RUN yarn install --pure-lockfile --no-progress
@@ -32,6 +33,6 @@ COPY --from=grafana /build/grafana-server ./bin/
 USER app
 RUN grafana-server -v
 ENTRYPOINT ["./lib/entrypoint.sh", "--packaging", "docker", "--homepath", "./static", "--config", "./config/grafana.ini", "cfg:default.paths.data=./data", "cfg:default.paths.logs=./data/log", "cfg:default.paths.plugins=./data/plugins", "cfg:default.paths.provisioning=./config/provisioning", "cfg:default.log.mode=console"]
-HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "http://127.0.0.1:3000/healthz"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://127.0.0.1:3000/healthz"]
 EXPOSE 3000/tcp
 

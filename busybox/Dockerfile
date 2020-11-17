@@ -7,7 +7,7 @@ FROM busybox:musl
 ENV CHARSET UTF-8
 ENV LANG C.UTF-8
 ENV TZ UTC
-ENV PATH /app/bin
+ENV PATH /app/bin:$PATH
 ENV LD_LIBRARY_PATH /app/lib
 ENV HOME /dev/shm
 ENV XDG_RUNTIME_DIR /dev/shm

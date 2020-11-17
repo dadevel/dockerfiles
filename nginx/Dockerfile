@@ -52,6 +52,6 @@ COPY --from=nginx /build/conf/mime.types ./static/
 USER app
 RUN nginx -v
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
-HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "http://127.0.0.1"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://127.0.0.1"]
 EXPOSE 80/tcp 443/tcp
 

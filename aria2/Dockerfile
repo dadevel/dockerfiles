@@ -24,6 +24,6 @@ USER app
 RUN aria2c --version
 ENTRYPOINT ["aria2c", "--log", "-", "--dir", "./data", "--conf-path", "./config/aria2.conf", "--enable-rpc", "--rpc-listen-all"]
 CMD ["--log-level", "warn", "--rpc-listen-port", "6800"]
-HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "http://127.0.0.1:6800"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://127.0.0.1:6800"]
 EXPOSE 6800/tcp
 

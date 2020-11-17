@@ -41,6 +41,6 @@ USER 1000
 RUN ["unbound", "-V"]
 ENTRYPOINT ["unbound", "-dd"]
 CMD ["-p", "-c", "./static/unbound.conf"]
-HEALTHCHECK --interval=60s --timeout=5s CMD ["nslookup", "health.unbound.test", "127.0.0.1#53"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["nslookup", "health.unbound.test", "127.0.0.1#53"]
 EXPOSE 53/tcp 53/udp 853/tcp
 
