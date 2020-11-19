@@ -1,7 +1,9 @@
-FROM dadevel/c-builder:latest as unbound
+FROM dadevel/cxx-builder:latest as unbound
 # fstrm and protobuf are required for dnstap
-RUN apk add --no-cache byacc expat-dev expat-static file fstrm-dev fstrm-static libevent-dev libevent-static libressl-dev protobuf-c-dev
-COPY ./src/ .
+RUN apk add --no-cache byacc expat-dev expat-static file fstrm-dev fstrm-static libevent-dev libevent-static libressl-dev protobuf-c-dev libcap
+COPY ./src .
+# unused feature flags:
+# --enable-tfo-client --enable-tfo-server --enable-ipset --enable-subnet
 RUN ./configure \
 --prefix=/app \
 --bindir=/app/bin \
@@ -27,20 +29,20 @@ RUN ./configure \
 --enable-pie \
 --enable-relro-now \
 --with-pic
-# additional feature flags
-# --enable-tfo-client --enable-tfo-server --enable-ipset --enable-subnet
-RUN make -j $(nproc) && strip ./unbound
+RUN make -j $(nproc)
+RUN strip ./unbound
+RUN ./unbound -V
+RUN setcap -q cap_net_bind_service+ep ./unbound
 # unbound-anchor exits with return code 1 even if everything went fine
 RUN wget -q -O - https://www.internic.net/domain/named.cache | tee ./root.hints | awk '{ if ($3 == "A" || $3 == "AAAA") { printf("master: %s\n", $NF) } }' > ./root.conf && { ./unbound-anchor -a ./root.key -r ./root.hints || [ $? -eq 1 ]; }
 
 FROM dadevel/busybox:latest
 COPY --from=unbound /build/unbound ./bin/
-COPY --from=unbound --chown=1000:1000 /build/root.hints /build/root.key /build/root.conf ./data/
-COPY ./unbound.conf ./static/
+COPY --from=unbound --chown=app:app /build/root.hints /build/root.key /build/root.conf ./data/
+COPY ./unbound.conf ./config/
 USER 1000
-RUN ["unbound", "-V"]
-ENTRYPOINT ["unbound", "-dd"]
-CMD ["-p", "-c", "./static/unbound.conf"]
-HEALTHCHECK --interval=60s --timeout=3s CMD ["nslookup", "health.unbound.test", "127.0.0.1#53"]
+ENTRYPOINT ["unbound", "-dd", "-c", "./config/unbound.conf"]
+CMD ["-p"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["nslookup", "health.unbound.test", "127.0.0.1"]
 EXPOSE 53/tcp 53/udp 853/tcp
 

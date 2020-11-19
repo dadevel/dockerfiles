@@ -1,0 +1,6 @@
+route:
+  receiver: test
+
+receivers:
+- name: test
+

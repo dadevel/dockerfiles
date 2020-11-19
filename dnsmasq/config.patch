@@ -1,5 +1,5 @@
---- a/config.h	2020-07-21 08:42:19.012656003 +0200
-+++ b/config.h	2020-07-21 08:45:35.885002412 +0200
+--- a/config.h
++++ b/config.h
 @@ -41,12 +41,12 @@
  #define SMALLDNAME 50 /* most domain names are smaller than this */
  #define CNAME_CHAIN 10 /* chains longer than this atr dropped for loop protection */
@@ -17,17 +17,17 @@
  #define TFTP_MAX_CONNECTIONS 50 /* max simultaneous connections */
  #define LOG_MAX 5 /* log-queue length */
  #define RANDFILE "/dev/urandom"
-@@ -174,6 +174,10 @@
- #define HAVE_IPSET 
- #define HAVE_LOOP
- #define HAVE_DUMPFILE
+@@ -156,6 +156,10 @@
+    in a build command line using COPTS.
+ 
+ */
 +#define LEASEFILE "/app/data/leases"
 +#define CONFFILE "/app/config/dnsmasq.conf"
 +#define RESOLVFILE "/app/config/resolv.conf"
 +#define RUNFILE "/dev/shm/dnsmasq.pid"
  
- /* Build options which require external libraries.
-    
+ /* Defining this builds a binary which handles time differently and works better on a system without a 
+    stable RTC (it uses uptime, not epoch time) and writes the DHCP leases file less often to avoid flash wear. 
 @@ -185,9 +189,9 @@
  /* #define HAVE_LUASCRIPT */
  /* #define HAVE_DBUS */

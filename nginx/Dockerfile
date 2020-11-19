@@ -1,8 +1,9 @@
-FROM dadevel/c-builder:latest as nginx
-RUN apk add --no-cache linux-headers libressl-dev pcre-dev zlib-dev
-COPY ./src/ .
-ENV CFLAGS $CFLAGS -fPIC
 # documentation: https://nginx.org/en/docs/configure.html
+
+FROM dadevel/cxx-builder:latest as nginx
+RUN apk add --no-cache linux-headers libressl-dev pcre-dev zlib-dev libcap
+COPY ./src .
+ENV CFLAGS $CFLAGS -fPIC
 RUN ./auto/configure \
 --prefix=/app \
 --sbin-path=/app/bin \
@@ -41,17 +42,19 @@ RUN ./auto/configure \
 --with-stream_realip_module \
 --with-stream_ssl_module \
 --with-stream_ssl_preread_module
-RUN make -j $(nproc) && strip ./objs/nginx
+RUN make -j $(nproc) && mv ./objs/nginx .
+RUN strip ./nginx
+RUN ./nginx -v
+RUN setcap -q cap_net_bind_service+ep ./nginx
 
 FROM dadevel/alpine:latest
 ARG TARGETARCH
-RUN apk add --no-cache libressl pcre perl zlib && \
-[ $TARGETARCH != arm ] || apk add --no-cache libgcc
-COPY --from=nginx /build/objs/nginx ./bin/
+RUN apk add --no-cache libressl pcre perl zlib && [ $TARGETARCH != arm ] || apk add --no-cache libgcc
+COPY --from=nginx /build/nginx ./bin/
 COPY --from=nginx /build/conf/mime.types ./static/
+COPY ./nginx.conf ./config/
 USER app
-RUN nginx -v
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
-HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://127.0.0.1"]
+ENTRYPOINT ["nginx", "-g", "daemon off;", "-c", "./config/nginx.conf"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://127.0.0.1/healthz"]
 EXPOSE 80/tcp 443/tcp
 

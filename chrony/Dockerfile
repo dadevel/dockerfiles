@@ -1,8 +1,7 @@
-FROM dadevel/c-builder:latest as chrony
-# compiling with --disable-privdrop and managing privileges via docker does not work, chrony insists on starting as root
-# not installing libseccomp and specifying --enable-scfilter because starting chronyd with -F 1 to enforce seccomp filtering only results in a crash
+FROM dadevel/cxx-builder:latest as chrony
 RUN apk add --no-cache asciidoctor bison libcap-dev nettle-dev
-COPY ./src/ .
+COPY ./src .
+# compiling without --enable-scfilter because starting chronyd with enforced seccomp filtering results in a crash
 RUN ./configure \
 --prefix=/app \
 --bindir=/app/bin \
@@ -14,24 +13,25 @@ RUN ./configure \
 --chronyvardir=/app/data \
 --chronyrundir=/dev/shm \
 --with-pidfile=/dev/shm/chronyd.pid \
---with-hwclockfile=/app/static/adjtime \
---with-user=app \
+--with-hwclockfile=/app/config/adjtime \
 --with-sendmail=/usr/sbin/sendmail \
+--with-user=app \
+--disable-privdrop \
 --enable-ntp-signd
-RUN make -j $(nproc) && \
-strip ./chronyd && \
-strip ./chronyc
+RUN make -j $(nproc)
+RUN strip ./chronyd ./chronyc
+RUN ./chronyd --version
+RUN setcap -q cap_net_bind_service,cap_sys_time+ep ./chronyd
 
 FROM dadevel/alpine:latest
 ARG TARGETARCH
-RUN apk add --no-cache libcap nettle && \
-[ $TARGETARCH != arm ] || apk add --no-cache libgcc
+RUN apk add --no-cache libcap nettle && [ $TARGETARCH != arm ] || apk add --no-cache libgcc
 COPY --from=chrony /build/chronyd ./bin/
 COPY --from=chrony /build/chronyc ./bin/
-COPY ./entrypoint.sh ./lib/
-RUN chronyd -v
-ENTRYPOINT ["./lib/entrypoint.sh", "-d", "-u", "app", "-f", "./config/chrony.conf"]
-CMD ["-r", "-s"]
-HEALTHCHECK --interval=60s --timeout=3s CMD ["chronyc", "quit"]
+COPY ./chrony.conf ./config/
+USER app
+ENTRYPOINT ["chronyd", "-d", "-U", "-f", "./config/chrony.conf"]
+CMD ["-L", "1", "-r", "-s"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["chronyc", "sources"]
 EXPOSE 123/udp
 

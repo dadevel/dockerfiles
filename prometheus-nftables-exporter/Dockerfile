@@ -1,5 +1,5 @@
-FROM dadevel/python:latest
-RUN apk add --no-cache libcap nftables && \
+FROM dadevel/python3:latest
+RUN apk add --no-cache nftables libcap && \
 setcap -q cap_net_admin+ep /usr/sbin/nft && \
 apk del --purge --rdepends libcap && \
 rm -rf /etc/nftables*

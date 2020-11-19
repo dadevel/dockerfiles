@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
     - alpine
-    - c-builder
+    - cxx-builder
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -60,7 +60,7 @@ jobs:
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  c-builder:
+  cxx-builder:
     runs-on: ubuntu-20.04
     needs: []
     steps:
@@ -69,7 +69,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish c-builder
+      run: ./make.py publish cxx-builder
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
     - alpine
-    - c-builder
+    - cxx-builder
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -120,7 +120,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
     - alpine
-    - c-builder
+    - cxx-builder
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -149,6 +149,7 @@ jobs:
     needs:
     - alpine
     - go-builder
+    - nodejs-builder
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -163,7 +164,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
     - alpine
-    - c-builder
+    - cxx-builder
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -178,7 +179,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
     - alpine
-    - c-builder
+    - cxx-builder
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -204,11 +205,24 @@ jobs:
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+  nodejs-builder:
+    runs-on: ubuntu-20.04
+    needs: []
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./make.py publish nodejs-builder
+      env:
+        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
   nginx:
     runs-on: ubuntu-20.04
     needs:
     - alpine
-    - c-builder
+    - cxx-builder
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -219,24 +233,12 @@ jobs:
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  openjdk:
-    runs-on: ubuntu-20.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish openjdk
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
   prometheus:
     runs-on: ubuntu-20.04
     needs:
     - busybox
     - go-builder
+    - nodejs-builder
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -294,7 +296,7 @@ jobs:
   prometheus-nftables-exporter:
     runs-on: ubuntu-20.04
     needs:
-    - python
+    - python3
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -338,7 +340,7 @@ jobs:
   prometheus-smart-collector:
     runs-on: ubuntu-20.04
     needs:
-    - python
+    - python3
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -349,7 +351,7 @@ jobs:
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  python:
+  python3:
     runs-on: ubuntu-20.04
     needs: []
     steps:
@@ -358,14 +360,13 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish python
+      run: ./make.py publish python3
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
   signal-cli:
     runs-on: ubuntu-20.04
-    needs:
-    - openjdk
+    needs: []
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -425,7 +426,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
     - busybox
-    - c-builder
+    - cxx-builder
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -450,11 +451,26 @@ jobs:
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+  watchtower:
+    runs-on: ubuntu-20.04
+    needs:
+    - busybox
+    - go-builder
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./make.py publish watchtower
+      env:
+        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
   wpa-supplicant:
     runs-on: ubuntu-20.04
     needs:
     - alpine
-    - c-builder
+    - cxx-builder
     steps:
     - name: Checkout
       uses: actions/checkout@v2

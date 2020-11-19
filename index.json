@@ -38,7 +38,7 @@
       "name": "busybox"
     },
     {
-      "name": "c-builder"
+      "name": "cxx-builder"
     },
     {
       "name": "cadvisor",
@@ -86,13 +86,13 @@
       "version": "refs/tags/v([0-9.]+)"
     },
     {
+      "name": "nodejs-builder",
+      "platforms": ["linux/amd64"]
+    },
+    {
       "name": "nginx",
       "source": "https://github.com/nginx/nginx.git",
       "version": "refs/tags/release-([0-9.]+)"
-    },
-    {
-      "name": "openjdk",
-      "platforms": ["linux/amd64"]
     },
     {
       "name": "prometheus",
@@ -133,7 +133,7 @@
       "source": "https://github.com/prometheus-community/node-exporter-textfile-collector-scripts.git"
     },
     {
-      "name": "python"
+      "name": "python3"
     },
     {
       "name": "signal-cli",
@@ -166,6 +166,11 @@
       "source": "https://github.com/ziahamza/webui-aria2.git"
     },
     {
+      "name": "watchtower",
+      "source": "https://github.com/containrrr/watchtower.git",
+      "version": "refs/tags/v([0-9.]+)"
+    },
+    {
       "name": "wpa-supplicant",
       "source": "git://w1.fi/srv/git/hostap.git",
       "version": "refs/tags/hostap_([0-9_]+)",
@@ -178,11 +183,15 @@
   "registries": [
     {
       "name": "docker.io",
-      "user": "dadevel"
+      "user": "dadevel",
+      "testing": false,
+      "release": true
     },
     {
       "name": "ghcr.io",
-      "user": "dadevel"
+      "user": "dadevel",
+      "testing": true,
+      "release": true
     }
   ]
 }

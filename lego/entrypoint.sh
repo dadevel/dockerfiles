@@ -31,9 +31,11 @@ main() {
     update_dhparam
     while :; do
         if update_certificates && update_staples; then
+            touch /dev/shm/healthy
             sh -c "$LEGO_RELOAD_COMMAND"
             sleep "$LEGO_REFRESH_INTERVAL"
         else
+            rm -f /dev/shm/healthy
             sleep "$LEGO_RETRY_INTERVAL"
         fi
     done

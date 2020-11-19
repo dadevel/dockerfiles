@@ -89,10 +89,13 @@ def do_generate_ci(opts):
 def generate_actions_config(index):
     return {
         'name': 'CI',
-        "on": {
-          'schedule': [
-              {'cron': '0 3 * * *'},
-          ],
+        'on': {
+            'push': {
+                'branches': ['master'],
+            },
+            'schedule': [
+                {'cron': '0 3 * * *'},
+            ],
         },
         'jobs': {image.name: generate_job(image, index.registries) for image in index.images},
     }
@@ -140,7 +143,7 @@ class Repository:
 
     def clone(self):
         if self.path.joinpath('.git').exists():
-            git('-C', self.path, 'reset', 'origin/HEAD')
+            git('-C', self.path, 'reset', '--hard', 'origin/HEAD')
             git('-C', self.path, 'pull', 'origin', 'HEAD', '--rebase')
         else:
             git('clone', self.source, self.path)
@@ -170,7 +173,7 @@ class Repository:
         matches = list()
         for ref in refs:
             assert self.version
-            match = self.version.match(ref)
+            match = self.version.fullmatch(ref)
             if match:
                 matches.append((ref, match))
 
@@ -185,7 +188,10 @@ class Repository:
 
 
 class Image:
-    dependency_extraction_regex = re.compile(r'from\s+(?:--platform=[^\s]+\s+)?(?P<image>[^\s:]+)(?::(?P<tag>[^\s]+))?(?:\s+as\s+[^\s]+)?')
+    dependency_extraction_patterns = [
+        re.compile(r'from\s+(?:--platform=[^\s]+\s+)?(?P<image>[^\s:]+)(?::(?P<tag>[^\s]+))?(?:\s+as\s+[^\s]+)?',
+        re.compile(r'copy\s+--from=(?P<image>[^\s:]+)(?::(?P<tag>[^\s]+))?\s+.*')
+    )
 
     def __init__(self, name, path=None, repository=None, platforms=None, dependencies=None, labels=None, build_date=None):
         self.name = name
@@ -213,73 +219,87 @@ class Image:
         )
 
     def _extract_dependencies(self, dockerfile):
-        # TODO: don't forget COPY --from=image
         with open(dockerfile) as file:
             for line in file:
-                match = self.dependency_extraction_regex.match(line.strip().lower())
-                if match:
-                    yield match.group('image')
+                image_name = self._match_dependency_pattern(line)
+                if image_name:
+                    yield image_name
+
+    def _match_dependency_pattern(self, line):
+        for pattern in self.dependency_extraction_patterns:
+            match = pattern.fullmatch(line.strip().lower())
+            if match:
+                return match.group('image')
+        return None
 
     def start_build_process(self, registries, cache):
         image = self
         if image.repository.source:
             image = image.update(repository=image.repository.clone().checkout())
-        image_name = image._build_test(cache)
-        image._run_test(image_name)
+        full_names = image._build_test(registries, cache)
+        image._run_test(full_names[0])
         image = image._build_release(registries, cache)
         return image
 
-    def _build_test(self, cache):
-        # TODO: don't hardcode registry
-        image_name = f'ghcr.io/dadevel/{self.name}:testing'
+    def _build_test(self, registries, cache):
+        names = [
+            f'{registry.name}/{registry.user}/{self.name}:testing'
+            for registry in registries
+            if registry.testing
+        ]
+        args = []
+        for name in names:
+            args.extend(('--tag', name))
+
         docker(
             'buildx', 'build',
             '--cache-from', f'type=local,src={cache}',
             '--cache-to', f'type=local,dest={cache}',
             '--platform', ','.join(self.platforms),
-            '--tag', image_name,
+            *args,
             '--push', self.path,
         )
-        return image_name
+        return names
 
-    def _run_test(self, image_name):
-        docker('pull', image_name)
-        has_healthcheck = bool(json.loads(docker('image', 'inspect', image_name, '--format', '{{json .Config.Healthcheck}}', capture=True)))
+    def _run_test(self, full_name):
+        docker('pull', full_name)
+        has_healthcheck = bool(json.loads(docker('image', 'inspect', full_name, '--format', '{{json .Config.Healthcheck}}', capture=True)))
         if has_healthcheck:
-            self._test_healthcheck(image_name)
+            self._test_healthcheck()
         else:
-            self._test_startup(image_name)
+            self._test_startup()
 
-    def _test_healthcheck(self, image_name):
-        cid = docker(
-            'run', '--detach', '--rm', '--tty',
-            '--health-interval', '1s',
-            '--health-retries', '60',
-            '--health-start-period', '1s',
-            '--health-timeout', '1s',
-            image_name, capture=True
-        )
-        for _ in range(60):
-            time.sleep(1)
-            state = json.loads(docker('container', 'inspect', cid, '--format', '{{json .State}}', capture=True))
-            status = state['Status']
-            health = state['Health'].get('Status')
-            if status in ('dead', 'exited'):
-                raise RuntimeError(f'image {self.name} failed to start up')
-            if health == 'healthy':
-                return
-        raise RuntimeError(f'image {self.name} failed the health check')
+    def _test_healthcheck(self):
+        cid = docker_compose('run', '--detach', self.name, capture=True)
+        try:
+            for _ in range(90):
+                time.sleep(1)
+                state = json.loads(docker('container', 'inspect', cid, '--format', '{{json .State}}', capture=True))
+                if state.get('Status') == 'exited':
+                    if state.get('ExitCode') == 0:
+                        return
+                    raise RuntimeError(f'image {self.name} failed to start up')
+                if state.get('Health', dict()).get('Status') == 'healthy':
+                    return
+            raise RuntimeError(f'image {self.name} failed the health check')
+        finally:
+            docker_compose('down', '--volumes', '--remove-orphans', '--timeout', '1')
 
-    def _test_startup(self, image_name):
-        cid = docker('run', '--detach', '--rm', '--tty', image_name, capture=True)
-        for _ in range(60):
-            time.sleep(1)
-            status = docker('container', 'inspect', cid, '--format', '{{.State.Status}}', capture=True)
-            if status in ('dead', 'exited'):
-                raise RuntimeError(f'image {self.name} failed to start up')
-            if status == 'running':
-                return
-        raise RuntimeError(f'image {self.name} did not start in time')
+    def _test_startup(self):
+        cid = docker_compose('run', '--detach', self.name, capture=True)
+        try:
+            for _ in range(90):
+                time.sleep(1)
+                state = json.loads(docker('container', 'inspect', cid, '--format', '{{json .State}}', capture=True))
+                if state.get('Status') == 'exited':
+                    if state.get('ExitCode') == 0:
+                        return
+                    raise RuntimeError(f'image {self.name} failed to start up')
+                if state.get('Status') == 'running':
+                    return
+            raise RuntimeError(f'image {self.name} did not start in time')
+        finally:
+            docker_compose('down', '--volumes', '--remove-orphans', '--timeout', '1')
 
     def _build_release(self, registries, cache):
         image = self
@@ -328,9 +348,11 @@ class Image:
 
 
 class Registry:
-    def __init__(self, name, user, token=None):
+    def __init__(self, name, user, testing, release, token=None):
         self.name = name
         self.user = user
+        self.testing = testing
+        self.release = release
         self.token = token
 
     @property
@@ -417,6 +439,11 @@ def setup_buildx():
 def docker(*args, **kwargs):
     sudo = () if 'docker' in user_groups() else ('sudo', '-E')
     return run(*sudo, 'docker', *args, env=dict(DOCKER_CLI_EXPERIMENTAL='enabled', BUILDX_NO_DEFAULT_LOAD='false'), **kwargs)
+
+
+def docker_compose(*args, **kwargs):
+    sudo = () if 'docker' in user_groups() else ('sudo', '-E')
+    return run(*sudo, 'docker-compose', *args, **kwargs)
 
 
 def git(*args, **kwargs):

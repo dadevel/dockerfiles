@@ -1,6 +1,6 @@
-FROM dadevel/c-builder:latest as haveged
+FROM dadevel/cxx-builder:latest as haveged
 RUN apk add --no-cache autoconf automake file libtool linux-headers
-COPY ./src/ .
+COPY ./src .
 RUN autoreconf -vif
 RUN ./configure \
 --prefix=/app \
@@ -14,13 +14,14 @@ RUN ./configure \
 --enable-static \
 --disable-shared \
 --with-pic
-RUN make -j $(nproc) && strip ./src/haveged
+RUN make -j $(nproc) && mv ./src/haveged .
+RUN strip ./haveged
+RUN ./haveged --version
 
 FROM dadevel/alpine:latest
 ARG TARGETARCH
 RUN [ $TARGETARCH != arm ] || apk add --no-cache libgcc
-COPY --from=haveged /build/src/haveged ./bin/
-RUN haveged --version
+COPY --from=haveged /build/haveged ./bin/
 ENTRYPOINT ["haveged", "--Foreground", "--pidfile=/dev/shm/haveged.pid"]
 CMD ["--verbose=1"]
 

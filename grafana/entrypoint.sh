@@ -6,7 +6,7 @@ for plugin in $GRAFANA_PLUGINS; do
             unzip -q -d /app/data/plugins/ "/app/data/plugins/${plugin}.zip" && \
             mv "/app/data/plugins/${plugin}"-*/ "/app/data/plugins/${plugin}/" && \
             rm "/app/data/plugins/${plugin}.zip" || \
-            echo "failed to install plugin ${plugin}"
+            echo "failed to install plugin ${plugin}" >&2
     fi
 done
 exec grafana-server "$@"
