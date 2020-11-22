@@ -11,6 +11,11 @@ services:
     cap_drop:
     - all
 
+  bitcoind:
+    image: ghcr.io/dadevel/bitcoind:testing
+    cap_drop:
+    - all
+
   blackarch:
     image: ghcr.io/dadevel/blackarch:testing
     cap_drop:

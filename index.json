@@ -31,6 +31,12 @@
       "version": "refs/tags/release-([0-9.]+)"
     },
     {
+      "name": "bitcoind",
+      "source": "https://github.com/bitcoin/bitcoin.git",
+      "version": "refs/tags/v([0-9.]+)",
+      "platforms": ["linux/amd64"]
+    },
+    {
       "name": "blackarch",
       "platforms": ["linux/amd64"]
     },

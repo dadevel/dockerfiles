@@ -90,9 +90,6 @@ def generate_actions_config(index):
     return {
         'name': 'CI',
         'on': {
-            'push': {
-                'branches': ['master'],
-            },
             'schedule': [
                 {'cron': '0 3 * * *'},
             ],
@@ -188,9 +185,9 @@ class Repository:
 
 
 class Image:
-    dependency_extraction_patterns = [
-        re.compile(r'from\s+(?:--platform=[^\s]+\s+)?(?P<image>[^\s:]+)(?::(?P<tag>[^\s]+))?(?:\s+as\s+[^\s]+)?',
-        re.compile(r'copy\s+--from=(?P<image>[^\s:]+)(?::(?P<tag>[^\s]+))?\s+.*')
+    dependency_extraction_patterns = (
+        re.compile(r'from\s+(?:--platform=[^\s]+\s+)?(?P<image>[^\s:]+)(?::(?P<tag>[^\s]+))?(?:\s+as\s+[^\s]+)?'),
+        re.compile(r'copy\s+--from=(?P<image>[^\s:]+)(?::(?P<tag>[^\s]+))?\s+.*'),
     )
 
     def __init__(self, name, path=None, repository=None, platforms=None, dependencies=None, labels=None, build_date=None):
