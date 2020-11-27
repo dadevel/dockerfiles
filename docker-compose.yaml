@@ -54,6 +54,10 @@ services:
 
   chrony:
     image: ghcr.io/dadevel/chrony:testing
+    entrypoint: [/bin/sh, -c]
+    command: ['chronyd --version && sleep 3']
+    healthcheck:
+      test: [NONE]
     cap_drop:
     - all
     cap_add:
