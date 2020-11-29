@@ -5,7 +5,7 @@ RUN make build
 RUN strip ./dist/lego
 
 FROM dadevel/alpine:latest
-RUN apk add --no-cache libressl
+RUN apk add --no-cache openssl
 COPY --from=lego /build/dist/lego ./bin/
 COPY ./entrypoint.sh ./lib/
 USER app

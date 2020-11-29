@@ -44,7 +44,7 @@ main() {
 update_dhparam() {
     case "$LEGO_GENERATE_DHPARAM" in
         y|yes|true|1)
-            [ -f "$LEGO_STORAGE_DIR/certificates/dhparam.pem" ] || libressl dhparam -out "$LEGO_STORAGE_DIR/certificates/dhparam.pem" 2048
+            [ -f "$LEGO_STORAGE_DIR/certificates/dhparam.pem" ] || openssl dhparam -out "$LEGO_STORAGE_DIR/certificates/dhparam.pem" 2048
             ;;
     esac
 }
@@ -94,12 +94,12 @@ update_staples() {
             for path in "$LEGO_STORAGE_DIR"/certificates/*.json; do
                 [ -f "${path}" ] || continue
                 path="${path%.json}"
-                libressl ocsp \
+                openssl ocsp \
                     -no_nonce \
                     -issuer "${path}.issuer.crt" \
                     -verify_other "${path}.issuer.crt" \
                     -cert "${path}.crt" \
-                    -url "$(libressl x509 -noout -ocsp_uri -in "${path}.crt")" \
+                    -url "$(openssl x509 -noout -ocsp_uri -in "${path}.crt")" \
                     -respout "${path}.staple.der"
             done
             ;;
