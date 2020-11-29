@@ -25,7 +25,7 @@ COPY --from=grafana-web /build/tools ./static/tools
 COPY --from=grafana /build/grafana-server ./bin/
 COPY ./grafana.ini ./config/
 USER app
-ENTRYPOINT ["./lib/entrypoint.sh", "--packaging", "docker", "--homepath", "./static", "--config", "./config/grafana.ini", "cfg:default.paths.data=./data", "cfg:default.paths.logs=./data/logs", "cfg:default.paths.plugins=./data/plugins", "cfg:default.paths.provisioning=./config/provisioning", "cfg:default.log.mode=console"]
+ENTRYPOINT ["./lib/entrypoint.sh", "--packaging", "docker", "--homepath", "./static", "--config", "./config/grafana.ini", "cfg:default.paths.data=/app/data", "cfg:default.paths.logs=/app/data/logs", "cfg:default.paths.plugins=/app/data/plugins", "cfg:default.paths.provisioning=/app/config/provisioning", "cfg:default.log.mode=console"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://127.0.0.1:3000/healthz"]
 EXPOSE 3000/tcp
 
