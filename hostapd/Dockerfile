@@ -10,9 +10,10 @@ RUN ./hostapd/hostapd -v || [ $? -eq 1 ]
 FROM dadevel/alpine:latest
 ARG TARGETARCH
 RUN apk add --no-cache iw libnl3 libressl && [ $TARGETARCH != arm ] || apk add --no-cache libgcc
-COPY ./entrypoint.sh ./lib/
 COPY --from=hostapd /build/hostapd/hostapd ./bin/
 COPY --from=hostapd /build/hostapd/hostapd_cli ./bin/
-ENTRYPOINT ["./lib/entrypoint.sh", "-P", "/dev/shm/hostapd.pid", "-g", "/dev/shm/hostapd", "-G", "app"]
-HEALTHCHECK --interval=60s --timeout=3s CMD ["hostapd_cli", "quit"]
+COPY ./entrypoint.sh ./lib/
+COPY ./hostapd.conf ./config/
+ENTRYPOINT ["./lib/entrypoint.sh", "-P", "/dev/shm/hostapd.pid", "-g", "/dev/shm/hostapd", "-G", "root"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["hostapd_cli", "-p", "/dev/shm/hostapd", "quit"]
 
