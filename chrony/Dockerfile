@@ -13,7 +13,7 @@ RUN ./configure \
 --chronyvardir=/app/data \
 --chronyrundir=/dev/shm \
 --with-pidfile=/dev/shm/chronyd.pid \
---with-hwclockfile=/app/config/adjtime \
+--with-hwclockfile=/app/static/adjtime \
 --with-sendmail=/usr/sbin/sendmail \
 --with-user=app \
 --disable-privdrop \
