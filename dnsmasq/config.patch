@@ -17,7 +17,7 @@
  #define TFTP_MAX_CONNECTIONS 50 /* max simultaneous connections */
  #define LOG_MAX 5 /* log-queue length */
  #define RANDFILE "/dev/urandom"
-@@ -156,6 +156,10 @@
+@@ -159,6 +159,10 @@
     in a build command line using COPTS.
  
  */
@@ -28,15 +28,17 @@
  
  /* Defining this builds a binary which handles time differently and works better on a system without a 
     stable RTC (it uses uptime, not epoch time) and writes the DHCP leases file less often to avoid flash wear. 
-@@ -185,9 +189,9 @@
+@@ -188,10 +192,10 @@
  /* #define HAVE_LUASCRIPT */
  /* #define HAVE_DBUS */
  /* #define HAVE_IDN */
 -/* #define HAVE_LIBIDN2 */
 -/* #define HAVE_CONNTRACK */
+-/* #define HAVE_NETTLEHASH */
 -/* #define HAVE_DNSSEC */
 +#define HAVE_LIBIDN2
 +#define HAVE_CONNTRACK
++#define HAVE_NETTLEHASH
 +#define HAVE_DNSSEC
  
  
