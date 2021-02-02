@@ -21,8 +21,9 @@ RUN ./auto/configure \
 --with-perl_modules_path=/app/lib/perl/vendor_perl \
 --user=app \
 --group=app \
---without-select_module \
+--without-http_gzip_module \
 --without-poll_module \
+--without-select_module \
 --with-threads \
 --with-file-aio \
 --with-http_ssl_module \
