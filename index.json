@@ -167,11 +167,6 @@
       "source": "https://github.com/ziahamza/webui-aria2.git"
     },
     {
-      "name": "watchtower",
-      "source": "https://github.com/containrrr/watchtower.git",
-      "version": "refs/tags/v([0-9.]+)"
-    },
-    {
       "name": "wpa-supplicant",
       "source": "git://w1.fi/srv/git/hostap.git",
       "version": "refs/tags/hostap_([0-9_]+)",

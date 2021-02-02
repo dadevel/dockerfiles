@@ -231,14 +231,6 @@ services:
     cap_add:
     - net_bind_service
 
-  watchtower:
-    image: ghcr.io/dadevel/watchtower:testing
-    command: --label-enable
-    cap_drop:
-    - all
-    volumes:
-    - /var/run/docker.sock:/var/run/docker.sock:ro
-
   webui-aria2:
     image: ghcr.io/dadevel/webui-aria2:testing
     cap_drop:
