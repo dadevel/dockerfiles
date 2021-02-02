@@ -60,11 +60,6 @@
       "name": "debian"
     },
     {
-      "name": "dnsmasq",
-      "source": "http://thekelleys.org.uk/git/dnsmasq.git",
-      "version": "refs/tags/v([0-9.]+)"
-    },
-    {
       "name": "go-builder"
     },
     {

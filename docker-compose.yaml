@@ -72,18 +72,6 @@ services:
     - all
     tty: yes
 
-  dnsmasq:
-    image: ghcr.io/dadevel/dnsmasq:testing
-    init: yes
-    cap_drop:
-    - all
-    cap_add:
-    - net_admin
-    - net_bind_service
-    - net_raw
-    - setgid
-    - setuid
-
   go-builder:
     image: ghcr.io/dadevel/go-builder:testing
     cap_drop:
