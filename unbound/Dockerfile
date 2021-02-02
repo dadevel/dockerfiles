@@ -1,9 +1,6 @@
 FROM dadevel/cxx-builder:latest as unbound
-# fstrm and protobuf are required for dnstap
-RUN apk add --no-cache byacc expat-dev expat-static file fstrm-dev fstrm-static libevent-dev libevent-static libressl-dev protobuf-c-dev libcap
+RUN apk add --no-cache expat-dev libressl-dev byacc file libcap
 COPY ./src .
-# unused feature flags:
-# --enable-tfo-client --enable-tfo-server --enable-ipset --enable-subnet
 RUN ./configure \
 --prefix=/app \
 --bindir=/app/bin \
@@ -17,18 +14,16 @@ RUN ./configure \
 --with-run-dir= \
 --with-pidfile= \
 --with-username= \
---disable-rpath \
+--disable-systemd \
+--without-pyunbound \
+--without-pythonmodule \
 --with-pthreads \
---with-libevent \
---enable-event-api \
---enable-dnstap \
---enable-static \
---enable-static-exe \
---enable-fully-static \
---disable-flto \
 --enable-pie \
 --enable-relro-now \
---with-pic
+--with-pic \
+--enable-flto \
+--disable-rpath \
+--enable-static-exe
 RUN make -j $(nproc)
 RUN strip ./unbound
 RUN ./unbound -V
@@ -36,10 +31,11 @@ RUN setcap -q cap_net_bind_service+ep ./unbound
 # unbound-anchor exits with return code 1 even if everything went fine
 RUN wget -q -O - https://www.internic.net/domain/named.cache | tee ./root.hints | awk '{ if ($3 == "A" || $3 == "AAAA") { printf("master: %s\n", $NF) } }' > ./root.conf && { ./unbound-anchor -a ./root.key -r ./root.hints || [ $? -eq 1 ]; }
 
-FROM dadevel/busybox:latest
+FROM dadevel/alpine:latest
 COPY --from=unbound /build/unbound ./bin/
 COPY --from=unbound --chown=app:app /build/root.hints /build/root.key /build/root.conf ./data/
 COPY ./unbound.conf ./config/
+RUN apk add --no-cache libressl
 USER 1000
 ENTRYPOINT ["unbound", "-dd", "-c", "./config/unbound.conf"]
 CMD ["-p"]
