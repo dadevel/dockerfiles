@@ -128,21 +128,6 @@ jobs:
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  dnsmasq:
-    runs-on: ubuntu-20.04
-    needs:
-    - alpine
-    - cxx-builder
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish dnsmasq
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
   go-builder:
     runs-on: ubuntu-20.04
     needs: []
@@ -376,6 +361,34 @@ jobs:
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+  sanoid:
+    runs-on: ubuntu-20.04
+    needs:
+    - alpine
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./make.py publish sanoid
+      env:
+        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+  syncoid:
+    runs-on: ubuntu-20.04
+    needs:
+    - alpine
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./make.py publish syncoid
+      env:
+        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
   signal-cli:
     runs-on: ubuntu-20.04
     needs:
@@ -438,7 +451,7 @@ jobs:
   unbound:
     runs-on: ubuntu-20.04
     needs:
-    - busybox
+    - alpine
     - cxx-builder
     steps:
     - name: Checkout
@@ -461,21 +474,6 @@ jobs:
         fetch-depth: 0
     - name: Build, Test & Push
       run: ./make.py publish webui-aria2
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  watchtower:
-    runs-on: ubuntu-20.04
-    needs:
-    - busybox
-    - go-builder
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish watchtower
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
