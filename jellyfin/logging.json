@@ -1,0 +1,14 @@
+{
+  "Serilog": {
+    "MinimumLevel": "Information",
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "outputTemplate": "[{Level:u3}] {Message:lj}{NewLine}{Exception}"
+        }
+      }
+    ]
+  }
+}
+
