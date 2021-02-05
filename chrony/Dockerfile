@@ -6,7 +6,6 @@ RUN ./configure \
 --prefix=/app \
 --bindir=/app/bin \
 --sbindir=/app/bin \
---libdir=/app/lib \
 --sysconfdir=/app/config \
 --datarootdir=/app/static \
 --localstatedir=/app/data \
