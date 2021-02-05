@@ -44,9 +44,6 @@
       "name": "busybox"
     },
     {
-      "name": "cxx-builder"
-    },
-    {
       "name": "cadvisor",
       "source": "https://github.com/google/cadvisor.git",
       "version": "refs/tags/v([0-9.]+)"
@@ -55,6 +52,9 @@
       "name": "chrony",
       "source": "https://git.tuxfamily.org/chrony/chrony.git",
       "version": "refs/tags/([0-9.]+)"
+    },
+    {
+      "name": "cxx-builder"
     },
     {
       "name": "debian"
@@ -82,13 +82,12 @@
       }
     },
     {
+      "name": "jellyfin"
+    },
+    {
       "name": "lego",
       "source": "https://github.com/go-acme/lego.git",
       "version": "refs/tags/v([0-9.]+)"
-    },
-    {
-      "name": "nodejs-builder",
-      "platforms": ["linux/amd64"]
     },
     {
       "name": "nginx",

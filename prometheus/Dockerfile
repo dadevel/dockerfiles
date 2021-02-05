@@ -1,8 +1,9 @@
-FROM --platform=$BUILDPLATFORM dadevel/nodejs-builder:latest as prometheus-web
-ENV PUBLIC_URL .
+FROM --platform=$BUILDPLATFORM node:12-alpine as prometheus-web
+WORKDIR /build
 COPY ./src .
+ENV PUBLIC_URL .
 # part one of 'assets' target from makefile
-RUN cd ./web/ui/react-app && yarn --frozen-lockfile && yarn build && mv ./build ../static/react
+RUN cd ./web/ui/react-app && yarn install --frozen-lockfile && yarn build && mv ./build ../static/react
 
 FROM dadevel/go-builder:latest as prometheus
 ENV GO111MODULE on
