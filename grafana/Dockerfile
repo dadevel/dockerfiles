@@ -1,6 +1,7 @@
-FROM --platform=$BUILDPLATFORM dadevel/nodejs-builder:latest as grafana-web
+FROM --platform=$BUILDPLATFORM node:14-alpine as grafana-web
+WORKDIR /build
 COPY ./src .
-RUN yarn install --pure-lockfile --no-progress
+RUN yarn install --pure-lockfile
 ENV NODE_ENV production
 RUN ./node_modules/.bin/grunt build
 
