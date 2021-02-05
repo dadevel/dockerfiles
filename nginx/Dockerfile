@@ -21,13 +21,10 @@ RUN ./auto/configure \
 --with-perl_modules_path=/app/lib/perl/vendor_perl \
 --user=app \
 --group=app \
---without-http_gzip_module \
 --without-poll_module \
 --without-select_module \
 --with-threads \
 --with-file-aio \
---with-http_ssl_module \
---with-http_v2_module \
 --with-http_addition_module \
 --with-http_auth_request_module \
 --with-http_degradation_module \
@@ -35,8 +32,10 @@ RUN ./auto/configure \
 --with-http_realip_module \
 --with-http_secure_link_module \
 --with-http_slice_module \
+--with-http_ssl_module \
 --with-http_stub_status_module \
 --with-http_sub_module \
+--with-http_v2_module \
 --with-mail \
 --with-mail_ssl_module \
 --with-stream \
