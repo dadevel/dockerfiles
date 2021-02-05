@@ -9,13 +9,14 @@ RUN ./configure \
 --libdir=/app/lib \
 --sysconfdir=/app/config \
 --datarootdir=/app/static \
---sharedstatedir=/app/data \
---localstatedir=/app/data \
+--sharedstatedir=/app/cache \
+--localstatedir=/app/cache \
 --runstatedir=/dev/shm \
 --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
 --disable-nls \
 --with-pic
-RUN make -j $(nproc) && mv ./src/aria2c ./aria2c
+RUN make -j $(nproc)
+RUN mv ./src/aria2c ./aria2c
 RUN strip ./aria2c
 RUN ./aria2c --version
 
@@ -24,7 +25,7 @@ RUN apk add --no-cache libressl libssh2 libxml2 zlib c-ares libstdc++ libgcc
 COPY --from=aria2 /build/aria2c ./bin/
 COPY ./aria2.conf ./config/
 USER app
-ENTRYPOINT ["aria2c", "--log", "-", "--dir", "./data", "--conf-path", "./config/aria2.conf", "--enable-rpc", "--rpc-listen-all"]
+ENTRYPOINT ["aria2c", "--log", "-", "--dir", "./storage", "--conf-path", "./config/aria2.conf", "--enable-rpc", "--rpc-listen-all"]
 CMD ["--rpc-listen-port", "6800"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["nc", "-z", "127.0.0.1", "6800"]
 EXPOSE 6800/tcp

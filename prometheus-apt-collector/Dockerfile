@@ -1,4 +1,4 @@
-FROM dadevel/debian:latest
+FROM dadevel/ubuntu-focal:latest
 COPY ./apt.sh ./bin/
 COPY ./entrypoint.sh ./lib/
 USER app

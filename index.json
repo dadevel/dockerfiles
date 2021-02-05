@@ -57,9 +57,6 @@
       "name": "cxx-builder"
     },
     {
-      "name": "debian"
-    },
-    {
       "name": "go-builder"
     },
     {
@@ -155,6 +152,9 @@
       "name": "syncthing",
       "source": "https://github.com/syncthing/syncthing.git",
       "version": "refs/tags/v([0-9.]+)"
+    },
+    {
+      "name": "ubuntu-focal"
     },
     {
       "name": "unbound",

@@ -115,19 +115,6 @@ jobs:
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  debian:
-    runs-on: ubuntu-20.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish debian
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
   go-builder:
     runs-on: ubuntu-20.04
     needs: []
@@ -188,7 +175,8 @@ jobs:
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
   jellyfin:
     runs-on: ubuntu-20.04
-    needs: []
+    needs:
+    - ubuntu-focal
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -262,7 +250,7 @@ jobs:
   prometheus-apt-collector:
     runs-on: ubuntu-20.04
     needs:
-    - debian
+    - ubuntu-focal
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -415,6 +403,19 @@ jobs:
         fetch-depth: 0
     - name: Build, Test & Push
       run: ./make.py publish syncthing
+      env:
+        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+  ubuntu-focal:
+    runs-on: ubuntu-20.04
+    needs: []
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./make.py publish ubuntu-focal
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}

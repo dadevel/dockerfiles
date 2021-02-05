@@ -8,8 +8,9 @@ RUN apk add --no-cache ca-certificates fortify-headers gcc git libcap make musl-
 ln -s /usr/share/zoneinfo/UTC /etc/localtime
 ENV CHARSET UTF-8
 ENV LANG C.UTF-8
+ENV LC_ALL C
 ENV TZ UTC
-ENV CFLAGS -Os -mtune=generic -pipe -flto -fstack-protector-strong --param=ssp-buffer-size=4 -fstack-clash-protection -fpie -fexceptions
+ENV CFLAGS -Os -pipe -flto -fstack-protector-strong --param=ssp-buffer-size=4 -fstack-clash-protection -fpie -fexceptions
 ENV CPPFLAGS -D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS
 ENV CXXFLAGS $CFLAGS
 ENV LDFLAGS -Wl,-O1,-z,defs,-z,relro,-z,now,-pie,--hash-style=gnu,--no-copy-dt-needed-entries

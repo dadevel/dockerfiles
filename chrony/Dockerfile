@@ -8,8 +8,8 @@ RUN ./configure \
 --sbindir=/app/bin \
 --sysconfdir=/app/config \
 --datarootdir=/app/static \
---localstatedir=/app/data \
---chronyvardir=/app/data \
+--localstatedir=/app/cache \
+--chronyvardir=/app/cache \
 --chronyrundir=/dev/shm \
 --with-pidfile=/dev/shm/chronyd.pid \
 --with-hwclockfile=/app/static/adjtime \

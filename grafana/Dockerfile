@@ -11,7 +11,8 @@ COPY ./src .
 ENV CGO_ENABLED 1
 # TODO: investigate what linker option causes the trouble
 ENV LDFLAGS ""
-RUN go run ./build.go build-server && mv ./bin/linux-*/grafana-server .
+RUN go run ./build.go build-server
+RUN mv ./bin/linux-*/grafana-server .
 RUN strip ./grafana-server
 RUN ./grafana-server -v
 

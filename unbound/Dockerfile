@@ -7,8 +7,8 @@ RUN ./configure \
 --sbindir=/app/bin \
 --libdir=/app/lib \
 --sysconfdir=/app/config \
---sharedstatedir=/app/data \
---localstatedir=/app/data \
+--sharedstatedir=/app/cache \
+--localstatedir=/app/cache \
 --datarootdir=/app/static \
 --with-conf-file=/app/config/unbound.conf \
 --with-run-dir= \
@@ -33,7 +33,7 @@ RUN wget -q -O - https://www.internic.net/domain/named.cache | tee ./root.hints 
 
 FROM dadevel/alpine:latest
 COPY --from=unbound /build/unbound ./bin/
-COPY --from=unbound --chown=app:app /build/root.hints /build/root.key /build/root.conf ./data/
+COPY --from=unbound --chown=app:app /build/root.hints /build/root.key /build/root.conf ./cache/
 COPY ./unbound.conf ./config/
 RUN apk add --no-cache libressl
 USER 1000

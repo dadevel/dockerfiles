@@ -8,13 +8,14 @@ RUN ./configure \
 --sbindir=/app/bin \
 --libdir=/app/lib \
 --sysconfdir=/app/config \
---sharedstatedir=/app/data \
---localstatedir=/app/data \
 --datarootdir=/app/static \
---enable-static \
+--sharedstatedir=/app/cache \
+--localstatedir=/app/cache \
 --disable-shared \
+--enable-static \
 --with-pic
-RUN make -j $(nproc) && mv ./src/haveged .
+RUN make -j $(nproc)
+RUN mv ./src/haveged .
 RUN strip ./haveged
 RUN ./haveged --version
 

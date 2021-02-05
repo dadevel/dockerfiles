@@ -6,7 +6,7 @@ RUN ./syncthing -version
 
 FROM dadevel/busybox:latest
 COPY --from=syncthing /build/syncthing ./bin/
-ENV HOME /app/data
+ENV HOME /app/storage
 ENV STGUIADDRESS 0.0.0.0:8384
 ENV STNODEFAULTFOLDER true
 USER 1000:1000

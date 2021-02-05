@@ -9,4 +9,5 @@ COPY --from=cadvisor /build/cadvisor ./bin/
 ENTRYPOINT ["cadvisor", "-logtostderr"]
 CMD ["-port", "9338"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://127.0.0.1:9338/healthz"]
+EXPOSE 9338/tcp
 

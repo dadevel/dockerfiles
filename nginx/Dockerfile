@@ -42,7 +42,8 @@ RUN ./auto/configure \
 --with-stream_realip_module \
 --with-stream_ssl_module \
 --with-stream_ssl_preread_module
-RUN make -j $(nproc) && mv ./objs/nginx .
+RUN make -j $(nproc)
+RUN mv ./objs/nginx .
 RUN strip ./nginx
 RUN ./nginx -v
 RUN setcap -q cap_net_bind_service+ep ./nginx
