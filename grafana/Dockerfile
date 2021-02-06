@@ -3,7 +3,7 @@ WORKDIR /build
 COPY ./src .
 RUN yarn install --pure-lockfile
 ENV NODE_ENV production
-RUN ./node_modules/.bin/grunt build
+RUN yarn build
 
 FROM dadevel/go-builder:latest as grafana
 COPY ./src .
