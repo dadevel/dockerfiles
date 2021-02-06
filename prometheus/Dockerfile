@@ -1,15 +1,16 @@
 FROM --platform=$BUILDPLATFORM node:12-alpine as prometheus-web
 WORKDIR /build
-COPY ./src .
+COPY ./src/web/ui/react-app .
 ENV PUBLIC_URL .
 # part one of 'assets' target from makefile
-RUN cd ./web/ui/react-app && yarn install --frozen-lockfile && yarn build && mv ./build ../static/react
+RUN yarn install --frozen-lockfile
+RUN yarn build
 
 FROM dadevel/go-builder:latest as prometheus
 ENV GO111MODULE on
 RUN apk add --no-cache curl
 COPY ./src .
-COPY --from=prometheus-web /build/web/ui/static/react ./web/ui/static/react
+COPY --from=prometheus-web /build/build ./web/ui/static/react
 # part two of 'assets' target from makefile
 RUN cd ./web/ui && go generate -x -v -mod=vendor
 # build binary
