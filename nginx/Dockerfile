@@ -1,6 +1,6 @@
 # documentation: https://nginx.org/en/docs/configure.html
 
-FROM dadevel/cxx-builder:latest as nginx
+FROM ghcr.io/dadevel/cxx-builder:latest as nginx
 RUN apk add --no-cache linux-headers libressl-dev pcre-dev zlib-dev libcap
 COPY ./src .
 ENV CFLAGS $CFLAGS -fPIC
@@ -48,7 +48,7 @@ RUN strip ./nginx
 RUN ./nginx -v
 RUN setcap -q cap_net_bind_service+ep ./nginx
 
-FROM dadevel/alpine:latest
+FROM ghcr.io/dadevel/alpine:latest
 ARG TARGETARCH
 RUN apk add --no-cache libressl pcre perl zlib && [ $TARGETARCH != arm ] || apk add --no-cache libgcc
 COPY --from=nginx /build/nginx ./bin/

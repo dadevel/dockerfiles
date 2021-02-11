@@ -1,4 +1,4 @@
-FROM dadevel/ubuntu-focal:latest
+FROM ghcr.io/dadevel/ubuntu-focal:latest
 RUN apt-get update && \
 apt-get install --no-install-recommends --yes gnupg ca-certificates wget && \
 wget -q -O - https://repo.jellyfin.org/ubuntu/jellyfin_team.gpg.key | apt-key add - && \
@@ -7,7 +7,8 @@ apt-get purge --auto-remove --yes gnupg
 RUN apt-get update && \
 apt-get install --no-install-recommends --yes jellyfin intel-media-va-driver-non-free && \
 userdel --remove jellyfin && \
-rm -rf /usr/share/doc
+rm -f /etc/default/jellyfin /etc/init.d/jellyfin && \
+rm -rf /usr/share/doc /etc/jellyfin /var/cache/jellyfin /var/log/jellyfin
 COPY ./logging.json ./config/
 USER app
 # jellyfin wants absolute paths

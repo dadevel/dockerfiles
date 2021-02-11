@@ -1,4 +1,4 @@
-FROM dadevel/cxx-builder:latest as haveged
+FROM ghcr.io/dadevel/cxx-builder:latest as haveged
 RUN apk add --no-cache autoconf automake file libtool linux-headers
 COPY ./src .
 RUN autoreconf -vif
@@ -19,7 +19,7 @@ RUN mv ./src/haveged .
 RUN strip ./haveged
 RUN ./haveged --version
 
-FROM dadevel/alpine:latest
+FROM ghcr.io/dadevel/alpine:latest
 ARG TARGETARCH
 RUN [ $TARGETARCH != arm ] || apk add --no-cache libgcc
 COPY --from=haveged /build/haveged ./bin/

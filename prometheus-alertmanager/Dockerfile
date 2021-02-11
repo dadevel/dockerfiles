@@ -1,11 +1,11 @@
-FROM dadevel/go-builder:latest as alertmanager
+FROM ghcr.io/dadevel/go-builder:latest as alertmanager
 RUN apk add --no-cache curl
 COPY ./src .
 RUN make -j $(nproc) common-build PROMU_BINARIES=alertmanager
 RUN strip ./alertmanager
 RUN ./alertmanager --version
 
-FROM dadevel/busybox:latest
+FROM ghcr.io/dadevel/busybox:latest
 COPY --from=alertmanager /build/alertmanager ./bin/
 COPY ./alertmanager.yaml ./config/
 USER 1000

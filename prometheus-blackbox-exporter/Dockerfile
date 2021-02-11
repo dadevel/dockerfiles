@@ -1,4 +1,4 @@
-FROM dadevel/go-builder:latest as blackbox-exporter
+FROM ghcr.io/dadevel/go-builder:latest as blackbox-exporter
 RUN apk add --no-cache curl
 COPY ./src .
 RUN make -j $(nproc) common-build
@@ -6,7 +6,7 @@ RUN mv ./blackbox_exporter ./blackbox-exporter
 RUN strip ./blackbox-exporter
 RUN ./blackbox-exporter --version
 
-FROM dadevel/busybox:latest
+FROM ghcr.io/dadevel/busybox:latest
 COPY --from=blackbox-exporter /build/blackbox-exporter ./bin/
 COPY ./blackbox-exporter.yaml ./config/
 USER 1000

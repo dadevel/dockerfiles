@@ -1,4 +1,4 @@
-FROM dadevel/alpine:latest
+FROM ghcr.io/dadevel/alpine:latest
 RUN apk add --no-cache busybox-extras
 COPY ./src/docs ./static/www
 COPY ./health.txt ./static/www/health

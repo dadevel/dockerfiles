@@ -1,10 +1,10 @@
-FROM dadevel/go-builder:latest as stdiscosrv
+FROM ghcr.io/dadevel/go-builder:latest as stdiscosrv
 COPY ./src .
 RUN go run ./build.go -no-upgrade build stdiscosrv
 RUN strip ./stdiscosrv
 RUN ./stdiscosrv -version
 
-FROM dadevel/busybox:latest
+FROM ghcr.io/dadevel/busybox:latest
 COPY --from=stdiscosrv /build/stdiscosrv ./bin/
 USER 1000:1000
 ENTRYPOINT ["stdiscosrv", "-cert=./data/cert.pem", "-key=./data/key.pem", "-db-dir=./data/disco.db"]

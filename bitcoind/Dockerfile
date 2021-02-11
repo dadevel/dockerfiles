@@ -1,4 +1,4 @@
-FROM dadevel/cxx-builder:latest as bitcoind
+FROM ghcr.io/dadevel/cxx-builder:latest as bitcoind
 RUN apk add --no-cache boost-dev libevent-dev libressl-dev autoconf automake libtool g++
 COPY ./src .
 RUN autoreconf --install --force
@@ -27,7 +27,7 @@ RUN strip ./bitcoind ./bitcoin-cli
 RUN ./bitcoind --version
 RUN ./bitcoin-cli --version
 
-FROM dadevel/alpine:latest
+FROM ghcr.io/dadevel/alpine:latest
 RUN apk add --no-cache boost-filesystem boost-system boost-thread libevent libressl libstdc++ libgcc
 COPY --from=bitcoind /build/bitcoind /build/bitcoin-cli ./bin/
 COPY ./bitcoin.conf ./config/

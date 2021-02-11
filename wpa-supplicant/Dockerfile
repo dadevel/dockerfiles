@@ -1,4 +1,4 @@
-FROM dadevel/cxx-builder:latest as wpa-supplicant
+FROM ghcr.io/dadevel/cxx-builder:latest as wpa-supplicant
 RUN apk add --no-cache linux-headers libnl3-dev libressl-dev dbus-dev pcsc-lite-dev
 COPY ./src .
 COPY ./config.txt ./wpa_supplicant/.config
@@ -6,7 +6,7 @@ RUN cd ./wpa_supplicant && make -j $(nproc)
 RUN strip ./wpa_supplicant/wpa_supplicant ./wpa_supplicant/wpa_cli ./wpa_supplicant/wpa_passphrase
 RUN ./wpa_supplicant/wpa_supplicant -v
 
-FROM dadevel/alpine:latest
+FROM ghcr.io/dadevel/alpine:latest
 ARG TARGETARCH
 RUN apk add --no-cache libnl3 libressl dbus-libs pcsc-lite-libs && \
 [ $TARGETARCH != arm ] || apk add --no-cache libgcc

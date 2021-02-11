@@ -206,7 +206,7 @@ class Image:
     def gather_dependencies(self):
         dependencies = list(sorted(set(self._extract_dependencies(self.path/'Dockerfile'))))
         # TODO: don't hardcode prefix
-        prefix = 'dadevel/'
+        prefix = 'ghcr.io/dadevel/'
         return self.update(
             dependencies=[
                 image_name[len(prefix):]

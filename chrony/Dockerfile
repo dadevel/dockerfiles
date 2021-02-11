@@ -1,4 +1,4 @@
-FROM dadevel/cxx-builder:latest as chrony
+FROM ghcr.io/dadevel/cxx-builder:latest as chrony
 RUN apk add --no-cache asciidoctor bison libcap-dev nettle-dev
 COPY ./src .
 # compiling without --enable-scfilter because starting chronyd with enforced seccomp filtering results in a crash
@@ -22,7 +22,7 @@ RUN strip ./chronyd ./chronyc
 RUN ./chronyd --version
 RUN setcap -q cap_net_bind_service,cap_sys_time+ep ./chronyd
 
-FROM dadevel/alpine:latest
+FROM ghcr.io/dadevel/alpine:latest
 ARG TARGETARCH
 RUN apk add --no-cache libcap nettle && [ $TARGETARCH != arm ] || apk add --no-cache libgcc
 COPY --from=chrony /build/chronyd ./bin/

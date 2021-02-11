@@ -1,4 +1,4 @@
-FROM dadevel/cxx-builder:latest as hostapd
+FROM ghcr.io/dadevel/cxx-builder:latest as hostapd
 RUN apk add --no-cache linux-headers libnl3-dev libressl-dev
 COPY ./src .
 COPY ./config.txt ./hostapd/.config
@@ -7,7 +7,7 @@ RUN strip ./hostapd/hostapd ./hostapd/hostapd_cli
 # hostapd -v always exits with return code 1
 RUN ./hostapd/hostapd -v || [ $? -eq 1 ]
 
-FROM dadevel/alpine:latest
+FROM ghcr.io/dadevel/alpine:latest
 ARG TARGETARCH
 RUN apk add --no-cache iw libnl3 libressl && [ $TARGETARCH != arm ] || apk add --no-cache libgcc
 COPY --from=hostapd /build/hostapd/hostapd ./bin/

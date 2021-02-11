@@ -1,10 +1,10 @@
-FROM dadevel/go-builder:latest as strelaysrv
+FROM ghcr.io/dadevel/go-builder:latest as strelaysrv
 COPY ./src .
 RUN go run ./build.go -no-upgrade build strelaysrv
 RUN strip ./strelaysrv
 RUN ./strelaysrv -version
 
-FROM dadevel/busybox:latest
+FROM ghcr.io/dadevel/busybox:latest
 COPY --from=strelaysrv /build/strelaysrv ./bin/
 USER 1000:1000
 ENTRYPOINT ["strelaysrv", "-keys=./data"]

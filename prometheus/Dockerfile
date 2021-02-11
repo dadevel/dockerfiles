@@ -6,7 +6,7 @@ ENV PUBLIC_URL .
 RUN yarn install --frozen-lockfile
 RUN yarn build
 
-FROM dadevel/go-builder:latest as prometheus
+FROM ghcr.io/dadevel/go-builder:latest as prometheus
 ENV GO111MODULE on
 RUN apk add --no-cache curl
 COPY ./src .
@@ -18,7 +18,7 @@ RUN make -j $(nproc) common-build PROMU_BINARIES=prometheus
 RUN strip ./prometheus
 RUN ./prometheus --version
 
-FROM dadevel/busybox:latest
+FROM ghcr.io/dadevel/busybox:latest
 COPY --from=prometheus /build/prometheus ./bin/
 COPY ./prometheus.yaml ./config/
 USER 1000

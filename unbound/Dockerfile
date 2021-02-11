@@ -1,4 +1,4 @@
-FROM dadevel/cxx-builder:latest as unbound
+FROM ghcr.io/dadevel/cxx-builder:latest as unbound
 RUN apk add --no-cache expat-dev libressl-dev byacc file libcap
 COPY ./src .
 RUN ./configure \
@@ -31,7 +31,7 @@ RUN setcap -q cap_net_bind_service+ep ./unbound
 # unbound-anchor exits with return code 1 even if everything went fine
 RUN wget -q -O - https://www.internic.net/domain/named.cache | tee ./root.hints | awk '{ if ($3 == "A" || $3 == "AAAA") { printf("master: %s\n", $NF) } }' > ./root.conf && { ./unbound-anchor -a ./root.key -r ./root.hints || [ $? -eq 1 ]; }
 
-FROM dadevel/alpine:latest
+FROM ghcr.io/dadevel/alpine:latest
 COPY --from=unbound /build/unbound ./bin/
 COPY --from=unbound --chown=app:app /build/root.hints /build/root.key /build/root.conf ./cache/
 COPY ./unbound.conf ./config/

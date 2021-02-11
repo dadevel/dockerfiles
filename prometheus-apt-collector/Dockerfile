@@ -1,4 +1,4 @@
-FROM dadevel/ubuntu-focal:latest
+FROM ghcr.io/dadevel/ubuntu-focal:latest
 COPY ./apt.sh ./bin/
 COPY ./entrypoint.sh ./lib/
 USER app

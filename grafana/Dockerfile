@@ -5,7 +5,7 @@ RUN yarn install --pure-lockfile
 ENV NODE_ENV production
 RUN yarn build
 
-FROM dadevel/go-builder:latest as grafana
+FROM ghcr.io/dadevel/go-builder:latest as grafana
 COPY ./src .
 # grafana uses sqlite which requires cgo
 ENV CGO_ENABLED 1
@@ -16,7 +16,7 @@ RUN mv ./bin/linux-*/grafana-server .
 RUN strip ./grafana-server
 RUN ./grafana-server -v
 
-FROM dadevel/alpine:latest
+FROM ghcr.io/dadevel/alpine:latest
 RUN apk add --no-cache musl-utils libressl && \
 mkdir -p ./data/logs ./data/plugins ./config/provisioning/plugins ./config/provisioning/datasources ./config/provisioning/dashboards ./config/provisioning/notifiers && \
 chown -R app:app ./data

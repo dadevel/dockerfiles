@@ -1,10 +1,10 @@
-FROM dadevel/go-builder:latest as syncthing
+FROM ghcr.io/dadevel/go-builder:latest as syncthing
 COPY ./src .
 RUN go run ./build.go -no-upgrade build syncthing
 RUN strip ./syncthing
 RUN ./syncthing -version
 
-FROM dadevel/busybox:latest
+FROM ghcr.io/dadevel/busybox:latest
 COPY --from=syncthing /build/syncthing ./bin/
 ENV HOME /app/storage
 ENV STGUIADDRESS 0.0.0.0:8384

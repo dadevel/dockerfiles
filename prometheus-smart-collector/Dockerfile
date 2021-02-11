@@ -1,4 +1,4 @@
-FROM dadevel/python3:latest
+FROM ghcr.io/dadevel/python3:latest
 RUN apk add --no-cache smartmontools libcap && \
 setcap -q cap_sys_rawio+ep /usr/sbin/smartctl && \
 apk del --purge --rdepends libcap && \

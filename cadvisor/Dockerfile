@@ -1,10 +1,10 @@
-FROM dadevel/go-builder:latest as cadvisor
+FROM ghcr.io/dadevel/go-builder:latest as cadvisor
 COPY ./src .
 RUN cd ./cmd && go build . && mv ./cmd /build/cadvisor
 RUN strip ./cadvisor
 RUN ./cadvisor -version
 
-FROM dadevel/busybox:latest
+FROM ghcr.io/dadevel/busybox:latest
 COPY --from=cadvisor /build/cadvisor ./bin/
 ENTRYPOINT ["cadvisor", "-logtostderr"]
 CMD ["-port", "9338"]

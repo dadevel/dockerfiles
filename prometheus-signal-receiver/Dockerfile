@@ -1,9 +1,9 @@
-FROM dadevel/go-builder:latest as signal-receiver
+FROM ghcr.io/dadevel/go-builder:latest as signal-receiver
 COPY ./src .
 RUN go build
 RUN strip ./alertmanager-signal-receiver
 
-FROM dadevel/signal-cli:latest
+FROM ghcr.io/dadevel/signal-cli:latest
 COPY --from=signal-receiver --chown=root:root /build/alertmanager-signal-receiver ./bin/
 USER app
 ENTRYPOINT ["alertmanager-signal-receiver"]

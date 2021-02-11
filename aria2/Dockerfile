@@ -1,4 +1,4 @@
-FROM dadevel/cxx-builder:latest as aria2
+FROM ghcr.io/dadevel/cxx-builder:latest as aria2
 RUN apk add --no-cache libressl-dev libssh2-dev libxml2-dev zlib-dev c-ares-dev pkgconf autoconf automake gettext-dev libtool g++
 COPY ./src .
 RUN autoreconf --install --force
@@ -20,7 +20,7 @@ RUN mv ./src/aria2c ./aria2c
 RUN strip ./aria2c
 RUN ./aria2c --version
 
-FROM dadevel/alpine:latest
+FROM ghcr.io/dadevel/alpine:latest
 RUN apk add --no-cache libressl libssh2 libxml2 zlib c-ares libstdc++ libgcc
 COPY --from=aria2 /build/aria2c ./bin/
 COPY ./aria2.conf ./config/
