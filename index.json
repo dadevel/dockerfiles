@@ -133,6 +133,16 @@
       "name": "python3"
     },
     {
+      "name": "sanoid",
+      "source": "https://github.com/jimsalterjrs/sanoid.git",
+      "version": "refs/tags/v([0-9.]+)"
+    },
+    {
+      "name": "syncoid",
+      "source": "https://github.com/jimsalterjrs/sanoid.git",
+      "version": "refs/tags/v([0-9.]+)"
+    },
+    {
       "name": "signal-cli",
       "source": "https://github.com/AsamK/signal-cli.git",
       "version": "refs/tags/v([0-9.]+)",

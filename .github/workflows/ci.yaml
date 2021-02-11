@@ -347,10 +347,37 @@ jobs:
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  signal-cli:
+  sanoid:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
+    - ubuntu-focal
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./make.py publish sanoid
+      env:
+        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+  syncoid:
+    runs-on: ubuntu-20.04
+    needs:
+    - ubuntu-focal
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./make.py publish syncoid
+      env:
+        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+  signal-cli:
+    runs-on: ubuntu-20.04
+    needs: []
     steps:
     - name: Checkout
       uses: actions/checkout@v2

@@ -192,6 +192,24 @@ services:
     - all
     tty: yes
 
+  sanoid:
+    image: ghcr.io/dadevel/sanoid:testing
+    entrypoint: [/bin/sh, -c]
+    command: ['sanoid --version && sleep 3']
+    healthcheck:
+      test: [NONE]
+    cap_drop:
+    - all
+
+  syncoid:
+    image: ghcr.io/dadevel/syncoid:testing
+    entrypoint: [/bin/sh, -c]
+    command: ['syncoid --version && sleep 3']
+    healthcheck:
+      test: [NONE]
+    cap_drop:
+    - all
+
   signal-cli:
     image: ghcr.io/dadevel/signal-cli:testing
     command: --version
