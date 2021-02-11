@@ -31,12 +31,6 @@ services:
     - all
     tty: yes
 
-  cxx-builder:
-    image: ghcr.io/dadevel/cxx-builder:testing
-    cap_drop:
-    - all
-    tty: yes
-
   cadvisor:
     image: ghcr.io/dadevel/cadvisor:testing
     privileged: true
@@ -66,8 +60,8 @@ services:
     volumes:
     - /etc/adjtime:/app/config/adjtime:ro
 
-  debian:
-    image: ghcr.io/dadevel/debian:testing
+  cxx-builder:
+    image: ghcr.io/dadevel/cxx-builder:testing
     cap_drop:
     - all
     tty: yes
@@ -105,6 +99,11 @@ services:
     devices:
     - /dev/rfkill
 
+  jellyfin:
+    image: ghcr.io/dadevel/jellyfin:testing
+    cap_drop:
+    - all
+
   lego:
     image: ghcr.io/dadevel/lego:testing
     entrypoint: [/bin/sh, -c]
@@ -118,12 +117,6 @@ services:
     - all
     cap_add:
     - net_bind_service
-
-  nodejs-builder:
-    image: ghcr.io/dadevel/nodejs-builder:testing
-    cap_drop:
-    - all
-    tty: yes
 
   prometheus:
     image: ghcr.io/dadevel/prometheus:testing
@@ -223,6 +216,12 @@ services:
     network_mode: host
     cap_drop:
     - all
+
+  ubuntu-focal:
+    image: ghcr.io/dadevel/ubuntu-focal:testing
+    cap_drop:
+    - all
+    tty: yes
 
   unbound:
     image: ghcr.io/dadevel/unbound:testing
