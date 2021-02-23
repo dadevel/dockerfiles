@@ -12,7 +12,7 @@ RUN apk add --no-cache curl
 COPY ./src .
 COPY --from=prometheus-web /build/build ./web/ui/static/react
 # part two of 'assets' target from makefile
-RUN cd ./web/ui && go generate -x -v -mod=vendor
+RUN cd ./web/ui && go generate -x -v
 # build binary
 RUN make -j $(nproc) common-build PROMU_BINARIES=prometheus
 RUN strip ./prometheus
