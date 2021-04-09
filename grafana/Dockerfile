@@ -1,6 +1,7 @@
 FROM --platform=$BUILDPLATFORM node:14-alpine as grafana-web
 WORKDIR /build
 COPY ./src .
+RUN apk add --no-cache git
 RUN yarn install --pure-lockfile
 ENV NODE_ENV production
 RUN yarn build
