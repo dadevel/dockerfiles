@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM node:12-alpine as prometheus-web
+FROM --platform=$BUILDPLATFORM node:14-alpine as prometheus-web
 WORKDIR /build
 COPY ./src/web/ui/react-app .
 ENV PUBLIC_URL .
