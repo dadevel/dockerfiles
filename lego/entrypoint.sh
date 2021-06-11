@@ -97,7 +97,6 @@ update_staples() {
                 openssl ocsp \
                     -no_nonce \
                     -issuer "${path}.issuer.crt" \
-                    -verify_other "${path}.issuer.crt" \
                     -cert "${path}.crt" \
                     -url "$(openssl x509 -noout -ocsp_uri -in "${path}.crt")" \
                     -respout "${path}.staple.der"
