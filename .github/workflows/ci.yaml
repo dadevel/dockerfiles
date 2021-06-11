@@ -276,6 +276,20 @@ jobs:
       env:
         DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
         GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+  prometheus-fritz-exporter:
+    runs-on: ubuntu-20.04
+    needs:
+    - python3
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./make.py publish prometheus-fritz-exporter
+      env:
+        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
+        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
   prometheus-nftables-exporter:
     runs-on: ubuntu-20.04
     needs:

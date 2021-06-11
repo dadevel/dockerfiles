@@ -111,6 +111,11 @@
       "version": "refs/tags/v([0-9.]+)"
     },
     {
+      "name": "prometheus-fritz-exporter",
+      "source": "https://github.com/pdreker/fritz_exporter.git",
+      "version": "refs/tags/v([0-9.]+)"
+    },
+    {
       "name": "prometheus-nftables-exporter",
       "source": "https://github.com/dadevel/prometheus-nftables-exporter.git",
       "version": "refs/tags/v([0-9.]+)"
