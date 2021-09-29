@@ -1,0 +1,8 @@
+{
+  "source": "https://github.com/dadevel/alertmanager-signal-receiver.git",
+  "version": "refs/tags/v([0-9.]+)",
+  "platforms": ["linux/amd64"],
+  "labels": {
+    "org.opencontainers.image.source": "https://github.com/dadevel/alertmanager-signal-receiver"
+  }
+}

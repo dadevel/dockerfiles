@@ -1,0 +1,22 @@
+{
+  "source": "",
+  "version": "refs/heads/(master|main)",
+  "correction": {
+    "search": "master|main",
+    "replace": "latest"
+  },
+  "platforms": [
+    "linux/amd64",
+    "linux/arm64/v8",
+    "linux/arm/v7"
+  ],
+  "labels": {
+    "org.opencontainers.image.title": "{image.path.name}",
+    "org.opencontainers.image.author": "dadevel",
+    "org.opencontainers.image.source": "https://github.com/dadevel/dockerfiles",
+    "org.opencontainers.image.created": "{timestamp}",
+    "org.opencontainers.image.version": "{version.latest_version}",
+    "org.opencontainers.image.revision": "{version.latest_commit}",
+    "org.opencontainers.image.url": "{build.source}"
+  }
+}

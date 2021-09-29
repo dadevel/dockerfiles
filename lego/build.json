@@ -1,0 +1,4 @@
+{
+  "source": "https://github.com/go-acme/lego.git",
+  "version": "refs/tags/v([0-9.]+)"
+}

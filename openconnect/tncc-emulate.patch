@@ -1,0 +1,20 @@
+--- a/trojans/tncc-emulate.py
++++ b/trojans/tncc-emulate.py
+@@ -82,7 +82,7 @@ except ImportError:
+
+ ssl._create_default_https_context = ssl._create_unverified_context
+
+-debug = True
++debug = False
+ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG if debug else logging.INFO)
+
+ MSG_POLICY = 0x58316
+@@ -654,7 +654,7 @@ def fingerprint_checking_SSLSocket(_fingerprint):
+             pubkey = cert.public_key.dump()
+             pin_sha256 = base64.b64encode(hashlib.sha256(pubkey).digest()).decode()
+             if pin_sha256 != self.fingerprint:
+-                raise Exception("Server fingerprint %s does not match expected pin-sha256:%s" % (pin_sha256, self.fingerprint))
++                logging.warning("Server fingerprint %s does not match expected pin-sha256:%s" % (pin_sha256, self.fingerprint))
+     return SSLSocket
+
+ if __name__ == "__main__":

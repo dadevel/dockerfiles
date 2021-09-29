@@ -1,0 +1,4 @@
+{
+  "source": "https://github.com/NLnetLabs/unbound.git",
+  "version": "refs/tags/release-([0-9.]+)"
+}

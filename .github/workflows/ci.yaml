@@ -1,51 +1,74 @@
 name: CI
 on:
+  push:
+    branches:
+    - main
   schedule:
   - cron: 0 3 * * *
 jobs:
-  alpine:
+  alertmanager:
     runs-on: ubuntu-20.04
-    needs: []
+    needs:
+    - debian
+    - go
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish alpine
+      run: ./build.py image alertmanager
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  apt-collector:
+    runs-on: ubuntu-20.04
+    needs:
+    - debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image apt-collector
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   aria2:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
-    - cxx-builder
+    - cxx
+    - debian
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish aria2
+      run: ./build.py image aria2
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   bitcoind:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
-    - cxx-builder
+    - cxx
+    - debian
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish bitcoind
+      run: ./build.py image bitcoind
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   blackarch:
     runs-on: ubuntu-20.04
     needs: []
@@ -55,54 +78,60 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish blackarch
+      run: ./build.py image blackarch
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  busybox:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  blackbox-exporter:
     runs-on: ubuntu-20.04
-    needs: []
+    needs:
+    - debian
+    - go
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish busybox
+      run: ./build.py image blackbox-exporter
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   cadvisor:
     runs-on: ubuntu-20.04
     needs:
-    - busybox
-    - go-builder
+    - debian
+    - go
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish cadvisor
+      run: ./build.py image cadvisor
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   chrony:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
-    - cxx-builder
+    - cxx
+    - debian
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish chrony
+      run: ./build.py image chrony
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  cxx-builder:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  cxx:
     runs-on: ubuntu-20.04
     needs: []
     steps:
@@ -111,11 +140,12 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish cxx-builder
+      run: ./build.py image cxx
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  go-builder:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  debian:
     runs-on: ubuntu-20.04
     needs: []
     steps:
@@ -124,231 +154,153 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish go-builder
+      run: ./build.py image debian
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  fritzbox-exporter:
+    runs-on: ubuntu-20.04
+    needs:
+    - debian
+    - go
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image fritzbox-exporter
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  go:
+    runs-on: ubuntu-20.04
+    needs: []
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image go
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   grafana:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
-    - go-builder
+    - debian
+    - go
+    - node
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish grafana
+      run: ./build.py image grafana
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   haveged:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
-    - cxx-builder
+    - cxx
+    - debian
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish haveged
+      run: ./build.py image haveged
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   hostapd:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
-    - cxx-builder
+    - cxx
+    - debian
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish hostapd
+      run: ./build.py image hostapd
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   jellyfin:
     runs-on: ubuntu-20.04
     needs:
-    - ubuntu-focal
+    - ubuntu
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish jellyfin
+      run: ./build.py image jellyfin
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   lego:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
-    - go-builder
+    - debian
+    - go
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish lego
+      run: ./build.py image lego
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  nftables-exporter:
+    runs-on: ubuntu-20.04
+    needs:
+    - python
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image nftables-exporter
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   nginx:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
-    - cxx-builder
+    - cxx
+    - debian
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish nginx
+      run: ./build.py image nginx
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  prometheus:
-    runs-on: ubuntu-20.04
-    needs:
-    - busybox
-    - go-builder
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish prometheus
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  prometheus-alertmanager:
-    runs-on: ubuntu-20.04
-    needs:
-    - busybox
-    - go-builder
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish prometheus-alertmanager
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  prometheus-apt-collector:
-    runs-on: ubuntu-20.04
-    needs:
-    - ubuntu-focal
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish prometheus-apt-collector
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  prometheus-blackbox-exporter:
-    runs-on: ubuntu-20.04
-    needs:
-    - busybox
-    - go-builder
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish prometheus-blackbox-exporter
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  prometheus-fritz-exporter:
-    runs-on: ubuntu-20.04
-    needs:
-    - python3
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish prometheus-fritz-exporter
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  prometheus-nftables-exporter:
-    runs-on: ubuntu-20.04
-    needs:
-    - python3
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish prometheus-nftables-exporter
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  prometheus-node-exporter:
-    runs-on: ubuntu-20.04
-    needs:
-    - busybox
-    - go-builder
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish prometheus-node-exporter
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  prometheus-signal-receiver:
-    runs-on: ubuntu-20.04
-    needs:
-    - go-builder
-    - signal-cli
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish prometheus-signal-receiver
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  prometheus-smart-collector:
-    runs-on: ubuntu-20.04
-    needs:
-    - python3
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish prometheus-smart-collector
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  python3:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  node:
     runs-on: ubuntu-20.04
     needs: []
     steps:
@@ -357,38 +309,87 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish python3
+      run: ./build.py image node
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  node-exporter:
+    runs-on: ubuntu-20.04
+    needs:
+    - debian
+    - go
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image node-exporter
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  prometheus:
+    runs-on: ubuntu-20.04
+    needs:
+    - debian
+    - go
+    - node
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image prometheus
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  python:
+    runs-on: ubuntu-20.04
+    needs: []
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image python
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  rust:
+    runs-on: ubuntu-20.04
+    needs: []
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image rust
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   sanoid:
     runs-on: ubuntu-20.04
     needs:
-    - ubuntu-focal
+    - ubuntu
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish sanoid
+      run: ./build.py image sanoid
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  syncoid:
-    runs-on: ubuntu-20.04
-    needs:
-    - ubuntu-focal
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./make.py publish syncoid
-      env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   signal-cli:
     runs-on: ubuntu-20.04
     needs: []
@@ -398,56 +399,106 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish signal-cli
+      run: ./build.py image signal-cli
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  signal-receiver:
+    runs-on: ubuntu-20.04
+    needs:
+    - go
+    - signal-cli
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image signal-receiver
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  smart-collector:
+    runs-on: ubuntu-20.04
+    needs:
+    - python
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image smart-collector
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   stdiscosrv:
     runs-on: ubuntu-20.04
     needs:
-    - busybox
-    - go-builder
+    - debian
+    - go
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish stdiscosrv
+      run: ./build.py image stdiscosrv
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   strelaysrv:
     runs-on: ubuntu-20.04
     needs:
-    - busybox
-    - go-builder
+    - debian
+    - go
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish strelaysrv
+      run: ./build.py image strelaysrv
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  syncoid:
+    runs-on: ubuntu-20.04
+    needs:
+    - ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image syncoid
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   syncthing:
     runs-on: ubuntu-20.04
     needs:
-    - busybox
-    - go-builder
+    - debian
+    - go
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish syncthing
+      run: ./build.py image syncthing
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-  ubuntu-focal:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  ubuntu:
     runs-on: ubuntu-20.04
     needs: []
     steps:
@@ -456,52 +507,55 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish ubuntu-focal
+      run: ./build.py image ubuntu
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   unbound:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
-    - cxx-builder
+    - cxx
+    - debian
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish unbound
+      run: ./build.py image unbound
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   webui-aria2:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
+    - debian
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish webui-aria2
+      run: ./build.py image webui-aria2
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   wpa-supplicant:
     runs-on: ubuntu-20.04
     needs:
-    - alpine
-    - cxx-builder
+    - cxx
+    - debian
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./make.py publish wpa-supplicant
+      run: ./build.py image wpa-supplicant
       env:
-        DOCKERIO_TOKEN: ${{ secrets.DOCKERIO_TOKEN }}
-        GHCRIO_TOKEN: ${{ secrets.GHCRIO_TOKEN }}
-
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,4 @@
+{
+  "source": "https://github.com/prometheus/prometheus.git",
+  "version": "refs/tags/v([0-9.]+)"
+}

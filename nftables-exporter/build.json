@@ -1,0 +1,7 @@
+{
+  "source": "https://github.com/dadevel/prometheus-nftables-exporter.git",
+  "version": "refs/tags/v([0-9.]+)",
+  "labels": {
+    "org.opencontainers.image.source": "https://github.com/dadevel/prometheus-nftables-exporter"
+  }
+}

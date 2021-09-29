@@ -106,4 +106,3 @@ update_staples() {
 }
 
 main "$@"
-

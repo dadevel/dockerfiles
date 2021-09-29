@@ -1,5 +1,5 @@
-FROM ghcr.io/dadevel/cxx-builder:latest as aria2
-RUN apk add --no-cache libressl-dev libssh2-dev libxml2-dev zlib-dev c-ares-dev pkgconf autoconf automake gettext-dev libtool g++
+FROM ghcr.io/dadevel/cxx:dev as aria2
+RUN apt-get update && apt-get install --no-install-recommends -y libssl-dev libssh2-1-dev libxml2-dev zlib1g-dev libc-ares-dev pkgconf autoconf automake autopoint gettext libtool
 COPY ./src .
 RUN autoreconf --install --force
 RUN ./configure \
@@ -18,15 +18,14 @@ RUN ./configure \
 RUN make -j $(nproc)
 RUN mv ./src/aria2c ./aria2c
 RUN strip ./aria2c
-RUN ./aria2c --version
 
-FROM ghcr.io/dadevel/alpine:latest
-RUN apk add --no-cache libressl libssh2 libxml2 zlib c-ares libstdc++ libgcc
-COPY --from=aria2 /build/aria2c ./bin/
+FROM ghcr.io/dadevel/debian:latest
+RUN apt-get update && apt-get install --no-install-recommends -y libssl1.1 libssh2-1 libxml2 zlib1g libc-ares2
 COPY ./aria2.conf ./config/
+COPY --from=aria2 /build/aria2c ./bin/
+RUN aria2c --version
 USER app
 ENTRYPOINT ["aria2c", "--log", "-", "--dir", "./storage", "--conf-path", "./config/aria2.conf", "--enable-rpc", "--rpc-listen-all"]
 CMD ["--rpc-listen-port", "6800"]
-HEALTHCHECK --interval=60s --timeout=3s CMD ["nc", "-z", "127.0.0.1", "6800"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["nc", "-z", "localhost", "6800"]
 EXPOSE 6800/tcp
-

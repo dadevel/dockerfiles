@@ -1,9 +1,9 @@
 # documentation: https://nginx.org/en/docs/configure.html
 
-FROM ghcr.io/dadevel/cxx-builder:latest as nginx
-RUN apk add --no-cache linux-headers libressl-dev pcre-dev zlib-dev libcap
+FROM ghcr.io/dadevel/cxx:dev as nginx
+RUN apt-get update && apt-get install --no-install-recommends -y linux-headers-generic libssl-dev libpcre3-dev zlib1g-dev
 COPY ./src .
-ENV CFLAGS $CFLAGS -fPIC
+ENV CFLAGS="$CFLAGS -fPIC"
 RUN ./auto/configure \
 --prefix=/app \
 --sbin-path=/app/bin \
@@ -45,17 +45,15 @@ RUN ./auto/configure \
 RUN make -j $(nproc)
 RUN mv ./objs/nginx .
 RUN strip ./nginx
-RUN ./nginx -v
 RUN setcap -q cap_net_bind_service+ep ./nginx
 
-FROM ghcr.io/dadevel/alpine:latest
-ARG TARGETARCH
-RUN apk add --no-cache libressl pcre perl zlib && [ $TARGETARCH != arm ] || apk add --no-cache libgcc
+FROM ghcr.io/dadevel/debian:latest
+RUN apt-get update && apt-get install --no-install-recommends -y libssl1.1 libpcre3 perl zlib1g
+COPY ./nginx.conf ./config/
 COPY --from=nginx /build/nginx ./bin/
 COPY --from=nginx /build/conf/mime.types ./static/
-COPY ./nginx.conf ./config/
+RUN nginx -v
 USER app
 ENTRYPOINT ["nginx", "-g", "daemon off;", "-c", "./config/nginx.conf"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://127.0.0.1/healthz"]
 EXPOSE 80/tcp 443/tcp
-

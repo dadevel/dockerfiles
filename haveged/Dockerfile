@@ -1,5 +1,5 @@
-FROM ghcr.io/dadevel/cxx-builder:latest as haveged
-RUN apk add --no-cache autoconf automake file libtool linux-headers
+FROM ghcr.io/dadevel/cxx:dev as haveged
+RUN apt-get update && apt-get install --no-install-recommends -y autoconf automake file libtool linux-headers-generic
 COPY ./src .
 RUN autoreconf -vif
 RUN ./configure \
@@ -17,12 +17,9 @@ RUN ./configure \
 RUN make -j $(nproc)
 RUN mv ./src/haveged .
 RUN strip ./haveged
-RUN ./haveged --version
 
-FROM ghcr.io/dadevel/alpine:latest
-ARG TARGETARCH
-RUN [ $TARGETARCH != arm ] || apk add --no-cache libgcc
+FROM ghcr.io/dadevel/debian:latest
 COPY --from=haveged /build/haveged ./bin/
+RUN haveged --version
 ENTRYPOINT ["haveged", "--Foreground", "--pidfile=/dev/shm/haveged.pid"]
 CMD ["--verbose=1"]
-

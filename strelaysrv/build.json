@@ -1,0 +1,4 @@
+{
+  "source": "https://github.com/syncthing/syncthing.git",
+  "version": "refs/tags/v([0-9.]+)"
+}

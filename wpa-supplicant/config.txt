@@ -616,4 +616,3 @@ CONFIG_DPP=y
 
 # Custom options
 CONFIG_IPV6=y
-

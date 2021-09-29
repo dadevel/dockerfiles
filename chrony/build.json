@@ -1,0 +1,4 @@
+{
+  "source": "https://git.tuxfamily.org/chrony/chrony.git",
+  "version": "refs/tags/([0-9.]+)"
+}
