@@ -1,0 +1,5 @@
+{
+  "source": "https://github.com/Radarr/Radarr.git",
+  "version": "refs/tags/v([0-9.]+)",
+  "platforms": ["linux/amd64"]
+}
