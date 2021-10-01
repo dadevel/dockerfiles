@@ -13,7 +13,7 @@ COPY --from=sonarr-web /build/_output/UI ./_output/UI
 RUN bash -c 'source ./build.sh && PackageMono'
 
 FROM ghcr.io/dadevel/mono:latest
-RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libsqlite3-0 mediainfo
+RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libicu63 libsqlite3-0 mediainfo
 COPY --from=sonarr /build/_output_linux ./bin
 USER app
 ENTRYPOINT ["mono", "./bin/Sonarr.exe", "/nobrowser", "/data=/app/data"]
