@@ -1,5 +1,5 @@
 ARG MONO_VERSION=6
-FROM docker.io/library/mono:$MONO_VERSION-slim
+FROM docker.io/library/mono:$MONO_VERSION
 ARG PREFIX=/app
 ARG PUID=1000
 ARG PGID=1000
