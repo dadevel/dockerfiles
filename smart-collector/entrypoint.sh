@@ -1,15 +1,17 @@
 #!/bin/sh
 
-TEXTFILE_DIR="${SMARTMON_COLLECTOR_TEXTFILE_DIR:-/app/cache}"
-INTERVAL="${SMARTMON_COLLECTOR_INTERVAL:-3600}"
+INTERVAL="${SMART_COLLECTOR_INTERVAL:-3600}"
+TEXT_FILE="${SMART_COLLECTOR_TEXTFILE_DIR:-/app/cache}/smart.prom"
+TEMP_FILE="$TEXT_FILE.$$"
+HEALTH_FILE=/dev/shm/healthy
 
 while :; do
-    if smartmon.py > "$TEXTFILE_DIR/smartmon.prom.$$"; then
-        mv "$TEXTFILE_DIR/smartmon.prom.$$" "$TEXTFILE_DIR/smartmon.prom"
-        touch /dev/shm/healthy
+    if smartmon.py > "$TEMP_FILE"; then
+        mv "$TEMP_FILE" "$TEXT_FILE"
+        touch "$HEALTH_FILE"
     else
         echo "error: metric collection failed with exit code $?" >&2
-        rm -f /dev/shm/healthy
+        rm -f "$TEXT_FILE" "$HEALTH_FILE"
     fi
     sleep "$INTERVAL"
 done
