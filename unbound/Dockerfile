@@ -30,7 +30,7 @@ RUN setcap -q cap_net_bind_service+ep ./unbound
 RUN wget -q -O - https://www.internic.net/domain/named.cache | tee ./root.hints | awk '{ if ($3 == "A" || $3 == "AAAA") { printf("master: %s\n", $NF) } }' > ./root.conf && { ./unbound-anchor -a ./root.key -r ./root.hints || [ $? -eq 1 ]; }
 
 FROM ghcr.io/dadevel/debian:latest
-RUN apt-get update && apt-get install --no-install-recommends -y libssl1.1
+RUN apt-get update && apt-get install --no-install-recommends -y libssl1.1 dnsutils
 COPY ./unbound.conf ./config/
 COPY --from=unbound /build/unbound ./bin/
 COPY --from=unbound --chown=app:app /build/root.hints /build/root.key /build/root.conf ./cache/
