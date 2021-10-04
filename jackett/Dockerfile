@@ -10,6 +10,7 @@ COPY --from=jackett /build/src/Jackett.Server/bin/Release/net5.0/linux-x64 ./bin
 RUN jackett --version || [ $? -eq 1 ]
 USER app
 ENV XDG_CONFIG_HOME=/app/data
-ENTRYPOINT ["jackett", "--NoRestart", "--NoUpdates", "--ListenPublic"]
+ENTRYPOINT ["jackett", "--NoRestart", "--NoUpdates"]
+CMD ["--ListenPublic"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:9117"]
 EXPOSE 9117/tcp

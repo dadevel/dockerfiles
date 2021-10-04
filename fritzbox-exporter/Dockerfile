@@ -13,7 +13,7 @@ COPY ./src/metrics.json ./src/metrics-lua.json ./static/
 COPY --from=fritzbox-exporter /build/fritzbox_exporter ./bin/fritzbox-exporter
 RUN fritzbox-exporter -h || [ $? -eq 2 ]
 USER app
-ENTRYPOINT ["./lib/entrypoint.sh"]
-CMD ["-listen-address", ":9042", "-metrics-file", "./static/metrics.json", "-lua-metrics-file", "./static/metrics-lua.json"]
+ENTRYPOINT ["./lib/entrypoint.sh", "-metrics-file", "./static/metrics.json", "-lua-metrics-file", "./static/metrics-lua.json"]
+CMD ["-listen-address", ":9042"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["nc", "-z", "localhost", "9042"]
 EXPOSE 9042/tcp
