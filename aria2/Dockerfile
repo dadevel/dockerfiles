@@ -25,7 +25,7 @@ COPY ./aria2.conf ./config/
 COPY --from=aria2 /build/aria2c ./bin/
 RUN aria2c --version
 USER app
-ENTRYPOINT ["aria2c", "--log", "-", "--dir", "./storage", "--conf-path", "./config/aria2.conf", "--enable-rpc", "--rpc-listen-all"]
-CMD ["--rpc-listen-port", "6800"]
+ENTRYPOINT ["aria2c", "--log", "-", "--dir", "./data", "--conf-path", "./config/aria2.conf"]
+CMD ["--enable-rpc", "--rpc-listen-all", "--rpc-listen-port", "6800"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["nc", "-z", "localhost", "6800"]
 EXPOSE 6800/tcp

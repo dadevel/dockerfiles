@@ -1,5 +1,6 @@
-FROM ghcr.io/dadevel/debian:latest
-RUN apt-get update && apt-get install --no-install-recommends -y inotify-tools jq
-COPY ./entrypoint.sh ./lib/
+FROM ghcr.io/dadevel/python:latest
+COPY ./src/main.py ./bin/aria2-blackhole
+COPY ./src/requirements.txt ./static/
+RUN pip install -r ./static/requirements.txt && rm ./static/requirements.txt
 USER app
-ENTRYPOINT ["./lib/entrypoint.sh"]
+ENTRYPOINT ["aria2-blackhole"]
