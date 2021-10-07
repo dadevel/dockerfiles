@@ -1,7 +1,7 @@
 #!/bin/sh
 
 INTERVAL="${PODMAN_COLLECTOR_INTERVAL:-60}"
-TEXT_FILE="${PODMAN_COLLECTOR_TEXTFILE_DIR:-/app/cache}/podman.prom"
+TEXT_FILE="${PODMAN_COLLECTOR_TEXTFILE_DIR:-/app/textfiles}/podman.prom"
 TEMP_FILE="$TEXT_FILE.$$"
 HEALTH_FILE=/dev/shm/healthy
 TEMPLATE='podman_container_state{{`{`}}name="{{.Name}}",state="{{.State.Status}}",health="{{.State.Healthcheck.Status}}"{{`}`}} 1'

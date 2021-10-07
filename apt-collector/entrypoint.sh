@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 INTERVAL="${APT_COLLECTOR_INTERVAL:-3600}"
-TEXT_FILE="${APT_COLLECTOR_TEXTFILE_DIR:-/app/cache}/apt.prom"
+TEXT_FILE="${APT_COLLECTOR_TEXTFILE_DIR:-/app/textfiles}/apt.prom"
 TEMP_FILE="$TEXT_FILE.$$"
 HEALTH_FILE=/dev/shm/healthy
 

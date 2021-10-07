@@ -1,7 +1,7 @@
 #!/bin/sh
 
 INTERVAL="${SMART_COLLECTOR_INTERVAL:-3600}"
-TEXT_FILE="${SMART_COLLECTOR_TEXTFILE_DIR:-/app/cache}/smart.prom"
+TEXT_FILE="${SMART_COLLECTOR_TEXTFILE_DIR:-/app/textfiles}/smart.prom"
 TEMP_FILE="$TEXT_FILE.$$"
 HEALTH_FILE=/dev/shm/healthy
 

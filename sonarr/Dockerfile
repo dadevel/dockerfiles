@@ -16,6 +16,8 @@ FROM ghcr.io/dadevel/mono:latest
 RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libicu63 libsqlite3-0 mediainfo
 COPY --from=sonarr /build/_output_linux ./bin
 USER app
-ENTRYPOINT ["mono", "./bin/Sonarr.exe", "/nobrowser", "/data=/app/data"]
+ENTRYPOINT ["mono", "./bin/Sonarr.exe", "/nobrowser", "/data=/app/config"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:8989"]
 EXPOSE 8989/tcp
+VOLUME /app/config
+# /app/torrents /app/downloads /app/shows

@@ -13,8 +13,8 @@ ln -sf /usr/share/zoneinfo/$TIMEZONE /etc/localtime && \
 localedef -i $LANGUAGE -c -f $CHARSET -A /usr/share/locale/locale.alias $LANGUAGE.$CHARSET && \
 groupadd --gid $PGID app && \
 useradd --uid $PUID --gid $PGID --comment '' --home-dir /dev/shm --no-create-home --shell /bin/bash --no-log-init app && \
-mkdir -p $PREFIX/bin $PREFIX/lib $PREFIX/static $PREFIX/config $PREFIX/data $PREFIX/cache $PREFIX/storage && \
-chown -R $PUID:$PGID $PREFIX/data $PREFIX/cache $PREFIX/storage
+mkdir -p $PREFIX/bin $PREFIX/lib $PREFIX/static $PREFIX/config $PREFIX/data && \
+chown -R $PUID:$PGID $PREFIX
 ENV PATH=$PREFIX/bin:$PATH \
 LD_LIBRARY_PATH=$PREFIX/lib \
 HOME=/dev/shm \

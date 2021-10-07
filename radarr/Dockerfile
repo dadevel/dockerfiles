@@ -13,6 +13,8 @@ FROM ghcr.io/dadevel/debian:latest
 RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libicu67 libsqlite3-0 mediainfo
 COPY --from=radarr /build/_artifacts/linux-x64/net5.0/Radarr ./bin
 USER app
-ENTRYPOINT ["Radarr", "-nobrowser", "-data=/app/data"]
+ENTRYPOINT ["Radarr", "-nobrowser", "-data=/app/config"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:7878"]
 EXPOSE 7878/tcp
+VOLUME /app/config
+# /app/torrents /app/downloads /app/movies

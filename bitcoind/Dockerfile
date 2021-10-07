@@ -9,8 +9,8 @@ RUN ./configure \
 --libdir=/app/lib \
 --sysconfdir=/app/config \
 --datarootdir=/app/static \
---sharedstatedir=/app/cache \
---localstatedir=/app/cache \
+--sharedstatedir=/app/data \
+--localstatedir=/app/data \
 --runstatedir=/dev/shm \
 --disable-tests \
 --disable-gui-tests \
@@ -35,3 +35,4 @@ ENTRYPOINT ["bitcoind", "-conf=/app/config/bitcoin.conf", "-datadir=./data", "-n
 CMD ["-listen", "-port=8333", "-server", "-rpcport=8332", "-rpcallowip=0.0.0.0/0", "-rpcallowip=::/0"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["bitcoin-cli", "-conf=/app/config/bitcoin.conf", "-datadir=./data", "ping"]
 EXPOSE 8333/tcp 8332/tcp
+VOLUME /app/config /app/data

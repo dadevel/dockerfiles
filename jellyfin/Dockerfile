@@ -12,7 +12,8 @@ rm -rf /usr/share/doc /etc/jellyfin /var/cache/jellyfin /var/log/jellyfin
 COPY ./logging.json ./config/
 USER app
 # jellyfin wants absolute paths
-ENTRYPOINT ["jellyfin", "--configdir", "/app/data", "--datadir", "/app/data", "--cachedir", "/app/cache", "--logdir", "/dev/shm", "--webdir", "/usr/share/jellyfin/web", "--ffmpeg", "/usr/lib/jellyfin-ffmpeg/ffmpeg"]
+ENTRYPOINT ["jellyfin", "--configdir", "/app/config", "--datadir", "/app/data", "--cachedir", "/app/cache", "--logdir", "/dev/shm", "--webdir", "/usr/share/jellyfin/web", "--ffmpeg", "/usr/lib/jellyfin-ffmpeg/ffmpeg"]
 # proper health check at /health endpoint throws 404
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:8096/System/Info/Public"]
 EXPOSE 8096/tcp
+VOLUME /app/config /app/data /app/cache /app/media

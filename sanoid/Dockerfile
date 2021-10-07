@@ -6,3 +6,4 @@ COPY ./src/sanoid.conf ./config/
 RUN sanoid --version
 ENTRYPOINT ["sanoid", "--configdir", "./config"]
 CMD ["--help"]
+VOLUME /app/config

@@ -7,3 +7,4 @@ COPY ./entrypoint.sh ./lib/
 ENV XDG_RUNTIME_DIR=/run
 ENTRYPOINT ["./lib/entrypoint.sh"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["ls", "-d", "/dev/shm/healthy"]
+VOLUME /app/textfiles

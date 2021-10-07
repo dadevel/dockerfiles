@@ -11,3 +11,4 @@ ENTRYPOINT ["strelaysrv", "-keys=./data"]
 CMD ["-listen=:22067", "-status-srv=:22070", "-pools="]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["nc", "-z", "localhost", "22067"]
 EXPOSE 22067/tcp 22070/tcp
+VOLUME /app/data

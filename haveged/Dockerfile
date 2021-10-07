@@ -9,8 +9,8 @@ RUN ./configure \
 --libdir=/app/lib \
 --sysconfdir=/app/config \
 --datarootdir=/app/static \
---sharedstatedir=/app/cache \
---localstatedir=/app/cache \
+--sharedstatedir=/app/data \
+--localstatedir=/app/data \
 --disable-shared \
 --enable-static \
 --with-pic

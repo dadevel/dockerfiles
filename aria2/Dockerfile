@@ -9,8 +9,8 @@ RUN ./configure \
 --libdir=/app/lib \
 --sysconfdir=/app/config \
 --datarootdir=/app/static \
---sharedstatedir=/app/cache \
---localstatedir=/app/cache \
+--sharedstatedir=/app/data \
+--localstatedir=/app/data \
 --runstatedir=/dev/shm \
 --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
 --disable-nls \
@@ -21,11 +21,13 @@ RUN strip ./aria2c
 
 FROM ghcr.io/dadevel/debian:latest
 RUN apt-get update && apt-get install --no-install-recommends -y libssl1.1 libssh2-1 libxml2 zlib1g libc-ares2
+COPY entrypoint.sh ./lib/
 COPY ./aria2.conf ./config/
 COPY --from=aria2 /build/aria2c ./bin/
 RUN aria2c --version
 USER app
-ENTRYPOINT ["aria2c", "--log", "-", "--dir", "./data", "--conf-path", "./config/aria2.conf"]
+ENTRYPOINT ["./lib/entrypoint.sh", "--log", "-", "--dir", "./downloads", "--save-session", "./downloads/session.lock", "--input-file", "./downloads/session.lock", "--conf-path", "./config/aria2.conf"]
 CMD ["--enable-rpc", "--rpc-listen-all", "--rpc-listen-port", "6800"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["nc", "-z", "localhost", "6800"]
 EXPOSE 6800/tcp
+VOLUME /app/config /app/downloads

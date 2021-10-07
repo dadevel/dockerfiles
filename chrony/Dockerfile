@@ -12,7 +12,7 @@ RUN ./configure \
 --chronyvardir=/app/cache \
 --chronyrundir=/dev/shm \
 --with-pidfile=/dev/shm/chronyd.pid \
---with-hwclockfile=/app/static/adjtime \
+--with-hwclockfile=/app/config/adjtime \
 --with-sendmail=/usr/sbin/sendmail \
 --with-user=app \
 --disable-privdrop \
@@ -31,3 +31,4 @@ ENTRYPOINT ["chronyd", "-d", "-U", "-f", "./config/chrony.conf"]
 CMD ["-L", "1", "-r", "-s"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["chronyc", "sources"]
 EXPOSE 123/udp
+VOLUME /app/config /app/cache

@@ -1,8 +1,8 @@
 name: CI
 on:
-  #push:
-  #  branches:
-  #  - main
+  push:
+    branches:
+    - main
   schedule:
   - cron: 0 3 * * *
 jobs:
@@ -49,6 +49,21 @@ jobs:
         fetch-depth: 0
     - name: Build, Test & Push
       run: ./build.py image aria2
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  aria2-blackhole:
+    runs-on: ubuntu-20.04
+    needs:
+    - python
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image aria2-blackhole
       env:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
@@ -238,6 +253,21 @@ jobs:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
         REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  jackett:
+    runs-on: ubuntu-20.04
+    needs:
+    - debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image jackett
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   jellyfin:
     runs-on: ubuntu-20.04
     needs:
@@ -265,6 +295,20 @@ jobs:
         fetch-depth: 0
     - name: Build, Test & Push
       run: ./build.py image lego
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  mono:
+    runs-on: ubuntu-20.04
+    needs: []
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image mono
       env:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
@@ -330,6 +374,37 @@ jobs:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
         REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  openconnect:
+    runs-on: ubuntu-20.04
+    needs:
+    - cxx
+    - debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image openconnect
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  podman-collector:
+    runs-on: ubuntu-20.04
+    needs:
+    - debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image podman-collector
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   prometheus:
     runs-on: ubuntu-20.04
     needs:
@@ -357,6 +432,22 @@ jobs:
         fetch-depth: 0
     - name: Build, Test & Push
       run: ./build.py image python
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  radarr:
+    runs-on: ubuntu-20.04
+    needs:
+    - debian
+    - node
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image radarr
       env:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
@@ -390,25 +481,12 @@ jobs:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
         REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  signal-cli:
-    runs-on: ubuntu-20.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image signal-cli
-      env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   signal-receiver:
     runs-on: ubuntu-20.04
     needs:
+    - cxx
+    - debian
     - go
-    - signal-cli
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -431,6 +509,22 @@ jobs:
         fetch-depth: 0
     - name: Build, Test & Push
       run: ./build.py image smart-collector
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  sonarr:
+    runs-on: ubuntu-20.04
+    needs:
+    - mono
+    - node
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image sonarr
       env:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
@@ -532,6 +626,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
     - debian
+    - go
     steps:
     - name: Checkout
       uses: actions/checkout@v2

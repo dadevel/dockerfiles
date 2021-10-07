@@ -12,3 +12,4 @@ USER app
 ENTRYPOINT ["blackbox-exporter", "--config.file=./config/blackbox-exporter.yaml"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:9115/"]
 EXPOSE 9115/tcp
+VOLUME /app/config

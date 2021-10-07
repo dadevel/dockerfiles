@@ -10,5 +10,6 @@ COPY ./entrypoint.sh ./lib/
 COPY --from=lego /build/dist/lego ./bin/
 RUN lego --version
 USER app
-ENTRYPOINT ["./lib/entrypoint.sh", "--path", "./data"]
+ENTRYPOINT ["./lib/entrypoint.sh"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["ls", "-d", "/dev/shm/healthy"]
+VOLUME /app/certs
