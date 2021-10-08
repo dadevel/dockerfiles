@@ -8,8 +8,8 @@ FROM ghcr.io/dadevel/go:dev as grafana
 COPY ./src .
 # grafana uses sqlite which requires cgo
 ENV CGO_ENABLED=1
-# TODO: investigate what linker option causes the trouble
 ENV LDFLAGS="-Wl,-O1,-z,defs,-z,relro,-z,now,--hash-style=gnu,--no-copy-dt-needed-entries"
+RUN make gen-go
 RUN go run ./build.go build-server
 RUN mv ./bin/linux-*/grafana-server .
 RUN strip ./grafana-server
