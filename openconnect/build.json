@@ -1,3 +1,5 @@
 {
+  "source": "https://gitlab.com/openconnect/openconnect.git",
+  "version": "refs/tags/v([0-9.]+)",
   "platforms": ["linux/amd64"]
 }

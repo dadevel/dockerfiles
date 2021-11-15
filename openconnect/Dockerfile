@@ -1,11 +1,9 @@
 FROM ghcr.io/dadevel/cxx:dev as openconnect
 # see https://www.infradead.org/openconnect/building.html
 RUN apt-get update && apt-get install --no-install-recommends -y automake libtool pkg-config libxml2-dev zlib1g-dev libssl-dev liblz4-dev libpskc-dev
-RUN git clone --depth 1 --branch fix/timeout-b https://gitlab.com/webini/openconnect.git .
+COPY ./src .
 RUN curl -o ./vpnc-script https://gitlab.com/openconnect/vpnc-scripts/raw/master/vpnc-script && \
 chmod 0755 ./vpnc-script
-COPY ./tncc-emulate.patch .
-RUN git apply ./tncc-emulate.patch
 # without -pie
 ENV LDFLAGS="-Wl,-O1,-z,defs,-z,relro,-z,now,--hash-style=gnu,--no-copy-dt-needed-entries"
 RUN ./autogen.sh
