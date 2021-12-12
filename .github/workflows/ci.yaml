@@ -68,6 +68,23 @@ jobs:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
         REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  authelia:
+    runs-on: ubuntu-20.04
+    needs:
+    - debian
+    - go
+    - node
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image authelia
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   bazarr:
     runs-on: ubuntu-20.04
     needs:

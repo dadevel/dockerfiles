@@ -1,0 +1,4 @@
+{
+  "source": "https://github.com/authelia/authelia.git",
+  "version": "refs/tags/v([0-9.]+)"
+}
