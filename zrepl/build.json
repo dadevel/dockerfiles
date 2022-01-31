@@ -1,0 +1,4 @@
+{
+  "source": "https://github.com/zrepl/zrepl.git",
+  "version": "refs/tags/v([0-9.]+)"
+}

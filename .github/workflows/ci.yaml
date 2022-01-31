@@ -500,21 +500,6 @@ jobs:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
         REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  sanoid:
-    runs-on: ubuntu-20.04
-    needs:
-    - ubuntu
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image sanoid
-      env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   signal-receiver:
     runs-on: ubuntu-20.04
     needs:
@@ -595,21 +580,6 @@ jobs:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
         REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  syncoid:
-    runs-on: ubuntu-20.04
-    needs:
-    - ubuntu
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image syncoid
-      env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   syncthing:
     runs-on: ubuntu-20.04
     needs:
@@ -684,6 +654,22 @@ jobs:
         fetch-depth: 0
     - name: Build, Test & Push
       run: ./build.py image wpa-supplicant
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  zrepl:
+    runs-on: ubuntu-20.04
+    needs:
+    - go
+    - ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image zrepl
       env:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
