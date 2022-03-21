@@ -2,7 +2,10 @@
 from __future__ import annotations
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
-from distutils.version import LooseVersion
+try:
+    from packaging.version import LegacyVersion as LooseVersion
+except ModuleNotFoundError:
+    from distutils.version import LooseVersion
 from pathlib import Path
 from typing import Any, Generator, Optional
 
