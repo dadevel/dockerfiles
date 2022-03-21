@@ -1,6 +1,6 @@
 FROM ghcr.io/dadevel/cxx:dev as signal-cli
 RUN apt-get update && apt-get install --no-install-recommends -y dos2unix
-RUN curl -sSI https://github.com/AsamK/signal-cli/releases/latest | grep -i ^location: | dos2unix | grep -Eo '[0-9.]+$' | xargs -r -I {} curl -L 'https://github.com/AsamK/signal-cli/releases/download/v{}/signal-cli-{}.tar.gz' | tar -xzf -
+RUN curl -sSI https://github.com/AsamK/signal-cli/releases/latest | grep -i ^location: | dos2unix | grep -Eo '[0-9.]+$' | xargs -r -I {} curl -L 'https://github.com/asamk/signal-cli/releases/download/v{}/signal-cli-{}-linux.tar.gz' | tar -xzf -
 RUN mv ./signal-cli-*/ ./signal-cli/
 
 FROM ghcr.io/dadevel/go:dev as signal-receiver
