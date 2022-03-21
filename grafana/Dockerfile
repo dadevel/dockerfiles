@@ -1,6 +1,6 @@
 FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev as grafana-web
 COPY ./src .
-RUN yarn install --pure-lockfile
+RUN yarn install --frozen-lockfile
 ENV NODE_ENV=production
 RUN yarn build
 
