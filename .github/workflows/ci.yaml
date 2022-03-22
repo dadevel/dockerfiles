@@ -102,22 +102,6 @@ jobs:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel
         REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  bitcoind:
-    runs-on: ubuntu-20.04
-    needs:
-    - cxx
-    - debian
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image bitcoind
-      env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
   blackarch:
     runs-on: ubuntu-20.04
     needs: []
@@ -482,6 +466,22 @@ jobs:
         fetch-depth: 0
     - name: Build, Test & Push
       run: ./build.py image radarr
+      env:
+        REGISTRY_NAME: ghcr.io
+        REGISTRY_USER: dadevel
+        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+  redis:
+    runs-on: ubuntu-20.04
+    needs:
+    - cxx
+    - debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image redis
       env:
         REGISTRY_NAME: ghcr.io
         REGISTRY_USER: dadevel

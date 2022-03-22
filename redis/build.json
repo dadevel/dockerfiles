@@ -1,0 +1,4 @@
+{
+  "source": "https://github.com/redis/redis.git",
+  "version": "refs/tags/([0-9.]+)"
+}
