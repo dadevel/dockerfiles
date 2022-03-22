@@ -7,7 +7,7 @@ ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 ENV LANG=C.UTF-8 \
 CHARSET=UTF-8 \
 TZ=UTC \
-CFLAGS="-Os -pipe -flto -fstack-protector-strong --param=ssp-buffer-size=4 -fstack-clash-protection -fpie -fexceptions" \
+CFLAGS="-Os -pipe -flto -fstack-protector-strong --param=ssp-buffer-size=4 -fstack-clash-protection -fpie -fexceptions -fasynchronous-unwind-tables" \
 CPPFLAGS="-D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS" \
 CXXFLAGS=$CFLAGS \
 LDFLAGS="-Wl,-O1,-z,defs,-z,relro,-z,now,-pie,--hash-style=gnu,--no-copy-dt-needed-entries"
