@@ -1,7 +1,7 @@
 FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev as grafana-web
 COPY ./src .
 RUN yarn install --frozen-lockfile
-ENV NODE_ENV=production
+ENV NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096
 RUN yarn build
 
 FROM ghcr.io/dadevel/go:dev as grafana
