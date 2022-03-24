@@ -1,4 +1,8 @@
 {
+  "registry": {
+    "name": "ghcr.io",
+    "user": "dadevel"
+  },
   "source": "",
   "version": "refs/heads/(master|main)",
   "correction": {
@@ -10,7 +14,7 @@
     "linux/arm64/v8"
   ],
   "labels": {
-    "org.opencontainers.image.title": "{image.path.name}",
+    "org.opencontainers.image.title": "{image.context.name}",
     "org.opencontainers.image.author": "dadevel",
     "org.opencontainers.image.source": "https://github.com/dadevel/dockerfiles",
     "org.opencontainers.image.created": "{timestamp}",

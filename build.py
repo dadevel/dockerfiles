@@ -16,6 +16,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 
 QEMU_IMAGE = 'docker.io/multiarch/qemu-user-static:latest'
 BUILDER_NAME = 'multiarch'
@@ -28,48 +29,22 @@ WORKFLOW_PATH = '.github/workflows/ci.yaml'
 
 
 @dataclasses.dataclass
-class Registry:
-    name: str
-    user: Optional[str]
-    password: Optional[str]
-
-    @classmethod
-    def from_env(cls):
-        return cls(
-            os.environ.get('REGISTRY_NAME', 'localhost'),
-            os.environ.get('REGISTRY_USER'),
-            os.environ.get('REGISTRY_PASS')
-        )
-
-    def __post_init__(self):
-        self.can_authenticate = self.name and self.user and self.password
-
-    def login(self):
-        if self.can_authenticate:
-            docker('login', self.name, '--username', self.user, '--password-stdin', stdin=self.password)
-
-    def logout(self):
-        if self.can_authenticate:
-            docker('logout', self.name, check=False)
-
-
-@dataclasses.dataclass
 class Configuration:
     workdir: Path
     cache: Path
-    registry: Registry
-    defaults: dict[str, Any]
+    options: dict[str, Any]
 
     @classmethod
-    def from_dir(cls, path: Path):
+    def load(cls, project: Path) -> Configuration:
+        options = read_json(project/'default.json')
+        options['registry']['password'] = os.environ.get('GITHUB_TOKEN')
         return cls(
-            path,
-            path/'.cache',
-            Registry.from_env(),
-            read_json(path/'default.json'),
+            project,
+            project/'.cache',
+            options,
         )
 
-    def setup_cache(self):
+    def setup_cache(self) -> None:
         self.cache.mkdir(exist_ok=True)
 
     @staticmethod
@@ -81,6 +56,18 @@ class Configuration:
             docker('buildx', 'create', '--name', BUILDER_NAME, '--use')
             docker('buildx', 'inspect', '--bootstrap', BUILDER_NAME)
 
+    @property
+    def authenticated(self) -> bool:
+        return self.options['registry']['name'] and self.options['registry']['user'] and self.options['registry']['password']
+
+    def registry_login(self) -> None:
+        if self.authenticated:
+            docker('login', self.options['registry']['name'], '--username', self.options['registry']['user'], '--password-stdin', stdin=self.options['registry']['password'])
+
+    def registry_logout(self) -> None:
+        if self.authenticated:
+            docker('logout', self.options['registry']['name'], check=False)
+
 
 @dataclasses.dataclass
 class BuildInfo:
@@ -89,22 +76,18 @@ class BuildInfo:
     correction: dict[str, str]
     platforms: list[str]
     labels: dict[str, str]
+    registry: dict[str, str]
 
     @classmethod
     def from_file(cls, path: Path) -> BuildInfo:
-        attrs = CONFIG.defaults.copy()
+        attrs = CONFIG.options.copy()
         if path.exists():
             override = read_json(path)
             labels = attrs['labels'].copy()
             labels.update(override.get('labels', dict()))
             attrs.update(override, labels=labels)
-        return BuildInfo(
-            attrs['source'],
-            re.compile(attrs['version']),
-            attrs['correction'],
-            attrs['platforms'],
-            attrs['labels'],
-        )
+            attrs['version'] = re.compile(attrs['version'])
+        return BuildInfo(**attrs)
 
 
 @dataclasses.dataclass
@@ -170,32 +153,36 @@ class VersionInfo:
 
 @dataclasses.dataclass
 class ContainerImage:
-    path: Path
+    context: Path
+    dockerfile: Path
+    tag: str
     build_info: BuildInfo
     repo: Repository
 
     @classmethod
-    def from_file(cls, path: Path):
-        return cls(path, BuildInfo.from_file(path/'build.json'), Repository(path/'src'))
+    def from_file(cls, dockerfile: Path) -> ContainerImage:
+        return cls(dockerfile.parent, dockerfile, cls._get_tag_from_dockerfile(dockerfile), BuildInfo.from_file(dockerfile.parent/'build.json'), Repository(dockerfile.parent/'src'))
 
-    def __post_init__(self):
-        self.name = '/'.join(item for item in (CONFIG.registry.name, CONFIG.registry.user, self.path.name) if item)
+    @staticmethod
+    def _get_tag_from_dockerfile(path: Path) -> str:
+        return 'latest' if path.name == 'Dockerfile' else removesuffix(path.name, '.Dockerfile')
 
-    def build(self):
+    @property
+    def name(self) -> str:
+        return '/'.join(item for item in (CONFIG.options['registry']['name'], CONFIG.options['registry']['user'], self.context.name) if item)
+
+    def build(self) -> None:
         if self.build_info.source:
             version_info = self.repo.clone(self.build_info)
             self.repo.checkout(version_info)
         else:
             version_info = VersionInfo.empty()
 
-        if self.path.joinpath('Dockerfile').exists():
-            self._build_image(self.path/'Dockerfile', version_info, tag_postfix='')
-        for dockerfile in self.path.glob('*.Dockerfile'):
-            self._build_image(dockerfile, version_info,tag_postfix=dockerfile.with_suffix('').name)
+        self._build_image(version_info)
 
-    def _build_image(self, dockerfile: Path, version_info: VersionInfo, tag_postfix: str):
+    def _build_image(self, version_info: VersionInfo) -> None:
         tags = []
-        for tag in self._generate_image_tags(version_info, tag_postfix):
+        for tag in self._generate_image_tags(version_info):
             tags.extend(('--tag', f'{self.name}:{tag}'))
 
         labels = []
@@ -206,27 +193,31 @@ class ContainerImage:
             'buildx', 'build',
             '--cache-from', f'type=local,src={CONFIG.cache}',
             '--cache-to', f'type=local,dest={CONFIG.cache}',
-            '--platform', ','.join(self.build_info.platforms) if CONFIG.registry.can_authenticate else FALLBACK_PLATFORM,
+            '--platform', ','.join(self.build_info.platforms) if CONFIG.authenticated else FALLBACK_PLATFORM,
             *tags,
             *labels,
-            '--push' if CONFIG.registry.can_authenticate else '--load',
-            '--file', dockerfile,
-            self.path,
+            '--push' if CONFIG.authenticated else '--load',
+            '--file', self.dockerfile,
+            self.context,
         )
 
-    @staticmethod
-    def _generate_image_tags(version_info: VersionInfo, postfix: str) -> Generator[str, None, None]:
-        yield postfix if postfix else 'latest'
+    def _generate_image_tags(self, version_info: VersionInfo) -> Generator[str, None, None]:
+        yield self.tag
         if version_info.latest_version:
             yield from itertools.accumulate(
                 version_info.latest_version.split('.'),
-                lambda a, b: f'{a}.{b}-{postfix}' if postfix else f'{a}.{b}' if a else b,
+                lambda a, b: f'{self.tag}-{a}.{b}' if self.tag != 'latest' else f'{a}.{b}' if a else b,
             )
 
     def _generate_image_labels(self, version_info: VersionInfo):
         timestamp = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         labels = {
-            key: value.format(image=self, build=self.build_info, version=version_info, timestamp=timestamp)
+            key: value.format(
+                image=self,
+                build=self.build_info,
+                version=version_info,
+                timestamp=timestamp,
+            )
             for key, value in self.build_info.labels.items()
         }
         labels = {key: value for key, value in labels.items() if value}
@@ -235,14 +226,14 @@ class ContainerImage:
 
 def main():
     entrypoint = ArgumentParser()
-    entrypoint.add_argument('-w', '--workdir', type=Path, default=Path.cwd(), metavar='PATH')
+    entrypoint.add_argument('-w', '--workdir', type=Path, default=Path.cwd(), metavar='DIR')
     subparsers = entrypoint.add_subparsers(dest='command', required=True)
     parser = subparsers.add_parser('image')
-    parser.add_argument('image', nargs='+', type=Path)
+    parser.add_argument('image', nargs='+', type=Path, metavar='DOCKERFILE')
     parser = subparsers.add_parser('workflow')
     opts = entrypoint.parse_args()
     global CONFIG
-    CONFIG = Configuration.from_dir(opts.workdir)
+    CONFIG = Configuration.load(opts.workdir)
     commands = dict(
         image=build_images,
         workflow=write_workflow,
@@ -253,13 +244,13 @@ def main():
 def build_images(opts: Namespace) -> None:
     CONFIG.setup_cache()
     CONFIG.setup_docker_buildx()
-    CONFIG.registry.login()
+    CONFIG.registry_login()
     try:
         for path in opts.image:
             image = ContainerImage.from_file(path)
             image.build()
     finally:
-        CONFIG.registry.logout()
+        CONFIG.registry_logout()
 
 
 @dataclasses.dataclass
@@ -271,36 +262,34 @@ class Job:
     def from_file(cls, dockerfile: Path) -> Job:
         return cls(dockerfile, BuildInfo.from_file(dockerfile.parent/'build.json'))
 
-    def __post_init__(self):
-        self.dependencies = self._gather_dependencies()
+    @property
+    def dependencies(self) -> list[str]:
+        prefix = f'{CONFIG.options["registry"]["name"]}/{CONFIG.options["registry"]["user"]}/'
+        return list(sorted(set(self._extract_dependencies(prefix))))
 
     @property
     def name(self) -> str:
-        return self.dockerfile.parent.name
+        value = removesuffix(self.dockerfile.as_posix(), '/Dockerfile')
+        value = removesuffix(value, '.Dockerfile')
+        return value.replace('/', '-')
 
-    def _gather_dependencies(self) -> list[str]:
-        prefix = f'{CONFIG.registry.name}/{CONFIG.registry.user}/'
-        dependencies = list(sorted(set(self._extract_dependencies())))
-        return [
-            image_name[len(prefix):]
-            for image_name in dependencies
-            if image_name.startswith(prefix)
-        ]
-
-    def _extract_dependencies(self) -> Generator[str, None, None]:
+    def _extract_dependencies(self, prefix: str) -> Generator[str, None, None]:
         with open(self.dockerfile) as file:
             for line in file:
-                image_name = self._match_dependency_pattern(line)
-                if image_name:
-                    yield image_name
+                image, tag = self._match_dependency_pattern(line)
+                if image and image.startswith(prefix):
+                    image_name = image.removeprefix(prefix)
+                    path = Path(f'{image_name}/{tag}.Dockerfile')
+                    yield f'{image_name}-{tag}' if path.is_file() else image_name
 
     @staticmethod
-    def _match_dependency_pattern(line: str) -> Optional[str]:
+    def _match_dependency_pattern(line: str) -> tuple[Optional[str], Optional[str]]:
         for pattern in DOCKERFILE_DEPENDENCY_PATTERNS:
             match = pattern.fullmatch(line.strip().lower())
-            if match:
-                return match.group('image')
-        return None
+            if not match:
+                continue
+            return match.group('image'), match.group('tag')
+        return None, None
 
     def generate(self) -> dict[str, Any]:
         return {
@@ -316,11 +305,9 @@ class Job:
                 },
                 {
                     'name': 'Build, Test & Push',
-                    'run': f'./build.py image {self.name}',
+                    'run': f'./build.py image {self.dockerfile}',
                     'env': {
-                        'REGISTRY_NAME': CONFIG.registry.name,
-                        'REGISTRY_USER': CONFIG.registry.user,
-                        'REGISTRY_PASS': '${{ secrets.GITHUB_TOKEN }}'
+                        'GITHUB_TOKEN': '${{ secrets.GITHUB_TOKEN }}'
                     },
                 },
             ],
@@ -330,7 +317,7 @@ class Job:
 def write_workflow(opts: Namespace) -> None:
     import yaml
     jobs = [
-        Job.from_file(path)
+        Job.from_file(path.relative_to(opts.workdir))
         for path in sorted(
             itertools.chain(
                 opts.workdir.glob('*/Dockerfile'),
@@ -379,6 +366,10 @@ def run(*args: Any, stdin: str = None, capture: bool = False, check: bool = True
         message = f'{cmdline}: {process.stderr.strip()}' if process.stderr else cmdline
         raise RuntimeError(f'subprocess failed with exit code {process.returncode}: {message}')
     return process.stdout.strip() if capture else ''
+
+
+def removesuffix(value: str, suffix: str) -> str:
+    return value[len(suffix):] if value.startswith(suffix) else value
 
 
 def read_json(path: Path) -> Any:

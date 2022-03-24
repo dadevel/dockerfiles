@@ -10,18 +10,16 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
+    - go-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image alertmanager
+      run: ./build.py image alertmanager/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   apt-collector:
     runs-on: ubuntu-20.04
     needs:
@@ -32,15 +30,13 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image apt-collector
+      run: ./build.py image apt-collector/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   aria2:
     runs-on: ubuntu-20.04
     needs:
-    - cxx
+    - cxx-dev
     - debian
     steps:
     - name: Checkout
@@ -48,11 +44,9 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image aria2
+      run: ./build.py image aria2/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   aria2-blackhole:
     runs-on: ubuntu-20.04
     needs:
@@ -63,45 +57,39 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image aria2-blackhole
+      run: ./build.py image aria2-blackhole/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   authelia:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
-    - node
+    - go-dev
+    - node-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image authelia
+      run: ./build.py image authelia/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   bazarr:
     runs-on: ubuntu-20.04
     needs:
-    - cxx
+    - cxx-dev
     - debian
-    - node
+    - node-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image bazarr
+      run: ./build.py image bazarr/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   blackarch:
     runs-on: ubuntu-20.04
     needs: []
@@ -111,47 +99,41 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image blackarch
+      run: ./build.py image blackarch/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   blackbox-exporter:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
+    - go-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image blackbox-exporter
+      run: ./build.py image blackbox-exporter/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   cadvisor:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
+    - go-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image cadvisor
+      run: ./build.py image cadvisor/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   chrony:
     runs-on: ubuntu-20.04
     needs:
-    - cxx
+    - cxx-dev
     - debian
     steps:
     - name: Checkout
@@ -159,12 +141,10 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image chrony
+      run: ./build.py image chrony/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  cxx:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  cxx-dev:
     runs-on: ubuntu-20.04
     needs: []
     steps:
@@ -173,11 +153,9 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image cxx
+      run: ./build.py image cxx/dev.Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   debian:
     runs-on: ubuntu-20.04
     needs: []
@@ -187,28 +165,24 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image debian
+      run: ./build.py image debian/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   fritzbox-exporter:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
+    - go-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image fritzbox-exporter
+      run: ./build.py image fritzbox-exporter/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  go:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  go-dev:
     runs-on: ubuntu-20.04
     needs: []
     steps:
@@ -217,32 +191,28 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image go
+      run: ./build.py image go/dev.Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   grafana:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
-    - node
+    - go-dev
+    - node-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image grafana
+      run: ./build.py image grafana/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   haveged:
     runs-on: ubuntu-20.04
     needs:
-    - cxx
+    - cxx-dev
     - debian
     steps:
     - name: Checkout
@@ -250,15 +220,13 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image haveged
+      run: ./build.py image haveged/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   hostapd:
     runs-on: ubuntu-20.04
     needs:
-    - cxx
+    - cxx-dev
     - debian
     steps:
     - name: Checkout
@@ -266,11 +234,9 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image hostapd
+      run: ./build.py image hostapd/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   jackett:
     runs-on: ubuntu-20.04
     needs:
@@ -281,11 +247,9 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image jackett
+      run: ./build.py image jackett/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   jellyfin:
     runs-on: ubuntu-20.04
     needs:
@@ -296,12 +260,36 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image jellyfin
+      run: ./build.py image jellyfin/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  kali:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  kali-net:
+    runs-on: ubuntu-20.04
+    needs:
+    - kali-std
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image kali/net.Dockerfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  kali-rev:
+    runs-on: ubuntu-20.04
+    needs:
+    - kali-std
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image kali/rev.Dockerfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  kali-std:
     runs-on: ubuntu-20.04
     needs: []
     steps:
@@ -310,27 +298,49 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image kali
+      run: ./build.py image kali/std.Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  lego:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  kali-web:
     runs-on: ubuntu-20.04
     needs:
-    - debian
-    - go
+    - kali-std
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image lego
+      run: ./build.py image kali/web.Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  kali-win:
+    runs-on: ubuntu-20.04
+    needs:
+    - kali-std
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image kali/win.Dockerfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  lego:
+    runs-on: ubuntu-20.04
+    needs:
+    - debian
+    - go-dev
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image lego/Dockerfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   mono:
     runs-on: ubuntu-20.04
     needs: []
@@ -340,11 +350,21 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image mono
+      run: ./build.py image mono/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  mono-dev:
+    runs-on: ubuntu-20.04
+    needs: []
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image mono/dev.Dockerfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   nftables-exporter:
     runs-on: ubuntu-20.04
     needs:
@@ -355,15 +375,13 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image nftables-exporter
+      run: ./build.py image nftables-exporter/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   nginx:
     runs-on: ubuntu-20.04
     needs:
-    - cxx
+    - cxx-dev
     - debian
     steps:
     - name: Checkout
@@ -371,12 +389,10 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image nginx
+      run: ./build.py image nginx/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  node:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  node-dev:
     runs-on: ubuntu-20.04
     needs: []
     steps:
@@ -385,31 +401,27 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image node
+      run: ./build.py image node/dev.Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   node-exporter:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
+    - go-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image node-exporter
+      run: ./build.py image node-exporter/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   openconnect:
     runs-on: ubuntu-20.04
     needs:
-    - cxx
+    - cxx-dev
     - debian
     steps:
     - name: Checkout
@@ -417,11 +429,9 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image openconnect
+      run: ./build.py image openconnect/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   podman-collector:
     runs-on: ubuntu-20.04
     needs:
@@ -432,28 +442,24 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image podman-collector
+      run: ./build.py image podman-collector/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   prometheus:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
-    - node
+    - go-dev
+    - node-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image prometheus
+      run: ./build.py image prometheus/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   python:
     runs-on: ubuntu-20.04
     needs: []
@@ -463,44 +469,10 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image python
+      run: ./build.py image python/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  radarr:
-    runs-on: ubuntu-20.04
-    needs:
-    - debian
-    - node
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image radarr
-      env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  redis:
-    runs-on: ubuntu-20.04
-    needs:
-    - cxx
-    - debian
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image redis
-      env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  rust:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  python-dev:
     runs-on: ubuntu-20.04
     needs: []
     steps:
@@ -509,28 +481,64 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image rust
+      run: ./build.py image python/dev.Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
-  signal-receiver:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  radarr:
     runs-on: ubuntu-20.04
     needs:
-    - cxx
     - debian
-    - go
+    - node-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image signal-receiver
+      run: ./build.py image radarr/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  redis:
+    runs-on: ubuntu-20.04
+    needs:
+    - cxx-dev
+    - debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image redis/Dockerfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  rust-dev:
+    runs-on: ubuntu-20.04
+    needs: []
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image rust/dev.Dockerfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  signal-receiver:
+    runs-on: ubuntu-20.04
+    needs:
+    - cxx-dev
+    - debian
+    - go-dev
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image signal-receiver/Dockerfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   smart-collector:
     runs-on: ubuntu-20.04
     needs:
@@ -541,75 +549,66 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image smart-collector
+      run: ./build.py image smart-collector/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   sonarr:
     runs-on: ubuntu-20.04
     needs:
     - mono
-    - node
+    - mono-dev
+    - node-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image sonarr
+      run: ./build.py image sonarr/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   stdiscosrv:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
+    - go-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image stdiscosrv
+      run: ./build.py image stdiscosrv/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   strelaysrv:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
+    - go-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image strelaysrv
+      run: ./build.py image strelaysrv/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   syncthing:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
+    - go-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image syncthing
+      run: ./build.py image syncthing/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ubuntu:
     runs-on: ubuntu-20.04
     needs: []
@@ -619,15 +618,13 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image ubuntu
+      run: ./build.py image ubuntu/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   unbound:
     runs-on: ubuntu-20.04
     needs:
-    - cxx
+    - cxx-dev
     - debian
     steps:
     - name: Checkout
@@ -635,31 +632,27 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image unbound
+      run: ./build.py image unbound/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   webui-aria2:
     runs-on: ubuntu-20.04
     needs:
     - debian
-    - go
+    - go-dev
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image webui-aria2
+      run: ./build.py image webui-aria2/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   wpa-supplicant:
     runs-on: ubuntu-20.04
     needs:
-    - cxx
+    - cxx-dev
     - debian
     steps:
     - name: Checkout
@@ -667,15 +660,13 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image wpa-supplicant
+      run: ./build.py image wpa-supplicant/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   zrepl:
     runs-on: ubuntu-20.04
     needs:
-    - go
+    - go-dev
     - ubuntu
     steps:
     - name: Checkout
@@ -683,8 +674,6 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image zrepl
+      run: ./build.py image zrepl/Dockerfile
       env:
-        REGISTRY_NAME: ghcr.io
-        REGISTRY_USER: dadevel
-        REGISTRY_PASS: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

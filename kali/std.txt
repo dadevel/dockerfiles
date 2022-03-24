@@ -1,0 +1,41 @@
+build-essential
+curl
+dos2unix
+git
+git-lfs
+jq
+manpages
+man-db
+neovim
+rsync
+tmux
+wget
+
+# hash cracking:
+hashcat-nvidia
+john
+name-that-hash
+
+# network debugging:
+inetutils-ping
+iproute2
+knot-dnsutils
+netcat-openbsd
+openssl
+traceroute
+
+# connection:
+chisel
+openconnect
+openssh-client
+openssh-server
+openvpn
+proxychains4
+sshuttle
+
+# standard tools:
+exploitdb
+metasploit-framework
+nmap
+nuclei
+socat

@@ -1,0 +1,36 @@
+# scanning & fuzzing:
+feroxbuster
+ffuf
+gobuster
+nuclei
+sqlmap
+#burpsuite
+#https://github.com/rustscan/rustscan
+#nikto
+#wfuzz
+
+# cms scanning:
+wpscan
+#https://github.com/samjoan/droopescan
+#https://github.com/whoot/typo3scan
+
+# deserialization:
+phpggc
+#https://github.com/frohoff/ysoserial
+#https://github.com/pwntester/ysoserial.net
+
+# jwt authentication:
+#https://github.com/ticarpi/jwt_tool
+
+# symphony debugger:
+#https://github.com/synacktiv/eos
+
+# prototype pollution
+#https://github.com/msrkp/ppscan
+
+# aws:
+#https://github.com/andresriancho/enumerate-iam
+#pacu
+
+# container:
+#https://github.com/wagoodman/dive
