@@ -369,7 +369,7 @@ def run(*args: Any, stdin: str = None, capture: bool = False, check: bool = True
 
 
 def removesuffix(value: str, suffix: str) -> str:
-    return value[len(suffix):] if value.startswith(suffix) else value
+    return value[:-len(suffix)] if value.endswith(suffix) else value
 
 
 def read_json(path: Path) -> Any:
