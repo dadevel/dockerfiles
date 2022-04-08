@@ -4,12 +4,16 @@ dos2unix
 git
 git-lfs
 jq
+less
 manpages
 man-db
 neovim
 rsync
 tmux
 wget
+
+# hardware support:
+nvidia-driver-libs
 
 # hash cracking:
 hashcat-nvidia

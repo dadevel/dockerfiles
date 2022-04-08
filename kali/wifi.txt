@@ -1,0 +1,5 @@
+aircrack-ng
+kmod
+ngrep
+tcpdump
+wireshark-qt
