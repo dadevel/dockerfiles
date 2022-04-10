@@ -314,6 +314,19 @@ jobs:
       run: ./build.py image kali/web.Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  kali-wifi:
+    runs-on: ubuntu-20.04
+    needs:
+    - kali-std
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image kali/wifi.Dockerfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   kali-win:
     runs-on: ubuntu-20.04
     needs:
@@ -363,19 +376,6 @@ jobs:
         fetch-depth: 0
     - name: Build, Test & Push
       run: ./build.py image mono/dev.Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  nftables-exporter:
-    runs-on: ubuntu-20.04
-    needs:
-    - python
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image nftables-exporter/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   nginx:
