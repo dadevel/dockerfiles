@@ -11,5 +11,6 @@ ENV LANG=$LANGUAGE.$CHARSET \
 LANGUAGE=$LANGUAGE \
 CHARSET=$CHARSET \
 TZ=$TIMEZONE
+WORKDIR /workdir
 COPY ./std.txt ./pkgs.txt
 RUN grep -v -e '^#' -e '^$' ./pkgs.txt | xargs -r -- apt-get install --no-install-recommends -y --
