@@ -1,17 +1,11 @@
 FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev as prometheus-web
-COPY ./src/web/ui/react-app .
-ENV PUBLIC_URL=.
-# part one of 'assets' target from makefile
-RUN yarn install --frozen-lockfile
-RUN yarn build
+COPY ./src .
+RUN make -j $(nproc) assets-compress
 
 FROM ghcr.io/dadevel/go:dev as prometheus
 ENV GO111MODULE=on
 COPY ./src .
-COPY --from=prometheus-web /build/build ./web/ui/static/react
-# part two of 'assets' target from makefile
-RUN cd ./web/ui && go generate -x -v
-# build binary
+COPY --from=prometheus-web /build/web/ui/ ./web/ui/
 RUN make -j $(nproc) common-build PROMU_BINARIES=prometheus
 RUN strip ./prometheus
 
