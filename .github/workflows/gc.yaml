@@ -1,0 +1,15 @@
+name: GC
+on:
+  schedule:
+  - cron: 0 3 * * *
+jobs:
+  cleanup-images:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - run: ./cleanup-images.sh
+    env:
+      GITHUB_USER: ${{ github.repository_owner }}
+      GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
