@@ -1,6 +1,7 @@
 FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev as prometheus-web
 COPY ./src .
-RUN make -j $(nproc) assets-compress
+# parallelization breaks the build
+RUN make assets-compress
 
 FROM ghcr.io/dadevel/go:dev as prometheus
 ENV GO111MODULE=on
