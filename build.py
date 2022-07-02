@@ -347,8 +347,8 @@ def write_workflow(opts: Namespace) -> None:
 
 def docker(*args: Any, **kwargs: Any) -> str:
     groups = {grp.getgrgid(gid).gr_name for gid in os.getgroups()}
-    sudo = () if 'docker' in groups else ('sudo', '--preserve-env=DOCKER_CLI_EXPERIMENTAL,BUILDX_NO_DEFAULT_LOAD')
-    envvars = dict(DOCKER_CLI_EXPERIMENTAL='enabled', BUILDX_NO_DEFAULT_LOAD='false')
+    sudo = () if 'docker' in groups else ('sudo', '--preserve-env=DOCKER_CLI_EXPERIMENTAL,BUILDX_NO_DEFAULT_LOAD,DOCKER_HOST')
+    envvars = dict(DOCKER_CLI_EXPERIMENTAL='enabled', BUILDX_NO_DEFAULT_LOAD='false', DOCKER_HOST=os.environ.get('DOCKER_HOST', ''))
     return run(*sudo, 'docker', *args, env=envvars, **kwargs)
 
 
