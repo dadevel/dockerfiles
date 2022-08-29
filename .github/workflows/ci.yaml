@@ -168,20 +168,6 @@ jobs:
       run: ./build.py image debian/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  fritzbox-exporter:
-    runs-on: ubuntu-20.04
-    needs:
-    - debian
-    - go-dev
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image fritzbox-exporter/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   go-dev:
     runs-on: ubuntu-20.04
     needs: []
