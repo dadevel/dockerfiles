@@ -18,7 +18,7 @@ case "$LEGO_CHALLENGE" in
         ;;
     dns)
         LEGO_DNS_PROVIDER="${LEGO_DNS_PROVIDER:?no dns provider specified}"
-        LEGO_DNS_RESOLVERS="$LEGO_DNS_RESOLVERS"
+        LEGO_DNS_RESOLVERS="${LEGO_DNS_RESOLVERS:-}"
         ;;
 esac
 
@@ -65,9 +65,11 @@ update_certificates() {
             ;;
         dns)
             set -- "$@" --dns "$LEGO_DNS_PROVIDER"
-            for resolver in $LEGO_DNS_RESOLVERS; do
-                set -- "$@" --dns.resolvers "${resolver}"
-            done
+            if [ -n "$LEGO_DNS_RESOLVERS" ]; then
+                for resolver in $LEGO_DNS_RESOLVERS; do
+                    set -- "$@" --dns.resolvers "${resolver}"
+                done
+            fi
             ;;
     esac
 
