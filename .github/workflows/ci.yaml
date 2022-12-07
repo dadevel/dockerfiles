@@ -444,21 +444,6 @@ jobs:
       run: ./build.py image prometheus/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  puredns:
-    runs-on: ubuntu-20.04
-    needs:
-    - cxx-dev
-    - debian
-    - go-dev
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image puredns/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   python:
     runs-on: ubuntu-20.04
     needs: []
