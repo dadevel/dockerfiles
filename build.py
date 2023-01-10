@@ -4,7 +4,7 @@ from argparse import ArgumentParser, Namespace
 from datetime import datetime
 try:
     from packaging.version import LegacyVersion as LooseVersion
-except ModuleNotFoundError:
+except Exception:
     from distutils.version import LooseVersion
 from pathlib import Path
 from typing import Any, Generator, Optional
@@ -16,7 +16,6 @@ import json
 import os
 import re
 import subprocess
-import sys
 
 QEMU_IMAGE = 'docker.io/multiarch/qemu-user-static:latest'
 BUILDER_NAME = 'multiarch'
