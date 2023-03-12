@@ -10,9 +10,9 @@ COPY ./src .
 ENV CGO_ENABLED=1
 ENV LDFLAGS="-Wl,-O1,-z,defs,-z,relro,-z,now,--hash-style=gnu,--no-copy-dt-needed-entries"
 RUN make gen-go
-RUN go run ./build.go build-server
-RUN mv ./bin/linux-*/grafana-server .
-RUN strip ./grafana-server
+RUN make build-go
+RUN mv ./bin/linux-*/grafana .
+RUN strip ./grafana
 
 FROM ghcr.io/dadevel/debian:latest
 RUN apt-get update && apt-get install --no-install-recommends -y libssl1.1 && \
@@ -23,8 +23,8 @@ COPY ./grafana.ini ./config/
 COPY ./entrypoint.sh ./lib/
 COPY --from=grafana-web /build/public ./static/public
 COPY --from=grafana-web /build/tools ./static/tools
-COPY --from=grafana /build/grafana-server ./bin/
-RUN grafana-server -v
+COPY --from=grafana /build/grafana ./bin/
+RUN grafana -v
 USER app
 ENTRYPOINT ["./lib/entrypoint.sh", "--packaging", "docker", "--homepath", "./static", "--config", "./config/grafana.ini", "cfg:default.paths.data=/app/data", "cfg:default.paths.logs=/app/data/logs", "cfg:default.paths.plugins=/app/data/plugins", "cfg:default.paths.provisioning=/app/config/provisioning", "cfg:default.log.mode=console"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://127.0.0.1:3000/healthz"]

@@ -8,4 +8,4 @@ for plugin in $GRAFANA_PLUGINS; do
             echo "failed to install plugin ${plugin}" >&2
     fi
 done
-exec grafana-server "$@"
+exec grafana server "$@"
