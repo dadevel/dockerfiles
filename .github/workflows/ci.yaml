@@ -62,21 +62,6 @@ jobs:
       run: ./build.py image authelia/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  bazarr:
-    runs-on: ubuntu-20.04
-    needs:
-    - cxx-dev
-    - debian
-    - node-dev
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image bazarr/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   blackarch:
     runs-on: ubuntu-20.04
     needs: []
