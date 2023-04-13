@@ -47,19 +47,6 @@ jobs:
       run: ./build.py image aria2/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  aria2-blackhole:
-    runs-on: ubuntu-20.04
-    needs:
-    - python
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image aria2-blackhole/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   authelia:
     runs-on: ubuntu-20.04
     needs:

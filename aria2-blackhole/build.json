@@ -1,7 +1,0 @@
-{
-  "source": "https://github.com/dadevel/aria2-blackhole.git",
-  "version": "refs/tags/v([0-9.]+)",
-  "labels": {
-    "org.opencontainers.image.source": "https://github.com/dadevel/aria2-blackhole"
-  }
-}
