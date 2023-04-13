@@ -10,7 +10,7 @@ COPY --from=prowlarr-web /build/_output/UI ./_output/UI
 RUN ./build.sh --packages --framework net6.0 --runtime linux-x64
 
 FROM ghcr.io/dadevel/debian:latest
-RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libsqlite3-0
+RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libicu67 libsqlite3-0 mediainfo
 COPY --from=prowlarr /build/_artifacts/linux-x64/net6.0/Prowlarr ./bin
 USER app
 ENTRYPOINT ["Prowlarr", "-nobrowser", "-data=/app/config"]
