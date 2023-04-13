@@ -195,19 +195,6 @@ jobs:
       run: ./build.py image hostapd/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  jackett:
-    runs-on: ubuntu-20.04
-    needs:
-    - debian
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image jackett/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   jellyfin:
     runs-on: ubuntu-20.04
     needs:
