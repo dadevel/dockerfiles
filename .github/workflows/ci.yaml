@@ -403,6 +403,20 @@ jobs:
       run: ./build.py image prometheus/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  prowlarr:
+    runs-on: ubuntu-20.04
+    needs:
+    - debian
+    - node-dev
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image prowlarr/Dockerfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   python:
     runs-on: ubuntu-20.04
     needs: []

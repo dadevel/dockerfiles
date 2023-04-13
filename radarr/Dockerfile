@@ -17,4 +17,4 @@ ENTRYPOINT ["Radarr", "-nobrowser", "-data=/app/config"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:7878"]
 EXPOSE 7878/tcp
 VOLUME /app/config
-# /app/torrents /app/downloads /app/movies
+# /app/downloads /app/movies

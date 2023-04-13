@@ -20,4 +20,4 @@ ENTRYPOINT ["mono", "./bin/Sonarr.exe", "/nobrowser", "/data=/app/config"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:8989"]
 EXPOSE 8989/tcp
 VOLUME /app/config
-# /app/torrents /app/downloads /app/shows
+# /app/downloads /app/shows
