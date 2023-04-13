@@ -1,4 +1,4 @@
-ARG UBUNTU_VERSION=focal
+ARG UBUNTU_VERSION=jammy
 FROM docker.io/library/ubuntu:$UBUNTU_VERSION
 ARG PREFIX=/app
 ARG PUID=1000
