@@ -4,6 +4,7 @@ setcap -q cap_sys_rawio+ep /usr/sbin/smartctl && \
 apt-get purge --auto-remove -y libcap2-bin && \
 rm -rf /etc/smartd* && \
 addgroup app disk
+RUN pip3 install prometheus_client
 COPY ./src/smartmon.py ./bin/
 COPY ./entrypoint.sh ./lib/
 USER app
