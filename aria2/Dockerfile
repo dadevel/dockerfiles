@@ -20,7 +20,7 @@ RUN mv ./src/aria2c ./aria2c
 RUN strip ./aria2c
 
 FROM ghcr.io/dadevel/debian:latest
-RUN apt-get update && apt-get install --no-install-recommends -y libssl1.1 libssh2-1 libxml2 zlib1g libc-ares2
+RUN apt-get update && apt-get install --no-install-recommends -y libssl3 libssh2-1 libxml2 zlib1g libc-ares2
 COPY entrypoint.sh ./lib/
 COPY ./aria2.conf ./config/
 COPY --from=aria2 /build/aria2c ./bin/

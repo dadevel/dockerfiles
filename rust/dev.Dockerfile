@@ -1,4 +1,4 @@
-ARG DEBIAN_VERSION=bullseye
+ARG DEBIAN_VERSION=bookworm
 ARG RUST_VERSION=1
 FROM docker.io/library/rust:$RUST_VERSION-slim-$DEBIAN_VERSION
 ENV DEBIAN_FRONTEND=noninteractive

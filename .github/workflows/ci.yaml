@@ -61,20 +61,6 @@ jobs:
       run: ./build.py image blackbox-exporter/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  cadvisor:
-    runs-on: ubuntu-22.04
-    needs:
-    - debian
-    - go-dev
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image cadvisor/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   chrony:
     runs-on: ubuntu-22.04
     needs:

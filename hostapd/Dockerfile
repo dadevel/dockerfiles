@@ -6,7 +6,7 @@ RUN cd ./hostapd && make -j $(nproc)
 RUN strip ./hostapd/hostapd ./hostapd/hostapd_cli
 
 FROM ghcr.io/dadevel/debian:latest
-RUN apt-get update && apt-get install --no-install-recommends -y iw libnl-3-200 libnl-genl-3-200 libnl-route-3-200 libssl1.1
+RUN apt-get update && apt-get install --no-install-recommends -y iw libnl-3-200 libnl-genl-3-200 libnl-route-3-200 libssl3
 COPY ./entrypoint.sh ./lib/
 COPY ./hostapd.conf ./config/
 COPY --from=hostapd /build/hostapd/hostapd ./bin/

@@ -6,7 +6,7 @@ RUN cd ./wpa_supplicant && make -j $(nproc)
 RUN strip ./wpa_supplicant/wpa_supplicant ./wpa_supplicant/wpa_cli ./wpa_supplicant/wpa_passphrase
 
 FROM ghcr.io/dadevel/debian:latest
-RUN apt-get update && apt-get install --no-install-recommends -y libnl-3-200 libnl-genl-3-200 libnl-route-3-200 libssl1.1 libdbus-1-3 libdbus-glib-1-2 libpcsclite1
+RUN apt-get update && apt-get install --no-install-recommends -y libnl-3-200 libnl-genl-3-200 libnl-route-3-200 libssl3 libdbus-1-3 libdbus-glib-1-2 libpcsclite1
 COPY --from=wpa-supplicant /build/wpa_supplicant/wpa_supplicant /build/wpa_supplicant/wpa_cli /build/wpa_supplicant/wpa_passphrase ./bin/
 RUN wpa_supplicant -v
 ENTRYPOINT ["wpa_supplicant", "-P", "/dev/shm/wpa_supplicant.pid", "-c", "./config/wpa_supplicant.conf"]

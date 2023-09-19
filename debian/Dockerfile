@@ -1,4 +1,4 @@
-ARG DEBIAN_VERSION=bullseye
+ARG DEBIAN_VERSION=bookworm
 FROM docker.io/library/debian:$DEBIAN_VERSION-slim
 ARG PREFIX=/app
 ARG PUID=1000

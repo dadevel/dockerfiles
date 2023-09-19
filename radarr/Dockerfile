@@ -10,7 +10,7 @@ COPY --from=radarr-web /build/_output/UI ./_output/UI
 RUN ./build.sh --packages --framework net6.0 --runtime linux-x64
 
 FROM ghcr.io/dadevel/debian:latest
-RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libicu67 libsqlite3-0 mediainfo
+RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libicu72 libsqlite3-0 mediainfo
 COPY --from=radarr /build/_artifacts/linux-x64/net6.0/Radarr ./bin
 USER app
 ENTRYPOINT ["Radarr", "-nobrowser", "-data=/app/config"]

@@ -1,5 +1,5 @@
 ARG NODE_VERSION=16
-ARG DEBIAN_VERSION=bullseye
+ARG DEBIAN_VERSION=bookworm
 FROM docker.io/library/node:$NODE_VERSION-$DEBIAN_VERSION-slim
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \

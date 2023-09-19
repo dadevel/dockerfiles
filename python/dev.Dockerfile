@@ -1,4 +1,4 @@
-ARG DEBIAN_VERSION=bullseye
+ARG DEBIAN_VERSION=bookworm
 ARG PYTHON_VERSION=3
 FROM docker.io/library/python:$PYTHON_VERSION-slim-$DEBIAN_VERSION
 ENV DEBIAN_FRONTEND=noninteractive

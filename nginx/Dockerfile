@@ -48,7 +48,7 @@ RUN strip ./nginx
 RUN setcap -q cap_net_bind_service+ep ./nginx
 
 FROM ghcr.io/dadevel/debian:latest
-RUN apt-get update && apt-get install --no-install-recommends -y libssl1.1 libpcre3 perl zlib1g
+RUN apt-get update && apt-get install --no-install-recommends -y libssl3 libpcre3 perl zlib1g
 COPY ./nginx.conf ./config/
 COPY --from=nginx /build/nginx ./bin/
 COPY --from=nginx /build/conf/mime.types ./static/
