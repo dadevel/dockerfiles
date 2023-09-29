@@ -11,7 +11,7 @@ RUN ./configure \
 --datarootdir=/app/static \
 --sharedstatedir=/app/data \
 --localstatedir=/app/data \
---runstatedir=/dev/shm \
+--runstatedir=/app/data \
 --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
 --disable-nls \
 --with-pic
