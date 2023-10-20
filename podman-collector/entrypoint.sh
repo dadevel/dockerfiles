@@ -4,7 +4,7 @@ INTERVAL="${PODMAN_COLLECTOR_INTERVAL:-60}"
 TEXT_FILE="${PODMAN_COLLECTOR_TEXTFILE_DIR:-/app/textfiles}/podman.prom"
 TEMP_FILE="$TEXT_FILE.$$"
 HEALTH_FILE=/dev/shm/healthy
-TEMPLATE='podman_container_state{{`{`}}name="{{.Name}}",state="{{.State.Status}}",health="{{.State.Healthcheck.Status}}"{{`}`}} 1'
+TEMPLATE='.[]|"podman_container_state{name=\"\(.Name)\",state=\"\(.State.Status)\",health=\"\(.State.Health.Status)\"} 1"'
 
 main() {
     while :; do
@@ -22,7 +22,7 @@ main() {
 collect() {
     echo '# HELP podman_container_state Status and health of podman containers.'
     echo '# TYPE podman_container_state gauge'
-    podman --remote container ls --all --quiet | xargs -r -- podman --remote container inspect --format "$TEMPLATE"
+    podman --remote container ls --all --quiet | xargs -r podman --remote container inspect --format json | jq -r "$TEMPLATE"
 }
 
 main "$@"
