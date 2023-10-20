@@ -12,6 +12,7 @@ RUN ./build.sh --packages --framework net6.0 --runtime linux-x64
 FROM ghcr.io/dadevel/debian:latest
 RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libicu72 libsqlite3-0 mediainfo
 COPY --from=radarr /build/_artifacts/linux-x64/net6.0/Radarr ./bin
+RUN chmod +x ./bin/ffprobe
 USER app
 ENTRYPOINT ["Radarr", "-nobrowser", "-data=/app/config"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:7878"]
