@@ -322,33 +322,6 @@ jobs:
       run: ./build.py image radarr/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  rust-dev:
-    runs-on: ubuntu-22.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image rust/dev.Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  signal-receiver:
-    runs-on: ubuntu-22.04
-    needs:
-    - cxx-dev
-    - debian
-    - go-dev
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image signal-receiver/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   smart-collector:
     runs-on: ubuntu-22.04
     needs:
