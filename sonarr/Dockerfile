@@ -1,22 +1,19 @@
 FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev as sonarr-web
 COPY ./src .
-COPY ./build.patch .
-RUN git apply ./build.patch
-RUN bash -c 'source ./build.sh && RunWebpack'
+RUN ./build.sh --frontend
 
-FROM ghcr.io/dadevel/mono:dev as sonarr
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as sonarr
+WORKDIR /build
 COPY ./src .
-COPY ./build.patch .
-RUN git apply ./build.patch
-RUN bash -c 'source ./build.sh && Build'
+RUN ./build.sh --backend --runtime linux-x64 --framework net6.0
 COPY --from=sonarr-web /build/_output/UI ./_output/UI
-RUN bash -c 'source ./build.sh && PackageMono'
+RUN ./build.sh --packages --runtime linux-x64 --framework net6.0
 
-FROM ghcr.io/dadevel/mono:latest
-RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libicu63 libsqlite3-0 mediainfo
-COPY --from=sonarr /build/_output_linux ./bin
+FROM ghcr.io/dadevel/debian:latest
+RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libicu72 libsqlite3-0 mediainfo
+COPY --from=sonarr /build/_artifacts/linux-x64/net6.0/Sonarr ./bin
 USER app
-ENTRYPOINT ["mono", "./bin/Sonarr.exe", "/nobrowser", "/data=/app/config"]
+ENTRYPOINT ["Sonarr", "/nobrowser", "/data=/app/config"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:8989"]
 EXPOSE 8989/tcp
 VOLUME /app/config
