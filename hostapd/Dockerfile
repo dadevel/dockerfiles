@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/cxx:dev as hostapd
+FROM ghcr.io/dadevel/cxx:dev AS hostapd
 RUN apt-get update && apt-get install --no-install-recommends -y linux-headers-generic libnl-3-dev libnl-genl-3-dev libnl-route-3-dev libssl-dev pkg-config
 COPY ./src .
 COPY ./config.txt ./hostapd/.config

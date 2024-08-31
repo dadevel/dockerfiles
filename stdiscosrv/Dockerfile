@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/go:dev as stdiscosrv
+FROM ghcr.io/dadevel/go:dev AS stdiscosrv
 COPY ./src .
 RUN go run ./build.go -no-upgrade build stdiscosrv
 RUN strip ./stdiscosrv

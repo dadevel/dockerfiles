@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/go:dev as syncthing
+FROM ghcr.io/dadevel/go:dev AS syncthing
 COPY ./src .
 RUN go run ./build.go -no-upgrade build syncthing
 RUN strip ./syncthing

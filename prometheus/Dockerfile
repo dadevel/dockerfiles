@@ -1,9 +1,9 @@
-FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev as prometheus-web
+FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev AS prometheus-web
 COPY ./src .
 # parallelization breaks the build
 RUN make assets-compress
 
-FROM ghcr.io/dadevel/go:dev as prometheus
+FROM ghcr.io/dadevel/go:dev AS prometheus
 ENV GO111MODULE=on
 COPY ./src .
 COPY --from=prometheus-web /build/web/ui/ ./web/ui/

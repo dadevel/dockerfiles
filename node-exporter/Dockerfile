@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/go:dev as node-exporter
+FROM ghcr.io/dadevel/go:dev AS node-exporter
 COPY ./src .
 RUN make -j $(nproc) common-build
 RUN mv ./node_exporter ./node-exporter

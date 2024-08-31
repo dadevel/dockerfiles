@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/go:dev as zrepl
+FROM ghcr.io/dadevel/go:dev AS zrepl
 COPY ./src .
 RUN apt-get update && apt-get install --no-install-recommends -y gawk unzip
 RUN bash ./build.installprotoc.bash

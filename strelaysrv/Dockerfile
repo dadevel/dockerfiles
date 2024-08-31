@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/go:dev as strelaysrv
+FROM ghcr.io/dadevel/go:dev AS strelaysrv
 COPY ./src .
 RUN go run ./build.go -no-upgrade build strelaysrv
 RUN strip ./strelaysrv

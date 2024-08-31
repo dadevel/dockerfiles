@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/go:dev as lego
+FROM ghcr.io/dadevel/go:dev AS lego
 ENV GO111MODULE=on
 COPY ./src .
 RUN make build

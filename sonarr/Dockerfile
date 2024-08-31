@@ -1,8 +1,8 @@
-FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev as sonarr-web
+FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev AS sonarr-web
 COPY ./src .
 RUN ./build.sh --frontend
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 as sonarr
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS sonarr
 WORKDIR /build
 COPY ./src .
 RUN ./build.sh --backend --runtime linux-x64 --framework net6.0

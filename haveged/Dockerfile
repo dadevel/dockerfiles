@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/cxx:dev as haveged
+FROM ghcr.io/dadevel/cxx:dev AS haveged
 RUN apt-get update && apt-get install --no-install-recommends -y autoconf automake file libtool linux-headers-generic
 COPY ./src .
 RUN autoreconf -vif

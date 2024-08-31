@@ -1,6 +1,6 @@
 # documentation: https://nginx.org/en/docs/configure.html
 
-FROM ghcr.io/dadevel/cxx:dev as nginx
+FROM ghcr.io/dadevel/cxx:dev AS nginx
 RUN apt-get update && apt-get install --no-install-recommends -y linux-headers-generic libssl-dev libpcre3-dev zlib1g-dev
 COPY ./src .
 ENV CFLAGS="$CFLAGS -fPIC"

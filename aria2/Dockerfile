@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/cxx:dev as aria2
+FROM ghcr.io/dadevel/cxx:dev AS aria2
 RUN apt-get update && apt-get install --no-install-recommends -y libssl-dev libssh2-1-dev libxml2-dev zlib1g-dev libc-ares-dev pkgconf autoconf automake autopoint gettext libtool
 COPY ./src .
 RUN autoreconf --install --force

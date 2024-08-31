@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/cxx:dev as unbound
+FROM ghcr.io/dadevel/cxx:dev AS unbound
 RUN apt-get update && apt-get install --no-install-recommends -y libexpat1-dev libssl-dev byacc file flex bison
 COPY ./src .
 RUN ./configure \

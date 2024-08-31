@@ -1,8 +1,8 @@
-FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev as prowlarr-web
+FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev AS prowlarr-web
 COPY ./src .
 RUN ./build.sh --frontend
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 as prowlarr
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS prowlarr
 WORKDIR /build
 COPY ./src .
 RUN ./build.sh --backend

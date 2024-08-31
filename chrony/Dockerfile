@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/cxx:dev as chrony
+FROM ghcr.io/dadevel/cxx:dev AS chrony
 RUN apt-get update && apt-get install --no-install-recommends -y asciidoctor bison libcap-dev nettle-dev
 COPY ./src .
 # compiling without --enable-scfilter because starting chronyd with enforced seccomp filtering results in a crash

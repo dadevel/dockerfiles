@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/go:dev as httpd
+FROM ghcr.io/dadevel/go:dev AS httpd
 COPY ./httpd.go .
 RUN go build ./httpd.go
 RUN strip ./httpd

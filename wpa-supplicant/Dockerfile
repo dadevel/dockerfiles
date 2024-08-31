@@ -1,4 +1,4 @@
-FROM ghcr.io/dadevel/cxx:dev as wpa-supplicant
+FROM ghcr.io/dadevel/cxx:dev AS wpa-supplicant
 RUN apt-get update && apt-get install --no-install-recommends -y linux-headers-generic libnl-3-dev libnl-genl-3-dev libnl-route-3-dev libssl-dev libdbus-1-dev libdbus-glib-1-dev libpcsclite-dev
 COPY ./src .
 COPY ./config.txt ./wpa_supplicant/.config
