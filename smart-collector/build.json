@@ -1,3 +1,4 @@
 {
-  "source": "https://github.com/prometheus-community/node-exporter-textfile-collector-scripts.git"
+  "source": "https://github.com/prometheus-community/node-exporter-textfile-collector-scripts.git",
+  "platforms": ["linux/amd64"]
 }

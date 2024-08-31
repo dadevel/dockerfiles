@@ -1,4 +1,5 @@
 {
   "source": "https://github.com/nginx/nginx.git",
-  "version": "refs/tags/release-([0-9.]+)"
+  "version": "refs/tags/release-([0-9.]+)",
+  "platforms": ["linux/amd64"]
 }

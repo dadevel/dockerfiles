@@ -1,3 +1,4 @@
 {
-  "source": "https://github.com/ziahamza/webui-aria2.git"
+  "source": "https://github.com/ziahamza/webui-aria2.git",
+  "platforms": ["linux/amd64"]
 }

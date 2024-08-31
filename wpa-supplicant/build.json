@@ -4,5 +4,6 @@
   "correction": {
     "search": "_",
     "replace": "."
-  }
+  },
+  "platforms": ["linux/amd64"]
 }
