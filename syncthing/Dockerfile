@@ -5,9 +5,9 @@ RUN strip ./syncthing
 
 FROM ghcr.io/dadevel/debian:latest
 COPY --from=syncthing /build/syncthing ./bin/
-ENV HOME=/app/home \
-STGUIADDRESS=0.0.0.0:8384 \
-STNODEFAULTFOLDER=true
+ENV HOME=/app/home
+ENV STGUIADDRESS=0.0.0.0:8384
+ENV STNODEFAULTFOLDER=true
 RUN syncthing -version
 USER app
 ENTRYPOINT ["syncthing", "-logfile=-", "-logflags=0", "-home", "./config", "-no-browser", "-no-restart"]

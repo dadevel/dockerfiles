@@ -15,13 +15,13 @@ groupadd --gid $PGID app && \
 useradd --uid $PUID --gid $PGID --comment '' --home-dir /dev/shm --no-create-home --shell /bin/bash --no-log-init app && \
 mkdir -p $PREFIX/bin $PREFIX/lib $PREFIX/static $PREFIX/config $PREFIX/data && \
 chown -R $PUID:$PGID $PREFIX
-ENV PATH=$PREFIX/bin:$PATH \
-LD_LIBRARY_PATH=$PREFIX/lib \
-HOME=/dev/shm \
-XDG_RUNTIME_DIR=/dev/shm \
-TMPDIR=/dev/shm \
-LANG=$LANGUAGE.$CHARSET \
-LANGUAGE=$LANGUAGE \
-CHARSET=$CHARSET \
-TZ=$TIMEZONE
+ENV PATH=$PREFIX/bin:$PATH
+ENV LD_LIBRARY_PATH=$PREFIX/lib
+ENV HOME=/dev/shm
+ENV XDG_RUNTIME_DIR=/dev/shm
+ENV TMPDIR=/dev/shm
+ENV LANG=$LANGUAGE.$CHARSET
+ENV LANGUAGE=$LANGUAGE
+ENV CHARSET=$CHARSET
+ENV TZ=$TIMEZONE
 WORKDIR $PREFIX

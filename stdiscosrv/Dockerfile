@@ -5,7 +5,7 @@ RUN strip ./stdiscosrv
 
 FROM ghcr.io/dadevel/debian:latest
 COPY --from=stdiscosrv /build/stdiscosrv ./bin/
-RUN stdiscosrv -version
+RUN stdiscosrv -v
 USER app
 ENTRYPOINT ["stdiscosrv", "-cert=./data/cert.pem", "-key=./data/key.pem", "-db-dir=./data/disco.db"]
 CMD ["-listen=:8443", "-replication-listen=:19200", "-metrics-listen=:19201", "-http"]
