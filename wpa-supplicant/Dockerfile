@@ -10,5 +10,5 @@ RUN apt-get update && apt-get install --no-install-recommends -y libnl-3-200 lib
 COPY --from=wpa-supplicant /build/wpa_supplicant/wpa_supplicant /build/wpa_supplicant/wpa_cli /build/wpa_supplicant/wpa_passphrase ./bin/
 RUN wpa_supplicant -v
 ENTRYPOINT ["wpa_supplicant", "-P", "/dev/shm/wpa-supplicant.pid", "-c", "./config/wpa-supplicant.conf"]
-HEALTHCHECK --interval=60s --timeout=3s CMD ["wpa_cli", "-p", "/dev/shm/wpa-supplicant", "quit"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["wpa_cli", "-p", "/dev/shm/wpa-supplicant", "-s", "/dev/shm/wpa-supplicant", "quit"]
 VOLUME /app/config

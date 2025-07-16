@@ -9,6 +9,6 @@ COPY --from=node-exporter /build/node-exporter ./bin/
 RUN node-exporter --version
 USER app
 ENTRYPOINT ["node-exporter", "--collector.textfile.directory=./textfiles", "--path.rootfs=/rootfs"]
-HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:9100/health"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:9100/"]
 EXPOSE 9100/tcp
 VOLUME /app/config /app/textfiles

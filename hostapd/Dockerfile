@@ -13,5 +13,5 @@ COPY --from=hostapd /build/hostapd/hostapd ./bin/
 COPY --from=hostapd /build/hostapd/hostapd_cli ./bin/
 RUN hostapd -v || [ $? -eq 1 ]
 ENTRYPOINT ["./lib/entrypoint.sh", "-P", "/dev/shm/hostapd.pid", "-g", "/dev/shm/hostapd", "-G", "root"]
-HEALTHCHECK --interval=60s --timeout=3s CMD ["hostapd_cli", "-p", "/dev/shm/hostapd", "quit"]
+HEALTHCHECK --interval=60s --timeout=3s CMD ["hostapd_cli", "-p", "/dev/shm/hostapd", "-s", "/dev/shm/hostapd", "quit"]
 VOLUME /app/config
