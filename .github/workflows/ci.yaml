@@ -7,7 +7,7 @@ on:
   - cron: 0 3 * * *
 jobs:
   alertmanager:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - go-dev
@@ -21,7 +21,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   apt-collector:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     steps:
@@ -34,7 +34,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   aria2:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - cxx-dev
     - debian
@@ -48,7 +48,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   blackbox-exporter:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - go-dev
@@ -62,7 +62,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   chrony:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - cxx-dev
     - debian
@@ -76,7 +76,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   cxx-dev:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: []
     steps:
     - name: Checkout
@@ -88,7 +88,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   debian:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: []
     steps:
     - name: Checkout
@@ -100,7 +100,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   go-dev:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: []
     steps:
     - name: Checkout
@@ -112,7 +112,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   haveged:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - cxx-dev
     - debian
@@ -126,7 +126,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   hostapd:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - cxx-dev
     - debian
@@ -140,7 +140,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   jellyfin:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - ubuntu
     steps:
@@ -153,7 +153,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   lego:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - go-dev
@@ -167,7 +167,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   nginx:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - cxx-dev
     - debian
@@ -181,7 +181,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   node-dev:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: []
     steps:
     - name: Checkout
@@ -193,7 +193,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   node-exporter:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - go-dev
@@ -207,7 +207,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   peas:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: []
     steps:
     - name: Checkout
@@ -219,7 +219,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   podman-collector:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     steps:
@@ -232,7 +232,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   prometheus:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - go-dev
@@ -247,7 +247,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   prowlarr:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - node-dev
@@ -261,7 +261,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   python:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: []
     steps:
     - name: Checkout
@@ -273,7 +273,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   python-dev:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: []
     steps:
     - name: Checkout
@@ -285,7 +285,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   radarr:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - node-dev
@@ -299,7 +299,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   smart-collector:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - python
     steps:
@@ -312,7 +312,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   sonarr:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - node-dev
@@ -326,7 +326,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   stdiscosrv:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - go-dev
@@ -340,7 +340,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   strelaysrv:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - go-dev
@@ -354,7 +354,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   syncthing:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - go-dev
@@ -368,7 +368,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ubuntu:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: []
     steps:
     - name: Checkout
@@ -380,7 +380,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   unbound:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - cxx-dev
     - debian
@@ -394,7 +394,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   webui-aria2:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - debian
     - go-dev
@@ -408,7 +408,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   wpa-supplicant:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - cxx-dev
     - debian
@@ -422,7 +422,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   zrepl:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
     - go-dev
     - ubuntu

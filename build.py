@@ -292,7 +292,7 @@ class Job:
 
     def generate(self) -> dict[str, Any]:
         return {
-            'runs-on': 'ubuntu-22.04',
+            'runs-on': 'ubuntu-24.04',
             'needs': self.dependencies,
             'steps': [
                 {
