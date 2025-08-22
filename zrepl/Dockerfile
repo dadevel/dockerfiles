@@ -1,8 +1,6 @@
 FROM ghcr.io/dadevel/go:dev AS zrepl
 COPY ./src .
 RUN apt-get update && apt-get install --no-install-recommends -y gawk unzip
-RUN bash ./build.installprotoc.bash
-RUN bash ./lazy.sh godep
 # patch default paths
 RUN sed -i 's|/etc/zrepl|/app/config|g;s|/var/run/zrepl|/dev/shm/zrepl|g;' **/*.go
 RUN make -j $(nproc) zrepl-bin
