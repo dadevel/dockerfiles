@@ -367,7 +367,7 @@ jobs:
       run: ./build.py image syncthing/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  tailscale:
+  tailscale-forwarder:
     runs-on: ubuntu-24.04
     needs: []
     steps:
@@ -376,7 +376,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Build, Test & Push
-      run: ./build.py image tailscale/Dockerfile
+      run: ./build.py image tailscale-forwarder/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ubuntu:

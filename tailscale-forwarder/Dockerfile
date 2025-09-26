@@ -1,5 +1,5 @@
 FROM docker.io/tailscale/tailscale:latest
-RUN apk add --no-cache socat
+RUN apk add --no-cache socat && mkdir /var/lib/tailscale && chown -R nobody:nobody /var/lib/tailscale
 COPY ./entrypoint.sh /
 USER nobody
 ENTRYPOINT ["/entrypoint.sh"]

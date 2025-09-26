@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 echo 'starting tailscaled' >&2
-tailscaled -no-logs-no-support -socket=/dev/shm/tailscaled.sock -state=/var/lib/tailscale -socks5-server=:1080 -tun=userspace-networking &
+tailscaled -no-logs-no-support -socket=/dev/shm/tailscaled.sock -statedir=/var/lib/tailscale -socks5-server=:1080 -tun=userspace-networking &
 echo 'bringing tailscale up' >&2
 tailscale --socket=/dev/shm/tailscaled.sock up --login-server="${TS_LOGIN_SERVER:-https://controlplane.tailscale.com}" --timeout="${TS_TIMEOUT:-10s}" --auth-key="${TS_AUTHKEY:?undefined}" --hostname="${TS_HOSTNAME:-$HOSTNAME}" --accept-dns="${TS_ACCEPT_DNS:-true}" --accept-routes="${TS_ACCEPT_ROUTES:-false}" --advertise-exit-node="${TS_ADVERTISE_EXIT_NODE:-false}" --ssh="${TS_SSH:-false}" --shields-up="${TS_SHIELDS_UP:-true}" "$@"
 echo 'running socat' >&2
