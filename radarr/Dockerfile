@@ -2,16 +2,16 @@ FROM --platform=$BUILDPLATFORM ghcr.io/dadevel/node:dev AS radarr-web
 COPY ./src .
 RUN ./build.sh --frontend
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS radarr
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS radarr
 WORKDIR /build
 COPY ./src .
 RUN ./build.sh --backend
 COPY --from=radarr-web /build/_output/UI ./_output/UI
-RUN ./build.sh --packages --framework net6.0 --runtime linux-x64
+RUN ./build.sh --packages --framework net8.0 --runtime linux-x64
 
 FROM ghcr.io/dadevel/debian:latest
 RUN apt-get update && apt-get install --no-install-recommends -y libcurl4 libicu72 libsqlite3-0 mediainfo
-COPY --from=radarr /build/_artifacts/linux-x64/net6.0/Radarr ./bin
+COPY --from=radarr /build/_artifacts/linux-x64/net8.0/Radarr ./bin
 RUN chmod +x ./bin/ffprobe
 USER app
 ENTRYPOINT ["Radarr", "-nobrowser", "-data=/app/config"]
