@@ -367,18 +367,6 @@ jobs:
       run: ./build.py image syncthing/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  tailscale-forwarder:
-    runs-on: ubuntu-24.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image tailscale-forwarder/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ubuntu:
     runs-on: ubuntu-24.04
     needs: []
