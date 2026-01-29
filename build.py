@@ -2,10 +2,6 @@
 from __future__ import annotations
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
-try:
-    from packaging.version import LegacyVersion as LooseVersion
-except Exception:
-    from distutils.version import LooseVersion
 from pathlib import Path
 from typing import Any, Generator, Optional
 
@@ -129,7 +125,7 @@ class Repository:
                 matches.append((ref, match))
 
         versions = [(ref, match.group(1)) for ref, match in matches]
-        sorted_versions = sorted(versions, key=lambda pair: LooseVersion(pair[1]))
+        sorted_versions = sorted(versions, key=lambda pair: pair[1].split('.'))
         latest_ref, latest_version = sorted_versions[-1]
         return latest_ref, latest_version
 
