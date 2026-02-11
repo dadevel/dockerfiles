@@ -7,7 +7,6 @@ ENV CFLAGS="$CFLAGS -fPIC"
 RUN ./auto/configure \
 --prefix=/app \
 --sbin-path=/app/bin \
---modules-path=/app/lib/nginx/modules \
 --conf-path=/app/config/nginx.conf \
 --error-log-path=/proc/self/fd/2 \
 --http-log-path=/proc/self/fd/1 \
@@ -39,9 +38,7 @@ RUN ./auto/configure \
 --with-mail \
 --with-mail_ssl_module \
 --with-stream \
---with-stream_realip_module \
---with-stream_ssl_module \
---with-stream_ssl_preread_module
+--with-stream_ssl_module
 RUN make -j $(nproc)
 RUN mv ./objs/nginx .
 RUN strip ./nginx
