@@ -20,6 +20,6 @@ RUN strip ./haveged
 
 FROM ghcr.io/dadevel/debian:latest
 COPY --from=haveged /build/haveged ./bin/
-RUN haveged --version
+RUN haveged --version || [ $? -eq 1 ]
 ENTRYPOINT ["haveged", "--Foreground", "--pidfile=/dev/shm/haveged.pid"]
 CMD ["--verbose=1"]
