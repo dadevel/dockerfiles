@@ -1,5 +1,0 @@
-{
-  "source": "https://github.com/aria2/aria2.git",
-  "version": "refs/tags/release-([0-9.]+)",
-  "platforms": ["linux/amd64"]
-}

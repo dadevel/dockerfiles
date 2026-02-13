@@ -9,8 +9,7 @@ jobs:
   alertmanager:
     runs-on: ubuntu-24.04
     needs:
-    - debian
-    - go-dev
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -18,6 +17,18 @@ jobs:
         fetch-depth: 0
     - name: Build, Test & Push
       run: ./build.py image alertmanager/Dockerfile
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  alpine:
+    runs-on: ubuntu-24.04
+    needs: []
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Build, Test & Push
+      run: ./build.py image alpine/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   apt-collector:
@@ -36,8 +47,7 @@ jobs:
   aria2:
     runs-on: ubuntu-24.04
     needs:
-    - cxx-dev
-    - debian
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -50,8 +60,7 @@ jobs:
   blackbox-exporter:
     runs-on: ubuntu-24.04
     needs:
-    - debian
-    - go-dev
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -64,8 +73,7 @@ jobs:
   chrony:
     runs-on: ubuntu-24.04
     needs:
-    - cxx-dev
-    - debian
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -73,18 +81,6 @@ jobs:
         fetch-depth: 0
     - name: Build, Test & Push
       run: ./build.py image chrony/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  cxx-dev:
-    runs-on: ubuntu-24.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image cxx/dev.Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   debian:
@@ -99,23 +95,10 @@ jobs:
       run: ./build.py image debian/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  go-dev:
-    runs-on: ubuntu-24.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image go/dev.Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   haveged:
     runs-on: ubuntu-24.04
     needs:
-    - cxx-dev
-    - debian
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -128,8 +111,7 @@ jobs:
   hostapd:
     runs-on: ubuntu-24.04
     needs:
-    - cxx-dev
-    - debian
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -141,8 +123,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   jellyfin:
     runs-on: ubuntu-24.04
-    needs:
-    - ubuntu
+    needs: []
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -152,25 +133,10 @@ jobs:
       run: ./build.py image jellyfin/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  lego:
-    runs-on: ubuntu-24.04
-    needs:
-    - debian
-    - go-dev
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image lego/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   nginx:
     runs-on: ubuntu-24.04
     needs:
-    - cxx-dev
-    - debian
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -180,23 +146,10 @@ jobs:
       run: ./build.py image nginx/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  node-dev:
-    runs-on: ubuntu-24.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image node/dev.Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   node-exporter:
     runs-on: ubuntu-24.04
     needs:
-    - debian
-    - go-dev
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -206,22 +159,10 @@ jobs:
       run: ./build.py image node-exporter/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  peas:
-    runs-on: ubuntu-24.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image peas/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   podman-collector:
     runs-on: ubuntu-24.04
     needs:
-    - debian
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -234,9 +175,7 @@ jobs:
   prometheus:
     runs-on: ubuntu-24.04
     needs:
-    - debian
-    - go-dev
-    - node-dev
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -249,8 +188,7 @@ jobs:
   prowlarr:
     runs-on: ubuntu-24.04
     needs:
-    - debian
-    - node-dev
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -260,48 +198,10 @@ jobs:
       run: ./build.py image prowlarr/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  python:
-    runs-on: ubuntu-24.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image python/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  python-dev:
-    runs-on: ubuntu-24.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image python/dev.Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  radarr:
-    runs-on: ubuntu-24.04
-    needs:
-    - debian
-    - node-dev
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image radarr/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   smart-collector:
     runs-on: ubuntu-24.04
     needs:
-    - python
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -323,53 +223,10 @@ jobs:
       run: ./build.py image socat/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  sonarr:
-    runs-on: ubuntu-24.04
-    needs:
-    - debian
-    - node-dev
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image sonarr/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  stdiscosrv:
-    runs-on: ubuntu-24.04
-    needs:
-    - debian
-    - go-dev
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image stdiscosrv/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  strelaysrv:
-    runs-on: ubuntu-24.04
-    needs:
-    - debian
-    - go-dev
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image strelaysrv/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   syncthing:
     runs-on: ubuntu-24.04
     needs:
-    - debian
-    - go-dev
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -379,23 +236,10 @@ jobs:
       run: ./build.py image syncthing/Dockerfile
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  ubuntu:
-    runs-on: ubuntu-24.04
-    needs: []
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image ubuntu/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   unbound:
     runs-on: ubuntu-24.04
     needs:
-    - cxx-dev
-    - debian
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -408,8 +252,7 @@ jobs:
   webui-aria2:
     runs-on: ubuntu-24.04
     needs:
-    - debian
-    - go-dev
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -422,8 +265,7 @@ jobs:
   wpa-supplicant:
     runs-on: ubuntu-24.04
     needs:
-    - cxx-dev
-    - debian
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -436,8 +278,7 @@ jobs:
   zrepl:
     runs-on: ubuntu-24.04
     needs:
-    - go-dev
-    - ubuntu
+    - alpine
     steps:
     - name: Checkout
       uses: actions/checkout@v4

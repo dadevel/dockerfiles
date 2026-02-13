@@ -1,13 +1,12 @@
-FROM ghcr.io/dadevel/python:latest
-RUN apt-get update && apt-get install --no-install-recommends -y smartmontools libcap2-bin && \
-setcap -q cap_sys_rawio+ep /usr/sbin/smartctl && \
-apt-get purge --auto-remove -y libcap2-bin && \
+FROM ghcr.io/dadevel/alpine:latest
+RUN wget -O /app/bin/smartmon.py https://raw.githubusercontent.com/prometheus-community/node-exporter-textfile-collector-scripts/76a66171683889a3cb43f1b8fe6cf5d5067ff927/smartmon.py && chmod +x /app/bin/smartmon.py
+RUN apk add --no-cache python3 py3-prometheus-client smartmontools && \
 rm -rf /etc/smartd* && \
-usermod -aG disk app
-RUN pip3 install prometheus_client
-COPY ./src/smartmon.py ./bin/
-COPY ./entrypoint.sh ./lib/
+setcap -q cap_sys_rawio+ep $(which smartctl) && \
+addgroup app disk
+COPY ./entrypoint.sh /app/lib/
 USER app
-ENTRYPOINT ["./lib/entrypoint.sh"]
+ENTRYPOINT ["/app/lib/entrypoint.sh"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["ls", "-d", "/dev/shm/healthy"]
 VOLUME /app/textfiles
+

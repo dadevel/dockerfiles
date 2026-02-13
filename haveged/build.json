@@ -1,5 +1,0 @@
-{
-  "source": "https://github.com/jirka-h/haveged.git",
-  "version": "refs/tags/v([a-z0-9.]+)",
-  "platforms": ["linux/amd64"]
-}

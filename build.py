@@ -13,9 +13,6 @@ import os
 import re
 import subprocess
 
-QEMU_IMAGE = 'docker.io/multiarch/qemu-user-static:latest'
-BUILDER_NAME = 'multiarch'
-FALLBACK_PLATFORM = 'linux/amd64'
 DOCKERFILE_DEPENDENCY_PATTERNS = (
     re.compile(r'from\s+(?:--platform=[^\s]+\s+)?(?P<image>[^\s:]+)(?::(?P<tag>[^\s]+))?(?:\s+as\s+[^\s]+)?'),
     re.compile(r'copy\s+--from=(?P<image>[^\s:]+)(?::(?P<tag>[^\s]+))?\s+.*'),
@@ -33,23 +30,10 @@ class Configuration:
     def load(cls, project: Path) -> Configuration:
         options = read_json(project/'default.json')
         options['registry']['password'] = os.environ.get('GITHUB_TOKEN')
-        return cls(
-            project,
-            project/'.cache',
-            options,
-        )
+        return cls(project, project/'.cache', options)
 
     def setup_cache(self) -> None:
         self.cache.mkdir(exist_ok=True)
-
-    @staticmethod
-    def setup_docker_buildx() -> None:
-        docker('run', '--rm', '--privileged', QEMU_IMAGE, '--reset', '--persistent', 'yes')
-        try:
-            docker('buildx', 'inspect', BUILDER_NAME)
-        except RuntimeError:
-            docker('buildx', 'create', '--name', BUILDER_NAME, '--use')
-            docker('buildx', 'inspect', '--bootstrap', BUILDER_NAME)
 
     @property
     def authenticated(self) -> bool:
@@ -65,166 +49,59 @@ class Configuration:
 
 
 @dataclasses.dataclass
-class BuildInfo:
-    source: str
-    version: re.Pattern
-    correction: dict[str, str]
-    platforms: list[str]
-    labels: dict[str, str]
-    registry: dict[str, str]
-
-    @classmethod
-    def from_file(cls, path: Path) -> BuildInfo:
-        attrs = CONFIG.options.copy()
-        if path.exists():
-            override = read_json(path)
-            labels = attrs['labels'].copy()
-            labels.update(override.get('labels', dict()))
-            attrs.update(override, labels=labels)
-            attrs['version'] = re.compile(attrs['version'])
-        return BuildInfo(**attrs)
-
-
-@dataclasses.dataclass
-class Repository:
-    path: Path
-
-    def clone(self, build_info: BuildInfo) -> VersionInfo:
-        git_dir = self.path/'.git'
-        if git_dir.is_dir():
-            git('-C', self.path, 'reset', '--hard', 'origin/HEAD')
-            git('-C', self.path, 'pull', 'origin', 'HEAD', '--rebase')
-        else:
-            git('clone', build_info.source, self.path)
-        latest_ref, latest_version = self._find_lastest_ref(build_info.version)
-        latest_version = self._correct_version(latest_version, build_info.correction)
-        return VersionInfo(
-            latest_ref,
-            latest_version,
-            git('-C', self.path, 'rev-list', '--max-count=1', latest_ref, capture=True),
-            git('-C', self.path, 'rev-parse', 'HEAD', capture=True),
-        )
-
-    def checkout(self, version_info: VersionInfo) -> None:
-        git('-C', self.path, 'checkout', '--quiet', version_info.latest_ref)
-
-    def _find_lastest_ref(self, version_regex: re.Pattern) -> tuple[str, str]:
-        lines = git('-C', self.path, 'show-ref', capture=True).splitlines()
-        refs = []
-        for line in lines:
-            words = line.split(' ', maxsplit=1)
-            if len(words) != 2:
-                raise RuntimeError('could not parse output from git show-ref')
-            _, ref = words
-            refs.append(ref)
-
-        matches = list()
-        for ref in refs:
-            match = version_regex.fullmatch(ref)
-            if match:
-                matches.append((ref, match))
-
-        versions = [(ref, match.group(1)) for ref, match in matches]
-        sorted_versions = sorted(versions, key=lambda pair: pair[1].split('.'))
-        latest_ref, latest_version = sorted_versions[-1]
-        return latest_ref, latest_version
-
-    @staticmethod
-    def _correct_version(version: str, correction: dict[str, str]) -> str:
-        return version.replace(correction['search'], correction['replace'])
-
-
-@dataclasses.dataclass
-class VersionInfo:
-    latest_ref: str
-    latest_version: str
-    latest_commit: str
-    current_commit: str
-
-    @classmethod
-    def empty(cls):
-        return cls('', '', '', '')
-
-
-@dataclasses.dataclass
 class ContainerImage:
     context: Path
     dockerfile: Path
-    tag: str
-    build_info: BuildInfo
-    repo: Repository
 
     @classmethod
     def from_file(cls, dockerfile: Path) -> ContainerImage:
-        return cls(dockerfile.parent, dockerfile, cls._get_tag_from_dockerfile(dockerfile), BuildInfo.from_file(dockerfile.parent/'build.json'), Repository(dockerfile.parent/'src'))
-
-    @staticmethod
-    def _get_tag_from_dockerfile(path: Path) -> str:
-        return 'latest' if path.name == 'Dockerfile' else removesuffix(path.name, '.Dockerfile')
+        return cls(dockerfile.parent, dockerfile)
 
     @property
     def name(self) -> str:
         return '/'.join(item for item in (CONFIG.options['registry']['name'], CONFIG.options['registry']['user'], self.context.name) if item)
 
-    def build(self) -> None:
-        if self.build_info.source:
-            version_info = self.repo.clone(self.build_info)
-            self.repo.checkout(version_info)
-        else:
-            version_info = VersionInfo.empty()
-
-        self._build_image(version_info)
-
-    def _build_image(self, version_info: VersionInfo) -> None:
-        tags = []
-        for tag in self._generate_image_tags(version_info):
-            tags.extend(('--tag', f'{self.name}:{tag}'))
-
-        labels = []
-        for key, value in self._generate_image_labels(version_info).items():
-            labels.extend(('--label', f'{key}={value}'))
+    def build(self, label_templates: dict[str, str], cache: bool = True) -> None:
+        args = []
+        if cache:
+            args.extend((
+                '--cache-from', f'type=local,src={CONFIG.cache}',
+                '--cache-to', f'type=local,dest={CONFIG.cache}',
+            ))
+        for key, value in self._generate_image_labels(label_templates).items():
+            args.extend(('--label', f'{key}={value}'))
 
         docker(
             'buildx', 'build',
-            '--cache-from', f'type=local,src={CONFIG.cache}',
-            '--cache-to', f'type=local,dest={CONFIG.cache}',
-            '--platform', ','.join(self.build_info.platforms) if CONFIG.authenticated else FALLBACK_PLATFORM,
-            *tags,
-            *labels,
+            '--platform', 'linux/amd64',
+            *args,
+            '--tag', f'{self.name}:latest'
             '--push' if CONFIG.authenticated else '--load',
             '--file', self.dockerfile,
             self.context,
         )
 
-    def _generate_image_tags(self, version_info: VersionInfo) -> Generator[str, None, None]:
-        yield self.tag
-        if version_info.latest_version:
-            yield from itertools.accumulate(
-                version_info.latest_version.split('.'),
-                lambda a, b: f'{self.tag}-{a}.{b}' if self.tag != 'latest' else f'{a}.{b}' if a else b,
-            )
-
-    def _generate_image_labels(self, version_info: VersionInfo):
+    def _generate_image_labels(self, label_templates: dict[str, str]):
         timestamp = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         labels = {
-            key: value.format(
-                image=self,
-                build=self.build_info,
-                version=version_info,
-                timestamp=timestamp,
-            )
-            for key, value in self.build_info.labels.items()
+            key: value.format(image=self, timestamp=timestamp)
+            for key, value in label_templates.items()
         }
-        labels = {key: value for key, value in labels.items() if value}
+        labels = {
+            key: value
+            for key, value in labels.items()
+            if value
+        }
         return labels
 
 
-def main():
+def main() -> None:
     entrypoint = ArgumentParser()
     entrypoint.add_argument('-w', '--workdir', type=Path, default=Path.cwd(), metavar='DIR')
     subparsers = entrypoint.add_subparsers(dest='command', required=True)
     parser = subparsers.add_parser('image')
     parser.add_argument('image', nargs='+', type=Path, metavar='DOCKERFILE')
+    parser.add_argument('--no-cache', action='store_const', const=True, default=False)
     parser = subparsers.add_parser('workflow')
     opts = entrypoint.parse_args()
     global CONFIG
@@ -238,12 +115,11 @@ def main():
 
 def build_images(opts: Namespace) -> None:
     CONFIG.setup_cache()
-    CONFIG.setup_docker_buildx()
     CONFIG.registry_login()
     try:
         for path in opts.image:
             image = ContainerImage.from_file(path)
-            image.build()
+            image.build(CONFIG.options['labels'], cache=not opts.no_cache)
     finally:
         CONFIG.registry_logout()
 
@@ -251,11 +127,10 @@ def build_images(opts: Namespace) -> None:
 @dataclasses.dataclass
 class Job:
     dockerfile: Path
-    build_info: BuildInfo
 
     @classmethod
     def from_file(cls, dockerfile: Path) -> Job:
-        return cls(dockerfile, BuildInfo.from_file(dockerfile.parent/'build.json'))
+        return cls(dockerfile)
 
     @property
     def dependencies(self) -> list[str]:
@@ -313,12 +188,7 @@ def write_workflow(opts: Namespace) -> None:
     import yaml
     jobs = [
         Job.from_file(path.relative_to(opts.workdir))
-        for path in sorted(
-            itertools.chain(
-                opts.workdir.glob('*/Dockerfile'),
-                opts.workdir.glob('*/*.Dockerfile'),
-            )
-        )
+        for path in sorted(opts.workdir.glob('*/Dockerfile'))
     ]
     data = {
         'name': 'CI',
@@ -351,7 +221,7 @@ def git(*args: Any, **kwargs: Any) -> str:
     return run('git', *args, **kwargs)
 
 
-def run(*args: Any, stdin: str = None, capture: bool = False, check: bool = True, env: dict[str, Any] = None) -> str:
+def run(*args: Any, stdin: str|None = None, capture: bool = False, check: bool = True, env: dict[str, Any]|None = None) -> str:
     args = tuple(str(item) for item in args if item is not None)
     cmdline = ' '.join(args)
     print('>', cmdline, flush=True)
@@ -373,3 +243,4 @@ def read_json(path: Path) -> Any:
 
 if __name__ == '__main__':
     main()
+

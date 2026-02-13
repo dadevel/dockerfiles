@@ -1,9 +1,0 @@
-{
-  "source": "https://git.w1.fi/hostap.git",
-  "version": "refs/tags/hostap_([0-9_]+)",
-  "correction": {
-    "search": "_",
-    "replace": "."
-  },
-  "platforms": ["linux/amd64"]
-}
