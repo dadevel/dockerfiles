@@ -11,280 +11,588 @@ jobs:
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image alertmanager/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: alertmanager
+        tags: ghcr.io/dadevel/alertmanager:latest
+        labels: |
+          org.opencontainers.image.title=alertmanager
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   alpine:
     runs-on: ubuntu-24.04
     needs: []
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image alpine/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: alpine
+        tags: ghcr.io/dadevel/alpine:latest
+        labels: |
+          org.opencontainers.image.title=alpine
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   apt-collector:
     runs-on: ubuntu-24.04
     needs:
     - debian
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image apt-collector/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: apt-collector
+        tags: ghcr.io/dadevel/apt-collector:latest
+        labels: |
+          org.opencontainers.image.title=apt-collector
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   aria2:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image aria2/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: aria2
+        tags: ghcr.io/dadevel/aria2:latest
+        labels: |
+          org.opencontainers.image.title=aria2
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   blackbox-exporter:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image blackbox-exporter/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: blackbox-exporter
+        tags: ghcr.io/dadevel/blackbox-exporter:latest
+        labels: |
+          org.opencontainers.image.title=blackbox-exporter
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   chrony:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image chrony/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: chrony
+        tags: ghcr.io/dadevel/chrony:latest
+        labels: |
+          org.opencontainers.image.title=chrony
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   debian:
     runs-on: ubuntu-24.04
     needs: []
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image debian/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: debian
+        tags: ghcr.io/dadevel/debian:latest
+        labels: |
+          org.opencontainers.image.title=debian
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   haveged:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image haveged/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: haveged
+        tags: ghcr.io/dadevel/haveged:latest
+        labels: |
+          org.opencontainers.image.title=haveged
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   hostapd:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image hostapd/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: hostapd
+        tags: ghcr.io/dadevel/hostapd:latest
+        labels: |
+          org.opencontainers.image.title=hostapd
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   jellyfin:
     runs-on: ubuntu-24.04
     needs: []
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image jellyfin/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: jellyfin
+        tags: ghcr.io/dadevel/jellyfin:latest
+        labels: |
+          org.opencontainers.image.title=jellyfin
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   nginx:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image nginx/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: nginx
+        tags: ghcr.io/dadevel/nginx:latest
+        labels: |
+          org.opencontainers.image.title=nginx
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   node-exporter:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image node-exporter/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: node-exporter
+        tags: ghcr.io/dadevel/node-exporter:latest
+        labels: |
+          org.opencontainers.image.title=node-exporter
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   podman-collector:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image podman-collector/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: podman-collector
+        tags: ghcr.io/dadevel/podman-collector:latest
+        labels: |
+          org.opencontainers.image.title=podman-collector
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   prometheus:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image prometheus/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: prometheus
+        tags: ghcr.io/dadevel/prometheus:latest
+        labels: |
+          org.opencontainers.image.title=prometheus
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   prowlarr:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image prowlarr/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: prowlarr
+        tags: ghcr.io/dadevel/prowlarr:latest
+        labels: |
+          org.opencontainers.image.title=prowlarr
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   smart-collector:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image smart-collector/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: smart-collector
+        tags: ghcr.io/dadevel/smart-collector:latest
+        labels: |
+          org.opencontainers.image.title=smart-collector
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   socat:
     runs-on: ubuntu-24.04
     needs: []
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image socat/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: socat
+        tags: ghcr.io/dadevel/socat:latest
+        labels: |
+          org.opencontainers.image.title=socat
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   syncthing:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image syncthing/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: syncthing
+        tags: ghcr.io/dadevel/syncthing:latest
+        labels: |
+          org.opencontainers.image.title=syncthing
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   unbound:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image unbound/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: unbound
+        tags: ghcr.io/dadevel/unbound:latest
+        labels: |
+          org.opencontainers.image.title=unbound
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   webui-aria2:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image webui-aria2/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: webui-aria2
+        tags: ghcr.io/dadevel/webui-aria2:latest
+        labels: |
+          org.opencontainers.image.title=webui-aria2
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   wpa-supplicant:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image wpa-supplicant/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: wpa-supplicant
+        tags: ghcr.io/dadevel/wpa-supplicant:latest
+        labels: |
+          org.opencontainers.image.title=wpa-supplicant
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
   zrepl:
     runs-on: ubuntu-24.04
     needs:
     - alpine
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Git Checkout
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Build, Test & Push
-      run: ./build.py image zrepl/Dockerfile
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v3
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dadevel
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker Build & Push
+      uses: docker/build-push-action@v6
+      with:
+        context: zrepl
+        tags: ghcr.io/dadevel/zrepl:latest
+        labels: |
+          org.opencontainers.image.title=zrepl
+          org.opencontainers.image.author=dadevel
+          org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
+        push: true
