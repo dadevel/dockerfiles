@@ -8,4 +8,3 @@ CMD ["-p"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["nslookup", "health.unbound.test", "127.0.0.1"]
 EXPOSE 53/tcp 53/udp 853/tcp
 VOLUME /app/config /app/cache
-

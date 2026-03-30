@@ -13,4 +13,3 @@ ENTRYPOINT ["httpd", "-f", "-h", "/app/static/www"]
 CMD ["-p", "6801"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:6801/health"]
 EXPOSE 6801/tcp
-

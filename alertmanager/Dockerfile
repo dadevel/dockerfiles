@@ -5,4 +5,3 @@ ENTRYPOINT ["alertmanager", "--config.file=/app/config/alertmanager.yaml", "--st
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:9093/-/healthy"]
 EXPOSE 9093/tcp
 VOLUME /app/config /app/data
-

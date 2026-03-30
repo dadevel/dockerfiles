@@ -36,4 +36,3 @@ ENTRYPOINT ["jellyfin", "--configdir", "/app/config", "--datadir", "/app/data", 
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:8096/System/Info/Public"]
 EXPOSE 8096/tcp
 VOLUME /app/config /app/data /app/cache /app/media
-

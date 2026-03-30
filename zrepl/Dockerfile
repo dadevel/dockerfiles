@@ -22,4 +22,3 @@ CMD ["--config", "/app/config/zrepl.yaml"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["zrepl", "version"]
 EXPOSE 8888/tcp 9811/tcp
 VOLUME /app/config
-

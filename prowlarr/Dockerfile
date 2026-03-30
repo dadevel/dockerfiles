@@ -26,4 +26,3 @@ HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://lo
 EXPOSE 9696/tcp
 VOLUME /app/config
 # /app/downloads /app/movies
-

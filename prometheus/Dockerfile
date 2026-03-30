@@ -6,4 +6,3 @@ ENTRYPOINT ["prometheus", "--config.file=/app/config/prometheus.yaml", "--storag
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:9090/-/healthy"]
 EXPOSE 9090/tcp
 VOLUME /app/config /app/data
-

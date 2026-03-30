@@ -5,4 +5,3 @@ ENTRYPOINT ["node_exporter", "--collector.textfile.directory=/app/textfiles", "-
 HEALTHCHECK --interval=60s --timeout=3s CMD ["wget", "-q", "-O", "-", "http://localhost:9100/"]
 EXPOSE 9100/tcp
 VOLUME /app/config /app/textfiles
-

@@ -7,4 +7,3 @@ CMD ["-L", "1", "-r", "-s"]
 HEALTHCHECK --interval=60s --timeout=3s CMD ["chronyc", "sources"]
 EXPOSE 123/udp
 VOLUME /app/config /app/cache
-
