@@ -81,23 +81,23 @@ class Job:
 
     def generate(self) -> dict[str, Any]:
         return {
-            'runs-on': 'ubuntu-24.04',
+            'runs-on': 'ubuntu-latest',
             'needs': self.dependencies,
             'steps': [
                 {
                     'name': 'Git Checkout',
-                    'uses': 'actions/checkout@v5',
+                    'uses': 'actions/checkout@v6',
                     'with': {
                         'fetch-depth': 0,
                     }
                 },
                 {
                     'name': 'Docker Setup',
-                    'uses': 'docker/setup-buildx-action@v3',
+                    'uses': 'docker/setup-buildx-action@v4',
                 },
                 {
                     'name': 'Docker Login',
-                    'uses': 'docker/login-action@v3',
+                    'uses': 'docker/login-action@v4',
                     'with': {
                         'registry': 'ghcr.io',
                         'username': 'dadevel',
@@ -106,7 +106,7 @@ class Job:
                 },
                 {
                     'name': 'Docker Build & Push',
-                    'uses': 'docker/build-push-action@v6',
+                    'uses': 'docker/build-push-action@v7',
                     'with': {
                         'context': self.context,
                         'tags': f'ghcr.io/dadevel/{self.name}:latest',
