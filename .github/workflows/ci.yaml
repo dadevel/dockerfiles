@@ -648,3 +648,4 @@ jobs:
           org.opencontainers.image.author=dadevel
           org.opencontainers.image.source=https://github.com/dadevel/dockerfiles
         push: true
+
